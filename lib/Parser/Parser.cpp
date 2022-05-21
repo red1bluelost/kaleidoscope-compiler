@@ -128,3 +128,49 @@ std::unique_ptr<ExprAST> Parser::parseExpression() {
     return nullptr;
   return parseBinOpRHS(0, std::move(LHS));
 }
+
+std::unique_ptr<PrototypeAST> Parser::parsePrototype() {
+  if (CurTok != Lexer::tok_identifier)
+    return logError<PrototypeAST>("expected function name in prototype");
+
+  std::string FnName = Lex.getIdentifierStr();
+  getNextToken();
+
+  if (CurTok != '(')
+    return logError<PrototypeAST>("expected '(' in prototype");
+
+  // read the list of argument names
+  std::vector<std::string> ArgNames;
+  while (getNextToken() == Lexer::tok_identifier)
+    ArgNames.push_back(Lex.getIdentifierStr());
+  if (CurTok != ')')
+    return logError<PrototypeAST>("expected ')' in prototype");
+
+  getNextToken(); // eat )
+  return std::make_unique<PrototypeAST>(std::move(FnName), std::move(ArgNames));
+}
+
+std::unique_ptr<FunctionAST> Parser::parseDefinition() {
+  getNextToken(); // eat def
+  auto Proto = parsePrototype();
+  if (!Proto)
+    return nullptr;
+  if (auto E = parseExpression())
+    return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
+  return nullptr;
+}
+
+std::unique_ptr<PrototypeAST> Parser::parseExtern() {
+  getNextToken(); // eat extern
+  return parsePrototype();
+}
+
+std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
+  if (auto E = parseExpression()) {
+    // make an anonymous proto
+    auto Proto = std::make_unique<PrototypeAST>("", std::vector<std::string>());
+    return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
+  }
+  return nullptr;
+}
+

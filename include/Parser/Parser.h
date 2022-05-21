@@ -2,6 +2,8 @@
 #define KALEIDOSCOPE_PARSER_PARSER_H
 
 #include "AST/ExprAST.h"
+#include "AST/FunctionAST.h"
+#include "AST/PrototypeAST.h"
 #include "Lexer/Lexer.h"
 
 #include <map>
@@ -52,6 +54,19 @@ class Parser {
   /// expression
   ///   ::= primary binoprhs
   std::unique_ptr<ExprAST> parseExpression();
+
+  /// prototype
+  ///   ::= id '(' id* ')'
+  std::unique_ptr<PrototypeAST> parsePrototype();
+
+  /// definition ::= 'def' prototype expression
+  std::unique_ptr<FunctionAST> parseDefinition();
+
+  /// external ::= 'extern' prototype
+  std::unique_ptr<PrototypeAST> parseExtern();
+
+  /// toplevelexpr ::= expression
+  std::unique_ptr<FunctionAST> parseTopLevelExpr();
 
 public:
   Parser(Lexer &Lex) : Lex(Lex) {}
