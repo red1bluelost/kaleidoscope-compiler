@@ -17,9 +17,6 @@ class Parser {
   /// CurTok/getNextToken - Provide a simple token buffer.
   /// CurTok is the current token the parser is looking at.
   int CurTok;
-  /// getNextToken - reads another token from the lexer and updates CurTok with
-  /// its results.
-  int getNextToken() { return CurTok = Lex.gettok(); }
 
   /// BinopPrecedence - This holds the precedence for each binary operator that
   /// is defined.
@@ -59,19 +56,6 @@ class Parser {
   ///   ::= id '(' id* ')'
   std::unique_ptr<PrototypeAST> parsePrototype();
 
-  /// definition ::= 'def' prototype expression
-  std::unique_ptr<FunctionAST> parseDefinition();
-
-  /// external ::= 'extern' prototype
-  std::unique_ptr<PrototypeAST> parseExtern();
-
-  /// toplevelexpr ::= expression
-  std::unique_ptr<FunctionAST> parseTopLevelExpr();
-
-  void handleDefinition();
-  void handleExtern();
-  void handleTopLevelExpression();
-
 public:
   Parser(Lexer &Lex) : Lex(Lex) {}
 
@@ -82,8 +66,19 @@ public:
     return *this;
   }
 
-  /// top ::= definition | external | expression | ';'
-  void mainLoop();
+  /// getNextToken - reads another token from the lexer and updates CurTok with
+  /// its results.
+  int getNextToken() { return CurTok = Lex.gettok(); }
+  int getCurToken() { return CurTok; }
+
+  /// definition ::= 'def' prototype expression
+  std::unique_ptr<FunctionAST> parseDefinition();
+
+  /// external ::= 'extern' prototype
+  std::unique_ptr<PrototypeAST> parseExtern();
+
+  /// toplevelexpr ::= expression
+  std::unique_ptr<FunctionAST> parseTopLevelExpr();
 };
 
 } // namespace kaleidoscope

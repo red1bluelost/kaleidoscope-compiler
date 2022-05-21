@@ -10,7 +10,7 @@ using namespace kaleidoscope;
 
 llvm::Function *FunctionAST::codegen(CodeGen &CG) {
   // check for an existing function from a previous 'extern' declaration
-  llvm::Function *TheFunction = CG.Module->getFunction(Proto->getName());
+  llvm::Function *TheFunction = CG.Module.getFunction(Proto->getName());
 
   if (TheFunction) {
     for (unsigned Idx = 0; auto &Arg : TheFunction->args())

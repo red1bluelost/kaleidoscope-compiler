@@ -12,7 +12,7 @@ llvm::Function *PrototypeAST::codegen(CodeGen &CG) {
   llvm::FunctionType *FT = llvm::FunctionType::get(
       llvm::Type::getDoubleTy(CG.Context), Doubles, false);
   llvm::Function *F = llvm::Function::Create(
-      FT, llvm::Function::ExternalLinkage, Name, CG.Module.get());
+      FT, llvm::Function::ExternalLinkage, Name, &CG.Module);
 
   for (unsigned Idx = 0; auto &Arg : F->args())
     Arg.setName(Args[Idx++]);

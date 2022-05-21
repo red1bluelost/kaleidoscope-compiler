@@ -13,12 +13,12 @@
 namespace kaleidoscope {
 
 class CodeGen {
-  std::map<std::string, llvm::Value *> NamedValues;
+  std::map<std::string, llvm::Value *> NamedValues{};
 
 public:
-  llvm::LLVMContext Context;
+  llvm::LLVMContext Context{};
   llvm::IRBuilder<> Builder{Context};
-  std::unique_ptr<llvm::Module> Module;
+  llvm::Module Module{"default codegen", Context};
 
   llvm::Value *getNamedVal(const std::string &Name) {
     if (NamedValues.contains(Name))
