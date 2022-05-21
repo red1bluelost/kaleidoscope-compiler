@@ -17,6 +17,17 @@ class CodeGen {
   llvm::IRBuilder<> Builder{Context};
   std::unique_ptr<llvm::Module> Module;
   std::map<std::string, llvm::Value *> NamedValues;
+
+public:
+  llvm::IRBuilder<> &getBuilder() { return Builder; }
+  llvm::Value *getNamedVal(const std::string &Name) {
+    if (NamedValues.contains(Name))
+      return NamedValues[Name];
+    return nullptr;
+  }
+  llvm::Function *getFunction(const std::string &FName) {
+    return Module->getFunction(FName);
+  }
 };
 
 } // namespace kaleidoscope
