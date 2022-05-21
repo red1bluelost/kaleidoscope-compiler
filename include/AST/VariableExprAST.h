@@ -13,6 +13,7 @@ class VariableExprAST : public ExprAST {
 
 public:
   VariableExprAST(std::string Name) : Name(std::move(Name)) {}
+  llvm::Value *codegen(CodeGen &CG) override;
 };
 
 } // namespace kaleidoscope

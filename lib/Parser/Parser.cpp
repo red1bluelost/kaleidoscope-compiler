@@ -4,18 +4,9 @@
 #include "AST/CallExprAST.h"
 #include "AST/NumberExprAST.h"
 #include "AST/VariableExprAST.h"
-
-#include <fmt/core.h>
-
-#include <string_view>
+#include "Error/Log.h"
 
 using namespace kaleidoscope;
-
-/// logError<AST> - These are little helper functions for error handling.
-template <typename T> static std::unique_ptr<T> logError(std::string_view Str) {
-  fmt::print(stderr, "Error: {}\n", Str);
-  return nullptr;
-}
 
 int Parser::getTokPrecedence() {
   if (!isascii(CurTok))

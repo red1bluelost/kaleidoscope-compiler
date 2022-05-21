@@ -17,6 +17,7 @@ class CallExprAST : public ExprAST {
 public:
   CallExprAST(std::string Callee, std::vector<std::unique_ptr<ExprAST>> Args)
       : Callee(std::move(Callee)), Args(std::move(Args)) {}
+  llvm::Value *codegen(CodeGen &CG) override;
 };
 
 } // namespace kaleidoscope
