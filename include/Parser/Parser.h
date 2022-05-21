@@ -68,6 +68,10 @@ class Parser {
   /// toplevelexpr ::= expression
   std::unique_ptr<FunctionAST> parseTopLevelExpr();
 
+  void handleDefinition();
+  void handleExtern();
+  void handleTopLevelExpression();
+
 public:
   Parser(Lexer &Lex) : Lex(Lex) {}
 
@@ -77,6 +81,9 @@ public:
     BinopPrecedence[Op] = Prec;
     return *this;
   }
+
+  /// top ::= definition | external | expression | ';'
+  void mainLoop();
 };
 
 } // namespace kaleidoscope

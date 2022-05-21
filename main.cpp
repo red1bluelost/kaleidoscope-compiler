@@ -8,4 +8,5 @@ int main() {
                                    .addBinopPrec('+', 20)
                                    .addBinopPrec('-', 20)
                                    .addBinopPrec('*', 40);
+  Parse.mainLoop();
 }

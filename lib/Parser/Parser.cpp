@@ -12,8 +12,8 @@
 using namespace kaleidoscope;
 
 /// logError<AST> - These are little helper functions for error handling.
-template <typename T> std::unique_ptr<T> logError(std::string_view Str) {
-  fmt::print(stderr, "LogError: {}\n", Str);
+template <typename T> static std::unique_ptr<T> logError(std::string_view Str) {
+  fmt::print(stderr, "Error: {}\n", Str);
   return nullptr;
 }
 
@@ -78,7 +78,7 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
 std::unique_ptr<ExprAST> Parser::parsePrimary() {
   switch (CurTok) {
   default:
-    return logError<ExprAST>("fuck");
+    return logError<ExprAST>("unknown token when expecting an expression");
   case Lexer::tok_identifier:
     return parseIdentifierExpr();
   case Lexer::tok_number:
@@ -174,3 +174,48 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
   return nullptr;
 }
 
+void Parser::handleDefinition() {
+  if (parseDefinition())
+    fmt::print(stderr, "Parsed a function definition.\n");
+  else
+    getNextToken(); // skip token for error recovery
+}
+
+void Parser::handleExtern() {
+  if (parseExtern())
+    fmt::print(stderr, "Parsed an extern.\n");
+  else
+    getNextToken(); // skip token for error recovery
+}
+
+void Parser::handleTopLevelExpression() {
+  // evaluate a top-level expression into an anonymous function
+  if (parseTopLevelExpr())
+    fmt::print(stderr, "Parsed a top-level expr.\n");
+  else
+    getNextToken(); // skip token for error recovery
+}
+
+void Parser::mainLoop() {
+  fmt::print(stderr, "ready> ");
+  getNextToken();
+  while (true) {
+    switch (CurTok) {
+    case Lexer::tok_eof:
+      return;
+    case ';': // ignore top-level semicolons
+      getNextToken();
+      break;
+    case Lexer::tok_def:
+      handleDefinition();
+      break;
+    case Lexer::tok_extern:
+      handleExtern();
+      break;
+    default:
+      handleTopLevelExpression();
+      break;
+    }
+    fmt::print(stderr, "ready> ");
+  }
+}
