@@ -12,11 +12,24 @@ add_compile_options(
         $<$<CONFIG:DEBUG>:-g3>
         $<$<CONFIG:DEBUG>:-Og>
         $<$<CONFIG:RELEASE>:-g0>
-        $<$<CONFIG:RELEASE>:-O3>)
+        $<$<CONFIG:RELEASE>:-O3>
+)
 
 add_link_options(
-        $<$<CONFIG:DEBUG>:-fsanitize=address>)
+        $<$<CONFIG:DEBUG>:-fsanitize=address>
+)
 
 include_directories(include)
 
-add_executable(kaleidoscope main.cpp lib/Lexer/Lexer.cpp include/Lexer/Lexer.h)
+add_executable(kaleidoscope
+        main.cpp
+        lib/Lexer/Lexer.cpp
+        include/Lexer/Lexer.h
+        include/AST/ExprAST.h
+        include/AST/NumberExprAST.h
+        include/AST/VariableExprAST.h
+        include/AST/BinaryExprAST.h
+        include/AST/CallExprAST.h
+        include/AST/PrototypeAST.h
+        include/AST/FunctionAST.h
+)
