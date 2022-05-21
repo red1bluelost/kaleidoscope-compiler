@@ -1,6 +1,9 @@
 #include "AST/BinaryExprAST.h"
 
 #include "Error/Log.h"
+#include "CodeGen/CodeGen.h"
+
+#include <llvm/IR/IRBuilder.h>
 
 using namespace kaleidoscope;
 

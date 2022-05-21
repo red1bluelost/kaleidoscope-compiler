@@ -1,6 +1,9 @@
 #include "AST/CallExprAST.h"
 
+#include "CodeGen/CodeGen.h"
 #include "Error/Log.h"
+
+#include <llvm/IR/Function.h>
 
 using namespace kaleidoscope;
 

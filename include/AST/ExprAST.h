@@ -1,11 +1,13 @@
 #ifndef KALEIDOSCOPE_AST_EXPRAST_H
 #define KALEIDOSCOPE_AST_EXPRAST_H
 
-#include "CodeGen/CodeGen.h"
-
-#include <llvm/IR/Value.h>
+namespace llvm {
+class Value;
+}
 
 namespace kaleidoscope {
+
+class CodeGen;
 
 /// ExprAST - Base class for all expression nodes.
 class ExprAST {
