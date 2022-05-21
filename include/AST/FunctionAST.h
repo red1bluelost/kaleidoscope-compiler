@@ -6,7 +6,12 @@
 
 #include <memory>
 
+namespace llvm {
+class Function;
+} // namespace llvm
+
 namespace kaleidoscope {
+class CodeGen;
 
 /// FunctionAST - This class represents a function definition itself.
 class FunctionAST {
@@ -17,6 +22,7 @@ public:
   FunctionAST(std::unique_ptr<PrototypeAST> Proto,
               std::unique_ptr<ExprAST> Body)
       : Proto(std::move(Proto)), Body(std::move(Body)) {}
+  llvm::Function *codegen(CodeGen &CG);
 };
 
 } // namespace kaleidoscope

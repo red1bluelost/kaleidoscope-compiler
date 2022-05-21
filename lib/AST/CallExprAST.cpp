@@ -9,7 +9,7 @@ using namespace kaleidoscope;
 
 llvm::Value *CallExprAST::codegen(CodeGen &CG) {
   // Look up the name in the global module table.
-  llvm::Function *CalleeF = CG.getFunction(Callee);
+  llvm::Function *CalleeF = CG.Module->getFunction(Callee);
   if (!CalleeF)
     return logErrorR<llvm::Value>("Unknown function referenced");
 
@@ -25,5 +25,5 @@ llvm::Value *CallExprAST::codegen(CodeGen &CG) {
       ArgsV.push_back(ArgV);
   }
 
-  return CG.getBuilder().CreateCall(CalleeF, ArgsV, "calltmp");
+  return CG.Builder.CreateCall(CalleeF, ArgsV, "calltmp");
 }
