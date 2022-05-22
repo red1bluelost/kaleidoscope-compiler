@@ -74,7 +74,7 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
     return parseIdentifierExpr();
   case Lexer::tok_number:
     return parseNumberExpr();
-  case ')':
+  case '(':
     return parseParenExpr();
   }
 }
