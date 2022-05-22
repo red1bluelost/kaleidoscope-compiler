@@ -8,7 +8,7 @@ message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS})
-llvm_map_components_to_libnames(llvm_libs core)
+llvm_map_components_to_libnames(llvm_libs core orcjit)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -60,6 +60,8 @@ add_executable(kaleidoscope
         lib/CodeGen/CodeGen.cpp
         include/CodeGen/CodeGen.h
         include/Error/Log.h
+        lib/Driver/Driver.cpp
+        include/Driver/Driver.h
 )
 target_link_libraries(kaleidoscope
         fmt::fmt
