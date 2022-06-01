@@ -19,10 +19,10 @@ llvm::Value *CallExprAST::codegen(CodeGen &CG) {
 
   std::vector<llvm::Value *> ArgsV;
   for (auto &Arg : Args) {
-    if (auto *ArgV = Arg->codegen(CG); !ArgV)
+    auto *ArgV = Arg->codegen(CG);
+    if (!ArgV)
       return logErrorR<llvm::Value>("Could not codegen arg");
-    else
-      ArgsV.push_back(ArgV);
+    ArgsV.push_back(ArgV);
   }
 
   return CG.Builder.CreateCall(CalleeF, ArgsV, "calltmp");

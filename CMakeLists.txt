@@ -33,10 +33,8 @@ add_link_options(
         $<$<CONFIG:DEBUG>:-fsanitize=address>
 )
 
-include_directories(
-        include
-        ${LLVM_INCLUDE_DIRS}
-)
+include_directories(include)
+include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
 
 add_executable(kaleidoscope
         main.cpp
