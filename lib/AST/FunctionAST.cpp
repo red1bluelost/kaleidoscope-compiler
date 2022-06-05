@@ -10,7 +10,7 @@ using namespace kaleidoscope;
 
 llvm::Function *FunctionAST::codegen(CodeGen &CG) {
   // check for an existing function from a previous 'extern' declaration
-  llvm::Function *TheFunction = CG.Module.getFunction(Proto->getName());
+  llvm::Function *TheFunction = CG.getModule().getFunction(Proto->getName());
 
   if (TheFunction) {
     for (unsigned Idx = 0; auto &Arg : TheFunction->args())
@@ -25,14 +25,14 @@ llvm::Function *FunctionAST::codegen(CodeGen &CG) {
 
   // create a new basic block to start insertion into
   llvm::BasicBlock *BB =
-      llvm::BasicBlock::Create(CG.Context, "entry", TheFunction);
-  CG.Builder.SetInsertPoint(BB);
+      llvm::BasicBlock::Create(CG.getContext(), "entry", TheFunction);
+  CG.getBuilder().SetInsertPoint(BB);
 
   // record the function arguments in the NamedValues map
   CG.recordFuncArgs(*TheFunction);
 
   if (llvm::Value *RetVal = Body->codegen(CG)) {
-    CG.Builder.CreateRet(RetVal); // Finish off the function
+    CG.getBuilder().CreateRet(RetVal); // Finish off the function
     llvm::verifyFunction(*TheFunction);
     return TheFunction;
   }

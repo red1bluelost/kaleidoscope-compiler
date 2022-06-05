@@ -16,16 +16,16 @@ llvm::Value *BinaryExprAST::codegen(CodeGen &CG) {
   default:
     return logErrorR<llvm::Value>("invalid binary operator");
   case '+':
-    return CG.Builder.CreateFAdd(L, R, "addtmp");
+    return CG.getBuilder().CreateFAdd(L, R, "addtmp");
   case '-':
-    return CG.Builder.CreateFSub(L, R, "subtmp");
+    return CG.getBuilder().CreateFSub(L, R, "subtmp");
   case '*':
-    return CG.Builder.CreateFMul(L, R, "multmp");
+    return CG.getBuilder().CreateFMul(L, R, "multmp");
   case '<':
     // Convert bool 0/1 to double 0.0 or 1.0
-    return CG.Builder.CreateUIToFP(
-        CG.Builder.CreateFCmpULT(L, R, "cmptmp"),
-        llvm::Type::getDoubleTy(CG.Builder.getContext()), "booltmp");
+    return CG.getBuilder().CreateUIToFP(
+        CG.getBuilder().CreateFCmpULT(L, R, "cmptmp"),
+        llvm::Type::getDoubleTy(CG.getBuilder().getContext()), "booltmp");
   }
   return nullptr;
 }

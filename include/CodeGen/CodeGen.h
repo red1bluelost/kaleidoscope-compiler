@@ -13,12 +13,27 @@
 namespace kaleidoscope {
 
 class CodeGen {
+public:
+  struct Session {
+    std::unique_ptr<llvm::LLVMContext> Context =
+        std::make_unique<llvm::LLVMContext>();
+    std::unique_ptr<llvm::Module> Module =
+        std::make_unique<llvm::Module>("default codegen", *Context);
+    llvm::IRBuilder<> Builder{*Context};
+  };
+
+private:
   std::map<std::string, llvm::Value *> NamedValues{};
+  std::unique_ptr<Session> CGS = std::make_unique<Session>();
 
 public:
-  llvm::LLVMContext Context{};
-  llvm::IRBuilder<> Builder{Context};
-  llvm::Module Module{"default codegen", Context};
+  llvm::LLVMContext &getContext() { return *CGS->Context; }
+  llvm::Module &getModule() { return *CGS->Module; }
+  llvm::IRBuilder<> &getBuilder() { return CGS->Builder; }
+
+  std::unique_ptr<Session> takeSession() {
+    return std::exchange(CGS, std::make_unique<Session>());
+  }
 
   llvm::Value *getNamedVal(const std::string &Name) {
     if (NamedValues.contains(Name))

@@ -1,3 +1,11 @@
 #include "Driver/Driver.h"
 
-int main() { kaleidoscope::Driver().mainLoop(); }
+#include <llvm/Support/TargetSelect.h>
+
+int main() {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
+
+  kaleidoscope::Driver().mainLoop();
+}
