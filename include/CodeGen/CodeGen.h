@@ -1,6 +1,8 @@
 #ifndef KALEIDOSCOPE_CODEGEN_CODEGEN_H
 #define KALEIDOSCOPE_CODEGEN_CODEGEN_H
 
+#include "AST/PrototypeAST.h"
+
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
@@ -25,6 +27,7 @@ public:
 private:
   std::map<std::string, llvm::Value *> NamedValues{};
   std::unique_ptr<Session> CGS = std::make_unique<Session>();
+  std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos{};
 
 public:
   llvm::LLVMContext &getContext() { return *CGS->Context; }
@@ -45,6 +48,24 @@ public:
     NamedValues.clear();
     for (auto &Arg : Func.args())
       NamedValues[(std::string)Arg.getName()] = &Arg;
+  }
+
+  PrototypeAST& addPrototype(std::unique_ptr<PrototypeAST> P) {
+    return *(FunctionProtos[P->getName()] = std::move(P));
+  }
+
+  llvm::Function *getFunction(llvm::StringRef Name) {
+    // first, see if the function has already been added to the current module
+    if (auto *F = CGS->Module->getFunction(Name))
+      return F;
+
+    // if not, check whether we can codegen the declaration from some existing
+    // prototype
+    if (auto FI = FunctionProtos.find(Name.str()); FI != FunctionProtos.end())
+      return FI->second->codegen(*this);
+
+    // if no existing prototype exists, return null
+    return nullptr;
   }
 };
 

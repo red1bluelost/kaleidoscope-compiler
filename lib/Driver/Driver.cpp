@@ -53,6 +53,9 @@ void Driver::handleDefinition() {
       fmt::print(stderr, "Read function definition:\n");
       llvm::errs() << *FnIR;
       fmt::print(stderr, "\n");
+      auto CGSess = resetSession();
+      ExitOnErr(JIT->addModule(llvm::orc::ThreadSafeModule(
+          std::move(CGSess->Module), std::move(CGSess->Context))));
     }
   } else
     Parse.getNextToken(); // skip token for error recovery
@@ -64,6 +67,7 @@ void Driver::handleExtern() {
       fmt::print(stderr, "Read extern:\n");
       llvm::errs() << *FnIR;
       fmt::print(stderr, "\n");
+      CG.addPrototype(std::move(ProtoAST));
     }
   } else
     Parse.getNextToken(); // skip token for error recovery
@@ -74,6 +78,9 @@ void Driver::handleTopLevelExpression() {
   if (auto FnAST = Parse.parseTopLevelExpr()) {
     if (auto *FnIR = FnAST->codegen(CG)) {
       FPM->run(*FnIR);
+      fmt::print(stderr, "Read top-level expression:\n");
+      llvm::errs() << *FnIR;
+      fmt::print(stderr, "\n");
 
       // Create a ResourceTracker to track JIT'd memory allocated to our
       // anonymous expression -- that way we can free it after executing.

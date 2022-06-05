@@ -9,7 +9,7 @@ using namespace kaleidoscope;
 
 llvm::Value *CallExprAST::codegen(CodeGen &CG) {
   // Look up the name in the global module table.
-  llvm::Function *CalleeF = CG.getModule().getFunction(Callee);
+  llvm::Function *CalleeF = CG.getFunction(Callee);
   if (!CalleeF)
     return logErrorR<llvm::Value>("Unknown function referenced");
 

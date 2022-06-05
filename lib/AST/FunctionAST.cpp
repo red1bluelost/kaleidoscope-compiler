@@ -9,17 +9,21 @@
 using namespace kaleidoscope;
 
 llvm::Function *FunctionAST::codegen(CodeGen &CG) {
-  // check for an existing function from a previous 'extern' declaration
-  llvm::Function *TheFunction = CG.getModule().getFunction(Proto->getName());
+  assert(Proto != nullptr && "codegen already called for function AST");
 
-  if (TheFunction) {
-    for (unsigned Idx = 0; auto &Arg : TheFunction->args())
-      if (Arg.getName() != Proto->getArgs()[Idx])
-        return logErrorR<llvm::Function>("arg names do not match prototype");
-  } else
-    TheFunction = Proto->codegen(CG);
+  // transfer ownership of the prototype to the FunctionProtos map
+  auto P = CG.addPrototype(std::move(Proto));
+  llvm::Function *TheFunction = CG.getFunction(P.getName());
   if (!TheFunction)
     return nullptr;
+
+  auto &PArgs = P.getArgs();
+  if (PArgs.size() != TheFunction->arg_size())
+    return logErrorR<llvm::Function>(
+        "arg names do not match length in prototype");
+  for (unsigned Idx = 0; auto &Arg : TheFunction->args())
+    if (Arg.getName() != PArgs[Idx])
+      return logErrorR<llvm::Function>("arg names do not match prototype");
   if (!TheFunction->empty())
     return logErrorR<llvm::Function>("Function cannot be redefined");
 
@@ -36,6 +40,7 @@ llvm::Function *FunctionAST::codegen(CodeGen &CG) {
     llvm::verifyFunction(*TheFunction);
     return TheFunction;
   }
+
   // Error reading body, remove function
   TheFunction->eraseFromParent();
   return logErrorR<llvm::Function>("Failed to codegen function body");

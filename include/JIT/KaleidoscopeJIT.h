@@ -44,6 +44,10 @@ public:
     MainJD.addGenerator(
         cantFail(llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
             DL.getGlobalPrefix())));
+    if (JTMB.getTargetTriple().isOSBinFormatCOFF()) {
+      ObjectLayer.setOverrideObjectFlagsWithResponsibilityFlags(true);
+      ObjectLayer.setAutoClaimResponsibilityForObjectSymbols(true);
+    }
   }
 
   ~KaleidoscopeJIT() {
