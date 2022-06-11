@@ -1,5 +1,7 @@
 #include "Lexer/Lexer.h"
 
+#include <llvm/ADT/StringSwitch.h>
+
 #include <cstdio>
 #include <utility>
 
@@ -10,11 +12,13 @@ int Lexer::handleIdentifier() {
   while (std::isalnum((LastChar = std::getchar())))
     IdentifierStr += LastChar;
 
-  if (IdentifierStr == "def")
-    return tok_def;
-  if (IdentifierStr == "extern")
-    return tok_extern;
-  return tok_identifier;
+  return llvm::StringSwitch<int>(IdentifierStr)
+      .Case("def", tok_def)
+      .Case("tok_extern", tok_extern)
+      .Case("if", tok_if)
+      .Case("then", tok_then)
+      .Case("else", tok_else)
+      .Default(tok_identifier);
 }
 
 int Lexer::handleNumber() {
