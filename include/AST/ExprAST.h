@@ -3,7 +3,7 @@
 
 namespace llvm {
 class Value;
-}
+} // namespace llvm
 
 namespace kaleidoscope {
 

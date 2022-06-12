@@ -2,6 +2,7 @@
 
 #include "AST/BinaryExprAST.h"
 #include "AST/CallExprAST.h"
+#include "AST/IfExprAST.h"
 #include "AST/NumberExprAST.h"
 #include "AST/VariableExprAST.h"
 #include "Error/Log.h"
@@ -76,6 +77,8 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
     return parseNumberExpr();
   case '(':
     return parseParenExpr();
+  case Lexer::tok_if:
+    return parseIfExpr();
   }
 }
 
@@ -111,6 +114,33 @@ std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
         std::make_unique<BinaryExprAST>(BinOp, std::move(LHS), std::move(RHS));
   } // loop around to top of the while loop
   return logError<ExprAST>("ran into EOF too early");
+}
+
+std::unique_ptr<ExprAST> Parser::parseIfExpr() {
+  getNextToken(); // eat the "if"
+
+  auto Cond = parseExpression();
+  if (!Cond)
+    return nullptr;
+
+  if (CurTok != Lexer::tok_then)
+    return logError<ExprAST>("expected \"then\" token");
+  getNextToken(); // eat the "then"
+
+  auto Then = parseExpression();
+  if (!Then)
+    return nullptr;
+
+  if (CurTok != Lexer::tok_else)
+    return logError<ExprAST>("expected \"else\" token");
+  getNextToken(); // eat the "else"
+
+  auto Else = parseExpression();
+  if (!Else)
+    return nullptr;
+
+  return std::make_unique<IfExprAST>(std::move(Cond), std::move(Then),
+                                     std::move(Else));
 }
 
 std::unique_ptr<ExprAST> Parser::parseExpression() {

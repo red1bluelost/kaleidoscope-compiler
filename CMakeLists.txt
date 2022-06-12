@@ -50,6 +50,8 @@ add_executable(kaleidoscope
         include/AST/BinaryExprAST.h
         lib/AST/CallExprAST.cpp
         include/AST/CallExprAST.h
+        lib/AST/IfExprAST.cpp
+        include/AST/IfExprAST.h
         lib/AST/PrototypeAST.cpp
         include/AST/PrototypeAST.h
         lib/AST/FunctionAST.cpp

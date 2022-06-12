@@ -48,6 +48,10 @@ class Parser {
   std::unique_ptr<ExprAST> parseBinOpRHS(int ExprPrec,
                                          std::unique_ptr<ExprAST> LHS);
 
+  /// ifexpr
+  ///   ::= 'if' expression 'then' expression 'else' expression
+  std::unique_ptr<ExprAST> parseIfExpr();
+
   /// expression
   ///   ::= primary binoprhs
   std::unique_ptr<ExprAST> parseExpression();
