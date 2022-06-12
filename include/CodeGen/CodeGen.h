@@ -44,13 +44,21 @@ public:
     return nullptr;
   }
 
+  llvm::Value *setNamedValue(const std::string &Name, llvm::Value *Val) {
+    return NamedValues[Name] = Val;
+  }
+
+  llvm::Value *shadowNamedVal(const std::string &Name, llvm::Value *Val) {
+    return std::exchange(NamedValues[Name], Val);
+  }
+
   void recordFuncArgs(llvm::Function &Func) {
     NamedValues.clear();
     for (auto &Arg : Func.args())
       NamedValues[(std::string)Arg.getName()] = &Arg;
   }
 
-  PrototypeAST& addPrototype(std::unique_ptr<PrototypeAST> P) {
+  PrototypeAST &addPrototype(std::unique_ptr<PrototypeAST> P) {
     return *(FunctionProtos[P->getName()] = std::move(P));
   }
 

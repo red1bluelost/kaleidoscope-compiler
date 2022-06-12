@@ -14,7 +14,7 @@ int Lexer::handleIdentifier() {
 
   return llvm::StringSwitch<int>(IdentifierStr)
       .Case("def", tok_def)
-      .Case("tok_extern", tok_extern)
+      .Case("extern", tok_extern)
       .Case("if", tok_if)
       .Case("then", tok_then)
       .Case("else", tok_else)
