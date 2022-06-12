@@ -22,6 +22,7 @@ add_compile_options(
         -Wall
         -Wextra
         -Wpedantic
+        -Wconversion
         $<$<CONFIG:DEBUG>:-fsanitize=address>
         $<$<CONFIG:DEBUG>:-g3>
         $<$<CONFIG:DEBUG>:-Og>

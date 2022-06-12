@@ -8,9 +8,9 @@
 using namespace kaleidoscope;
 
 int Lexer::handleIdentifier() {
-  IdentifierStr = LastChar;
+  IdentifierStr = static_cast<char>(LastChar);
   while (std::isalnum((LastChar = std::getchar())))
-    IdentifierStr += LastChar;
+    IdentifierStr += static_cast<char>(LastChar);
 
   return llvm::StringSwitch<int>(IdentifierStr)
       .Case("def", tok_def)
@@ -26,7 +26,7 @@ int Lexer::handleIdentifier() {
 int Lexer::handleNumber() {
   std::string NumStr;
   do {
-    NumStr += LastChar;
+    NumStr += static_cast<char>(LastChar);
     LastChar = std::getchar();
   } while (std::isdigit(LastChar) || LastChar == '.');
 

@@ -11,11 +11,9 @@
 using namespace kaleidoscope;
 
 int Parser::getTokPrecedence() {
-  if (!isascii(CurTok))
+  if (!isascii(CurTok) || !BinopPrecedence.contains(static_cast<char>(CurTok)))
     return -1;
-  if (!BinopPrecedence.contains(CurTok))
-    return -1;
-  return BinopPrecedence[CurTok];
+  return BinopPrecedence[static_cast<char>(CurTok)];
 }
 
 std::unique_ptr<ExprAST> Parser::parseNumberExpr() {
