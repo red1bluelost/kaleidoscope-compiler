@@ -18,6 +18,8 @@ int Lexer::handleIdentifier() {
       .Case("if", tok_if)
       .Case("then", tok_then)
       .Case("else", tok_else)
+      .Case("for", tok_for)
+      .Case("in", tok_in)
       .Default(tok_identifier);
 }
 
