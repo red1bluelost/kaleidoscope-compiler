@@ -52,6 +52,10 @@ class Parser {
   ///   ::= 'if' expression 'then' expression 'else' expression
   std::unique_ptr<ExprAST> parseIfExpr();
 
+  /// forexpr
+  ///   ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
+  std::unique_ptr<ExprAST> parseForExpr();
+
   /// expression
   ///   ::= primary binoprhs
   std::unique_ptr<ExprAST> parseExpression();

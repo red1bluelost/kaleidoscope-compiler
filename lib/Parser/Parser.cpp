@@ -2,6 +2,7 @@
 
 #include "AST/BinaryExprAST.h"
 #include "AST/CallExprAST.h"
+#include "AST/ForExprAST.h"
 #include "AST/IfExprAST.h"
 #include "AST/NumberExprAST.h"
 #include "AST/VariableExprAST.h"
@@ -79,6 +80,8 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
     return parseParenExpr();
   case Lexer::tok_if:
     return parseIfExpr();
+  case Lexer::tok_for:
+    return parseForExpr();
   }
 }
 
@@ -141,6 +144,50 @@ std::unique_ptr<ExprAST> Parser::parseIfExpr() {
 
   return std::make_unique<IfExprAST>(std::move(Cond), std::move(Then),
                                      std::move(Else));
+}
+
+std::unique_ptr<ExprAST> Parser::parseForExpr() {
+  getNextToken(); // eat "for"
+
+  if (CurTok != Lexer::tok_identifier)
+    return logError<ExprAST>("expected identifier after \"for\"");
+  std::string IdName = Lex.getIdentifierStr();
+  getNextToken(); // eat identifier
+
+  if (CurTok != '=')
+    return logError<ExprAST>("expected '=' after \"for\"");
+  getNextToken(); // eat '='
+
+  auto Start = parseExpression();
+  if (!Start)
+    return nullptr;
+  if (CurTok != ',')
+    return logError<ExprAST>("expected ',' after for-loop start value");
+  getNextToken(); // eat ','
+
+  auto End = parseExpression();
+  if (!End)
+    return nullptr;
+
+  // The step value is optional.
+  std::unique_ptr<ExprAST> Step;
+  if (CurTok == ',') {
+    getNextToken(); // eat ','
+    Step = parseExpression();
+    if (!Step)
+      return nullptr;
+  }
+
+  if (CurTok != Lexer::tok_in)
+    return logError<ExprAST>("expected 'in' after for");
+  getNextToken(); // eat "in"
+
+  auto Body = parseExpression();
+  if (!Body)
+    return nullptr;
+
+  return std::make_unique<ForExprAST>(IdName, std::move(Start), std::move(End),
+                                      std::move(Step), std::move(Body));
 }
 
 std::unique_ptr<ExprAST> Parser::parseExpression() {

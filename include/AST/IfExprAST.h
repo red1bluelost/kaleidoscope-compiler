@@ -1,5 +1,5 @@
-#ifndef KALEIDOSCOPE_IFEXPRAST_H
-#define KALEIDOSCOPE_IFEXPRAST_H
+#ifndef KALEIDOSCOPE_AST_IFEXPRAST_H
+#define KALEIDOSCOPE_AST_IFEXPRAST_H
 
 #include "AST/ExprAST.h"
 
@@ -21,4 +21,4 @@ public:
 
 } // namespace kaleidoscope
 
-#endif // KALEIDOSCOPE_IFEXPRAST_H
+#endif // KALEIDOSCOPE_AST_IFEXPRAST_H
