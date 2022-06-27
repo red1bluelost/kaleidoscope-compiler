@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 project(kaleidoscope)
 
 include(FetchContent)
+include(CheckIPOSupported)
+check_ipo_supported(RESULT supported OUTPUT error)
 
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
@@ -73,3 +75,6 @@ target_link_libraries(kaleidoscope
         fmt::fmt
         ${llvm_libs}
 )
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+    set_property(TARGET kaleidoscope PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
