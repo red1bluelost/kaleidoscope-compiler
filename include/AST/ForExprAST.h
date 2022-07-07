@@ -4,6 +4,7 @@
 #include "AST/ExprAST.h"
 
 #include <memory>
+#include <string>
 
 namespace kaleidoscope {
 

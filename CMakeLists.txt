@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.20)
 project(kaleidoscope)
 
 include(FetchContent)
@@ -20,22 +20,31 @@ FetchContent_Declare(fmt
         GIT_TAG 8.1.0)
 FetchContent_MakeAvailable(fmt)
 
-add_compile_options(
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Wconversion
-        $<$<CONFIG:DEBUG>:-fsanitize=address>
-        $<$<CONFIG:DEBUG>:-g3>
-        $<$<CONFIG:DEBUG>:-Og>
-        $<$<CONFIG:RELEASE>:-g0>
-        $<$<CONFIG:RELEASE>:-O3>
-)
+# Let's set compiler-specific flags
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU|Clang")
+    # G++
+    add_compile_options(
+            -Wall
+            -Wextra
+            -Wpedantic
+            -Wconversion
+            $<$<CONFIG:DEBUG>:-fsanitize=address>
+            $<$<CONFIG:DEBUG>:-g3>
+            $<$<CONFIG:DEBUG>:-Og>
+            $<$<CONFIG:RELEASE>:-g0>
+    )
+    add_link_options(
+            -export-dynamic
+            $<$<CONFIG:DEBUG>:-fsanitize=address>
+    )
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+    # MSVC
+    add_compile_options(
+            /W3
+    )
+endif()
 
-add_link_options(
-        -export-dynamic
-        $<$<CONFIG:DEBUG>:-fsanitize=address>
-)
+
 
 include_directories(include)
 include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
