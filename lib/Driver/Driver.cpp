@@ -29,9 +29,11 @@ setUpFPM(llvm::Module *Mod) {
 Driver::Driver()
     : Lex(), Parse(Parser(Lex)
                        .addBinopPrec('<', 10)
+                       .addBinopPrec('>', 10)
                        .addBinopPrec('+', 20)
                        .addBinopPrec('-', 20)
-                       .addBinopPrec('*', 40)),
+                       .addBinopPrec('*', 40)
+                       .addBinopPrec('/', 40)),
       CG(), JIT(ExitOnErr(KaleidoscopeJIT::create())) {
   CG.getModule().setDataLayout(JIT->getDataLayout());
   FPM = setUpFPM(&CG.getModule());

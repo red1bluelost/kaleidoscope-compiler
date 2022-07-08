@@ -12,20 +12,27 @@ llvm::Value *BinaryExprAST::codegen(CodeGen &CG) {
   if (!L || !R)
     return logErrorR<llvm::Value>("missing rhs and/or lhs");
 
+  auto &Builder = CG.getBuilder();
   switch (Op) {
   default:
     return logErrorR<llvm::Value>("invalid binary operator");
   case '+':
-    return CG.getBuilder().CreateFAdd(L, R, "addtmp");
+    return Builder.CreateFAdd(L, R, "addtmp");
   case '-':
-    return CG.getBuilder().CreateFSub(L, R, "subtmp");
+    return Builder.CreateFSub(L, R, "subtmp");
   case '*':
-    return CG.getBuilder().CreateFMul(L, R, "multmp");
+    return Builder.CreateFMul(L, R, "multmp");
+  case '/':
+    return Builder.CreateFDiv(L, R, "divtmp");
   case '<':
     // Convert bool 0/1 to double 0.0 or 1.0
-    return CG.getBuilder().CreateUIToFP(
-        CG.getBuilder().CreateFCmpULT(L, R, "cmptmp"),
+    return Builder.CreateUIToFP(
+        Builder.CreateFCmpULT(L, R, "cmptmp"),
+        llvm::Type::getDoubleTy(CG.getBuilder().getContext()), "booltmp");
+  case '>':
+    // Convert bool 0/1 to double 0.0 or 1.0
+    return Builder.CreateUIToFP(
+        Builder.CreateFCmpUGT(L, R, "cmptmp"),
         llvm::Type::getDoubleTy(CG.getBuilder().getContext()), "booltmp");
   }
-  return nullptr;
 }
