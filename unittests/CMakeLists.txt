@@ -9,6 +9,7 @@ enable_testing()
 
 add_executable(unittests
         Lexer.cpp
+        TestUtil.h
 )
 target_link_libraries(unittests
         gtest_main
