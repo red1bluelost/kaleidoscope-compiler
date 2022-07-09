@@ -6,7 +6,7 @@
 #include "AST/IfExprAST.h"
 #include "AST/NumberExprAST.h"
 #include "AST/VariableExprAST.h"
-#include "Error/Log.h"
+#include "Util/Error/Log.h"
 
 using namespace kaleidoscope;
 

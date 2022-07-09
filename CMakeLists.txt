@@ -74,7 +74,7 @@ add_executable(kaleidoscope
         include/Parser/Parser.h
         lib/CodeGen/CodeGen.cpp
         include/CodeGen/CodeGen.h
-        include/Error/Log.h
+        include/Util/Error/Log.h
         lib/Driver/Driver.cpp
         include/Driver/Driver.h
         lib/JIT/KaleidoscopeJIT.cpp
@@ -87,3 +87,5 @@ target_link_libraries(kaleidoscope
 if (CMAKE_BUILD_TYPE STREQUAL Release)
     set_property(TARGET kaleidoscope PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
+
+add_subdirectory(unittests)

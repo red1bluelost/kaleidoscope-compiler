@@ -1,7 +1,7 @@
 #include "AST/VariableExprAST.h"
 
 #include "CodeGen/CodeGen.h"
-#include "Error/Log.h"
+#include "Util/Error/Log.h"
 
 using namespace kaleidoscope;
 

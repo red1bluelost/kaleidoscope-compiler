@@ -1,7 +1,7 @@
 #include "AST/BinaryExprAST.h"
 
 #include "CodeGen/CodeGen.h"
-#include "Error/Log.h"
+#include "Util/Error/Log.h"
 
 #include <llvm/IR/IRBuilder.h>
 

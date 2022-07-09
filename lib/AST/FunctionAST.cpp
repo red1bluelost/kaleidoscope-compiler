@@ -1,7 +1,7 @@
 #include "AST/FunctionAST.h"
 
 #include "CodeGen/CodeGen.h"
-#include "Error/Log.h"
+#include "Util/Error/Log.h"
 
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Verifier.h>
