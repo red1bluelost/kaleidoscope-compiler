@@ -9,7 +9,7 @@ using namespace kaleidoscope;
 
 int Lexer::handleIdentifier() {
   IdentifierStr = static_cast<char>(LastChar);
-  while (std::isalnum((LastChar = std::getchar())))
+  while (std::isalnum((LastChar = GetChar())))
     IdentifierStr += static_cast<char>(LastChar);
 
   return llvm::StringSwitch<int>(IdentifierStr)
@@ -27,7 +27,7 @@ int Lexer::handleNumber() {
   std::string NumStr;
   do {
     NumStr += static_cast<char>(LastChar);
-    LastChar = std::getchar();
+    LastChar = GetChar();
   } while (std::isdigit(LastChar) || LastChar == '.');
 
   std::size_t Len;
@@ -40,9 +40,9 @@ int Lexer::handleNumber() {
 
 int Lexer::handleComment() {
   // Comment until end of line.
-  LastChar = std::getchar();
+  LastChar = GetChar();
   while (LastChar != EOF && LastChar != '\n' && LastChar != '\r')
-    LastChar = std::getchar();
+    LastChar = GetChar();
 
   if (LastChar == EOF)
     return tok_eof;
@@ -52,7 +52,7 @@ int Lexer::handleComment() {
 int Lexer::gettok() {
   // Skip any whitespace.
   while (std::isspace(LastChar))
-    LastChar = std::getchar();
+    LastChar = GetChar();
 
   if (std::isalpha(LastChar))
     return handleIdentifier();
@@ -64,5 +64,5 @@ int Lexer::gettok() {
     return tok_eof;
 
   // Otherwise, just return the character as its ascii value.
-  return std::exchange(LastChar, getchar());
+  return std::exchange(LastChar, GetChar());
 }

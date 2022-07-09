@@ -1,6 +1,8 @@
 #ifndef KALEIDOSCOPE_LEXER_LEXER_H
 #define KALEIDOSCOPE_LEXER_LEXER_H
 
+#include <cstdio>
+#include <functional>
 #include <string>
 
 namespace kaleidoscope {
@@ -32,6 +34,7 @@ public:
   };
 
 private:
+  std::function<int()> GetChar;
   std::string IdentifierStr;
   double NumVal;
 
@@ -47,6 +50,8 @@ private:
   int handleComment();
 
 public:
+  Lexer(std::function<int()> GetChar = std::getchar) : GetChar(GetChar) {}
+
   const std::string &getIdentifierStr() { return IdentifierStr; }
   double getNumVal() { return NumVal; }
 
