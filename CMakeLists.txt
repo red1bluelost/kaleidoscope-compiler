@@ -21,8 +21,7 @@ FetchContent_Declare(fmt
 FetchContent_MakeAvailable(fmt)
 
 # Let's set compiler-specific flags
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU|Clang")
-    # G++
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
     add_compile_options(
             -Wall
             -Wextra
@@ -42,6 +41,8 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     add_compile_options(
             /W3
     )
+else ()
+    message(FATAL_ERROR "Unknown compiler ${CMAKE_CXX_COMPILER_ID}")
 endif ()
 
 set(KALEIDOSCOPE_SOURCES
