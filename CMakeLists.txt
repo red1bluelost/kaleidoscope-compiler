@@ -37,12 +37,12 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU|Clang")
             -export-dynamic
             $<$<CONFIG:DEBUG>:-fsanitize=address>
     )
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     # MSVC
     add_compile_options(
             /W3
     )
-endif()
+endif ()
 
 set(KALEIDOSCOPE_SOURCES
         lib/Lexer/Lexer.cpp
@@ -57,10 +57,10 @@ set(KALEIDOSCOPE_SOURCES
         lib/Parser/Parser.cpp
         lib/CodeGen/CodeGen.cpp
         lib/Driver/Driver.cpp
-        lib/JIT/KaleidoscopeJIT.cpp
-)
+        lib/JIT/KaleidoscopeJIT.cpp)
 set(KALEIDOSCOPE_HEADERS
         include/Lexer/Lexer.h
+        include/AST/ASTVisitor.h
         include/AST/ExprAST.h
         include/AST/NumberExprAST.h
         include/AST/VariableExprAST.h
@@ -74,26 +74,29 @@ set(KALEIDOSCOPE_HEADERS
         include/CodeGen/CodeGen.h
         include/Util/Error/Log.h
         include/Driver/Driver.h
-        include/JIT/KaleidoscopeJIT.h
-)
+        include/JIT/KaleidoscopeJIT.h)
 
 include_directories(include)
 include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
 
-add_library(kaleidoscope_library
+add_library(
+        kaleidoscope_library
         ${KALEIDOSCOPE_SOURCES}
         ${KALEIDOSCOPE_HEADERS}
 )
-target_link_libraries(kaleidoscope_library
+target_link_libraries(
+        kaleidoscope_library
         fmt::fmt
         ${llvm_libs}
 )
 
-add_executable(kaleidoscope
+add_executable(
+        kaleidoscope
         main.cpp
         ${KALEIDOSCOPE_HEADERS}
 )
-target_link_libraries(kaleidoscope
+target_link_libraries(
+        kaleidoscope
         kaleidoscope_library
 )
 if (CMAKE_BUILD_TYPE STREQUAL Release)
