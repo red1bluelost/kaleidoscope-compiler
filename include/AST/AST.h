@@ -5,6 +5,8 @@
 
 namespace kaleidoscope {
 class ASTNode {
+  ASTNode() = delete;
+
 public:
   enum ASTNodeKind {
     ANK_ExprAST,
