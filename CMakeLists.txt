@@ -61,6 +61,7 @@ set(KALEIDOSCOPE_SOURCES
         lib/JIT/KaleidoscopeJIT.cpp)
 set(KALEIDOSCOPE_HEADERS
         include/Lexer/Lexer.h
+        include/AST/AST.h
         include/AST/ASTVisitor.h
         include/AST/ExprAST.h
         include/AST/NumberExprAST.h

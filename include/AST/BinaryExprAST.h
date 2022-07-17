@@ -13,14 +13,14 @@ class BinaryExprAST : public ExprAST {
   std::unique_ptr<ExprAST> LHS, RHS;
 
 public:
-  static constexpr ExprASTKind Kind = EAK_BinaryExprAST;
+  static constexpr ASTNodeKind Kind = ANK_BinaryExprAST;
 
   BinaryExprAST(char Op, std::unique_ptr<ExprAST> LHS,
                 std::unique_ptr<ExprAST> RHS)
       : ExprAST(Kind), Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
 
-  static bool classof(const ExprAST *E) noexcept {
-    return E->getKind() == Kind;
+  static bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
   }
 
   [[nodiscard]] char getOp() const noexcept { return Op; }

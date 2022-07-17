@@ -14,7 +14,7 @@ class ForExprAST : public ExprAST {
   std::unique_ptr<ExprAST> Start, End, Step, Body;
 
 public:
-  static constexpr ExprASTKind Kind = EAK_ForExprAST;
+  static constexpr ASTNodeKind Kind = ANK_ForExprAST;
 
   ForExprAST(std::string VarName, std::unique_ptr<ExprAST> Start,
              std::unique_ptr<ExprAST> End, std::unique_ptr<ExprAST> Step,
@@ -22,8 +22,8 @@ public:
       : ExprAST(Kind), VarName(std::move(VarName)), Start(std::move(Start)),
         End(std::move(End)), Step(std::move(Step)), Body(std::move(Body)) {}
 
-  static bool classof(const ExprAST *E) noexcept {
-    return E->getKind() == Kind;
+  static bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
   }
 
   [[nodiscard]] const std::string &getVarName() const noexcept {

@@ -12,15 +12,15 @@ class IfExprAST : public ExprAST {
   std::unique_ptr<ExprAST> Cond, Then, Else;
 
 public:
-  static constexpr ExprASTKind Kind = EAK_IfExprAST;
+  static constexpr ASTNodeKind Kind = ANK_IfExprAST;
 
   IfExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Then,
             std::unique_ptr<ExprAST> Else)
       : ExprAST(Kind), Cond(std::move(Cond)), Then(std::move(Then)),
         Else(std::move(Else)) {}
 
-  static bool classof(const ExprAST *E) noexcept {
-    return E->getKind() == Kind;
+  static bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
   }
 
   [[nodiscard]] ExprAST &getCond() const noexcept { return *Cond; }

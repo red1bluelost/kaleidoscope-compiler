@@ -13,14 +13,26 @@
 
 #include <llvm/Support/ErrorHandling.h>
 
+#include <type_traits>
+
 namespace kaleidoscope {
 
-class ExprAST;
-
-template <typename SubClass> class ASTVisitor {
+template <typename SubClass, bool DelegateExprAST = true> class ASTVisitor {
 public:
+  auto visit(ASTNode &A) {
+    ASTNode *AP = &A;
+    if (auto *E = llvm::dyn_cast<ExprAST>(AP))
+      return visit(*E);
+    if (auto *E = llvm::dyn_cast<FunctionAST>(AP))
+      return visit(*E);
+    if (auto *E = llvm::dyn_cast<PrototypeAST>(AP))
+      return visit(*E);
+    llvm_unreachable("invalid ASTNode class type");
+  }
+
 #define DELEGATE(AST) static_cast<SubClass *>(this)->visitImpl(AST)
 
+  template <typename = std::enable_if_t<DelegateExprAST>>
   auto visit(ExprAST &A) {
 #define HANDLE_EXPR_AST(AST_TYPE)                                              \
   case AST_TYPE::Kind:                                                         \
@@ -33,6 +45,11 @@ public:
       HANDLE_EXPR_AST(IfExprAST);
       HANDLE_EXPR_AST(NumberExprAST);
       HANDLE_EXPR_AST(VariableExprAST);
+    case ASTNode::ANK_ExprAST:
+    case ASTNode::ANK_LastExprAST:
+    case ASTNode::ANK_FunctionAST:
+    case ASTNode::ANK_PrototypeAST:
+      break;
     }
 
     llvm_unreachable("Missing an AST type being handled");

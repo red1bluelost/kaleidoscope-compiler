@@ -9,12 +9,12 @@ class NumberExprAST : public ExprAST {
   double Val;
 
 public:
-  static constexpr ExprASTKind Kind = EAK_NumberExprAST;
+  static constexpr ASTNodeKind Kind = ANK_NumberExprAST;
 
   NumberExprAST(double Val) : ExprAST(Kind), Val(Val) {}
 
-  static bool classof(const ExprAST *E) noexcept {
-    return E->getKind() == Kind;
+  static bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
   }
 
   [[nodiscard]] double getVal() const noexcept { return Val; }

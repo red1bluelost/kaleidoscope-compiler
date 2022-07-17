@@ -12,12 +12,12 @@ class VariableExprAST : public ExprAST {
   std::string Name;
 
 public:
-  static constexpr ExprASTKind Kind = EAK_VariableExprAST;
+  static constexpr ASTNodeKind Kind = ANK_VariableExprAST;
 
   VariableExprAST(std::string Name) : ExprAST(Kind), Name(std::move(Name)) {}
 
-  static bool classof(const ExprAST *E) noexcept {
-    return E->getKind() == Kind;
+  static bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
   }
 
   [[nodiscard]] const std::string &getName() const noexcept { return Name; }

@@ -16,13 +16,13 @@ class CallExprAST : public ExprAST {
   std::vector<std::unique_ptr<ExprAST>> Args;
 
 public:
-  static constexpr ExprASTKind Kind = EAK_CallExprAST;
+  static constexpr ASTNodeKind Kind = ANK_CallExprAST;
 
   CallExprAST(std::string Callee, std::vector<std::unique_ptr<ExprAST>> Args)
       : ExprAST(Kind), Callee(std::move(Callee)), Args(std::move(Args)) {}
 
-  static bool classof(const ExprAST *E) noexcept {
-    return E->getKind() == Kind;
+  static bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
   }
 
   [[nodiscard]] const std::string &getCallee() const noexcept { return Callee; }

@@ -1,35 +1,21 @@
 #ifndef KALEIDOSCOPE_AST_EXPRAST_H
 #define KALEIDOSCOPE_AST_EXPRAST_H
 
-#include <llvm/Support/Casting.h>
-
-namespace llvm {
-class Value;
-} // namespace llvm
+#include "AST/AST.h"
 
 namespace kaleidoscope {
 
-class CodeGen;
-
 /// ExprAST - Base class for all expression nodes.
-class ExprAST {
-public:
-  enum ExprASTKind {
-    EAK_BinaryExprAST,
-    EAK_CallExprAST,
-    EAK_ForExprAST,
-    EAK_IfExprAST,
-    EAK_NumberExprAST,
-    EAK_VariableExprAST,
-  };
-
-private:
-  const ExprASTKind Kind;
+class ExprAST : public ASTNode {
+protected:
+  ExprAST(ASTNodeKind K) : ASTNode(K) {}
 
 public:
-  ExprASTKind getKind() const { return Kind; }
+  static constexpr ASTNodeKind Kind = ANK_ExprAST;
 
-  ExprAST(ExprASTKind K) : Kind(K) {}
+  static bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
+  }
 
   virtual ~ExprAST() = default;
 };
