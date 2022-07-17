@@ -87,6 +87,10 @@ public:
 
   /// toplevelexpr ::= expression
   std::unique_ptr<FunctionAST> parseTopLevelExpr();
+
+public:
+  /// astnode ::= expression | external | definition
+  std::unique_ptr<ASTNode> parse();
 };
 
 } // namespace kaleidoscope

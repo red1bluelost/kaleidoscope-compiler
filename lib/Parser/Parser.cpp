@@ -241,3 +241,16 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
   }
   return nullptr;
 }
+
+std::unique_ptr<ASTNode> Parser::parse() {
+  switch (getCurToken()) {
+  case Lexer::tok_eof:
+    return nullptr;
+  case Lexer::tok_def:
+    return parseDefinition();
+  case Lexer::tok_extern:
+    return parseExtern();
+  default:
+    return parseExpression();
+  }
+}

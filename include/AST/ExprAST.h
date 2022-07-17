@@ -7,6 +7,8 @@ namespace kaleidoscope {
 
 /// ExprAST - Base class for all expression nodes.
 class ExprAST : public ASTNode {
+  ExprAST() = delete;
+
 protected:
   ExprAST(ASTNodeKind K) : ASTNode(K) {}
 
