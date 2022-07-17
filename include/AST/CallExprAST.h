@@ -4,6 +4,7 @@
 #include "AST/ExprAST.h"
 
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -18,14 +19,17 @@ public:
   static constexpr ExprASTKind Kind = EAK_CallExprAST;
 
   CallExprAST(std::string Callee, std::vector<std::unique_ptr<ExprAST>> Args)
-      : ExprAST(Kind), Callee(std::move(Callee)),
-        Args(std::move(Args)) {}
+      : ExprAST(Kind), Callee(std::move(Callee)), Args(std::move(Args)) {}
 
   static bool classof(const ExprAST *E) noexcept {
     return E->getKind() == Kind;
   }
 
-  llvm::Value *codegen(CodeGen &CG) override;
+  [[nodiscard]] const std::string &getCallee() const noexcept { return Callee; }
+  [[nodiscard]] std::span<const std::unique_ptr<ExprAST>>
+  getArgs() const noexcept {
+    return std::span(Args);
+  }
 };
 
 } // namespace kaleidoscope

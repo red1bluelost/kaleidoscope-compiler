@@ -14,14 +14,13 @@ class VariableExprAST : public ExprAST {
 public:
   static constexpr ExprASTKind Kind = EAK_VariableExprAST;
 
-  VariableExprAST(std::string Name)
-      : ExprAST(Kind), Name(std::move(Name)) {}
+  VariableExprAST(std::string Name) : ExprAST(Kind), Name(std::move(Name)) {}
 
   static bool classof(const ExprAST *E) noexcept {
     return E->getKind() == Kind;
   }
 
-  llvm::Value *codegen(CodeGen &CG) override;
+  [[nodiscard]] const std::string &getName() const noexcept { return Name; }
 };
 
 } // namespace kaleidoscope

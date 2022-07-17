@@ -23,7 +23,9 @@ public:
     return E->getKind() == Kind;
   }
 
-  llvm::Value *codegen(CodeGen &CG) override;
+  [[nodiscard]] ExprAST &getCond() const noexcept { return *Cond; }
+  [[nodiscard]] ExprAST &getThen() const noexcept { return *Then; }
+  [[nodiscard]] ExprAST &getElse() const noexcept { return *Else; }
 };
 
 } // namespace kaleidoscope

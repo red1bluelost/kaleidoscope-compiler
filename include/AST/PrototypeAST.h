@@ -21,10 +21,13 @@ class PrototypeAST {
 public:
   PrototypeAST(std::string Name, std::vector<std::string> Args)
       : Name(std::move(Name)), Args(std::move(Args)) {}
+  PrototypeAST(const PrototypeAST &) = default;
+  PrototypeAST(PrototypeAST &&) = default;
 
-  const std::string &getName() const { return Name; }
-  const std::vector<std::string> &getArgs() const { return Args; }
-  llvm::Function *codegen(CodeGen &CG);
+  [[nodiscard]] const std::string &getName() const noexcept { return Name; }
+  [[nodiscard]] const std::vector<std::string> &getArgs() const noexcept {
+    return Args;
+  }
 };
 
 } // namespace kaleidoscope

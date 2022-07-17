@@ -17,7 +17,7 @@ public:
     return E->getKind() == Kind;
   }
 
-  llvm::Value *codegen(CodeGen &CG) override;
+  [[nodiscard]] double getVal() const noexcept { return Val; }
 };
 
 } // namespace kaleidoscope

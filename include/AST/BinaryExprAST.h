@@ -17,14 +17,15 @@ public:
 
   BinaryExprAST(char Op, std::unique_ptr<ExprAST> LHS,
                 std::unique_ptr<ExprAST> RHS)
-      : ExprAST(Kind), Op(Op), LHS(std::move(LHS)),
-        RHS(std::move(RHS)) {}
+      : ExprAST(Kind), Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
 
   static bool classof(const ExprAST *E) noexcept {
     return E->getKind() == Kind;
   }
 
-  llvm::Value *codegen(CodeGen &CG) override;
+  [[nodiscard]] char getOp() const noexcept { return Op; }
+  [[nodiscard]] ExprAST &getLHS() const noexcept { return *LHS; }
+  [[nodiscard]] ExprAST &getRHS() const noexcept { return *RHS; }
 };
 
 } // namespace kaleidoscope

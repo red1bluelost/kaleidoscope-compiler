@@ -26,7 +26,13 @@ public:
     return E->getKind() == Kind;
   }
 
-  llvm::Value *codegen(CodeGen &CG) override;
+  [[nodiscard]] const std::string &getVarName() const noexcept {
+    return VarName;
+  }
+  [[nodiscard]] ExprAST &getStart() const noexcept { return *Start; }
+  [[nodiscard]] ExprAST &getEnd() const noexcept { return *End; }
+  [[nodiscard]] ExprAST &getStep() const noexcept { return *Step; }
+  [[nodiscard]] ExprAST &getBody() const noexcept { return *Body; }
 };
 
 } // namespace kaleidoscope

@@ -50,7 +50,7 @@ std::unique_ptr<CodeGen::Session> Driver::resetSession() {
 
 void Driver::handleDefinition() {
   if (auto FnAST = Parse.parseDefinition()) {
-    if (auto *FnIR = FnAST->codegen(CG)) {
+    if (auto *FnIR = CG.visit(*FnAST)) {
       FPM->run(*FnIR);
       fmt::print(stderr, "Read function definition:\n");
       llvm::errs() << *FnIR;
@@ -65,7 +65,7 @@ void Driver::handleDefinition() {
 
 void Driver::handleExtern() {
   if (auto ProtoAST = Parse.parseExtern()) {
-    if (auto *FnIR = ProtoAST->codegen(CG)) {
+    if (auto *FnIR = CG.visit(*ProtoAST)) {
       fmt::print(stderr, "Read extern:\n");
       llvm::errs() << *FnIR;
       fmt::print(stderr, "\n");
@@ -78,7 +78,7 @@ void Driver::handleExtern() {
 void Driver::handleTopLevelExpression() {
   // evaluate a top-level expression into an anonymous function
   if (auto FnAST = Parse.parseTopLevelExpr()) {
-    if (auto *FnIR = FnAST->codegen(CG)) {
+    if (auto *FnIR = CG.visit(*FnAST)) {
       FPM->run(*FnIR);
       fmt::print(stderr, "Read top-level expression:\n");
       llvm::errs() << *FnIR;

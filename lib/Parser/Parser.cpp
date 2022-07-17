@@ -174,7 +174,8 @@ std::unique_ptr<ExprAST> Parser::parseForExpr() {
     Step = parseExpression();
     if (!Step)
       return nullptr;
-  }
+  } else
+    Step = std::make_unique<NumberExprAST>(1.0); // default to 1.0
 
   if (CurTok != Lexer::tok_in)
     return logError<ExprAST>("expected 'in' after for");

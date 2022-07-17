@@ -19,7 +19,7 @@ class ExprAST;
 
 template <typename SubClass> class ASTVisitor {
 public:
-#define DELEGATE(AST) static_cast<SubClass *>(this)->visit(AST)
+#define DELEGATE(AST) static_cast<SubClass *>(this)->visitImpl(AST)
 
   auto visit(ExprAST &A) {
 #define HANDLE_EXPR_AST(AST_TYPE)                                              \

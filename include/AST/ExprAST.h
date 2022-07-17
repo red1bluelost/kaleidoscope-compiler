@@ -32,7 +32,6 @@ public:
   ExprAST(ExprASTKind K) : Kind(K) {}
 
   virtual ~ExprAST() = default;
-  virtual llvm::Value *codegen(CodeGen &CG) = 0;
 };
 
 } // namespace kaleidoscope

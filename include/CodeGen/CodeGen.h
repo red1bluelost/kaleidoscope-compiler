@@ -1,6 +1,7 @@
 #ifndef KALEIDOSCOPE_CODEGEN_CODEGEN_H
 #define KALEIDOSCOPE_CODEGEN_CODEGEN_H
 
+#include "AST/ASTVisitor.h"
 #include "AST/PrototypeAST.h"
 
 #include <llvm/IR/IRBuilder.h>
@@ -8,13 +9,27 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
-#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace kaleidoscope {
 
-class CodeGen {
+class CodeGen : public ASTVisitor<CodeGen> {
+  using Parent = ASTVisitor<CodeGen>;
+  friend Parent;
+
+  llvm::Value *visitImpl(BinaryExprAST &A);
+  llvm::Value *visitImpl(CallExprAST &A);
+  llvm::Value *visitImpl(ForExprAST &A);
+  llvm::Value *visitImpl(IfExprAST &A);
+  llvm::Value *visitImpl(NumberExprAST &A);
+  llvm::Value *visitImpl(VariableExprAST &A);
+
+  llvm::Function *visitImpl(FunctionAST &A);
+  llvm::Function *visitImpl(PrototypeAST &A);
+
 public:
   struct Session {
     std::unique_ptr<llvm::LLVMContext> Context =
@@ -25,9 +40,11 @@ public:
   };
 
 private:
-  std::map<std::string, llvm::Value *> NamedValues{};
+  std::unordered_map<std::string, llvm::Value *> NamedValues{};
   std::unique_ptr<Session> CGS = std::make_unique<Session>();
-  std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos{};
+  std::unordered_map<std::string, std::unique_ptr<PrototypeAST>>
+      FunctionProtos{};
+  std::unordered_set<std::string> CompiledFunctions{};
 
 public:
   llvm::LLVMContext &getContext() { return *CGS->Context; }
@@ -70,7 +87,7 @@ public:
     // if not, check whether we can codegen the declaration from some existing
     // prototype
     if (auto FI = FunctionProtos.find(Name.str()); FI != FunctionProtos.end())
-      return FI->second->codegen(*this);
+      return visit(*FI->second);
 
     // if no existing prototype exists, return null
     return nullptr;
