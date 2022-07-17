@@ -36,13 +36,13 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
             -rdynamic
             $<$<CONFIG:DEBUG>:-fsanitize=address>
     )
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # MSVC
     add_compile_options(
-            /W3
+            /W4
     )
 else ()
-    message(FATAL_ERROR "Unknown compiler ${CMAKE_CXX_COMPILER_ID}")
+    message(FATAL_ERROR "Unknown compiler '${CMAKE_CXX_COMPILER_ID}'")
 endif ()
 
 set(KALEIDOSCOPE_SOURCES
