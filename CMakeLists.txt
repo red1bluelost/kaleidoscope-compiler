@@ -33,7 +33,7 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
             $<$<CONFIG:RELEASE>:-g0>
     )
     add_link_options(
-            -export-dynamic
+            -rdynamic
             $<$<CONFIG:DEBUG>:-fsanitize=address>
     )
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
