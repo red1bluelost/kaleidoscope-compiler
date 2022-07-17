@@ -83,7 +83,7 @@ llvm::Value *CodeGen::visitImpl(ForExprAST &A) {
 
   // Within the loop, the variable is defined equal to the PHI node. If it
   // shadows an existing variable, we have to restore it, so save it now
-  llvm::Value *OldV = shadowNamedVal(A.getVarName(), Variable);
+  llvm::Value *OldV = std::exchange(NamedValues[A.getVarName()], Variable);
 
   // Emit the body of the loop. This can change the current BB. Note that the
   // value computed by the body is ignored but don't allow an error
@@ -117,7 +117,7 @@ llvm::Value *CodeGen::visitImpl(ForExprAST &A) {
   // Add a new entry to the PHI node for the backedge
   Variable->addIncoming(NextVar, LoopEndBB);
   // Restore the unshadowed variable
-  setNamedValue(A.getVarName(), OldV);
+  NamedValues[A.getVarName()] = OldV;
   // for expr always returns 0.0
   return llvm::Constant::getNullValue(llvm::Type::getDoubleTy(Context));
 }
@@ -181,8 +181,8 @@ llvm::Value *CodeGen::visitImpl(NumberExprAST &A) {
 }
 
 llvm::Value *CodeGen::visitImpl(VariableExprAST &A) {
-  if (auto *V = getNamedVal(A.getName()))
-    return V;
+  if (auto S = A.getName(); NamedValues.contains(S))
+    return NamedValues[S];
   return logErrorR<llvm::Value>("unknown variable name");
 }
 
@@ -212,7 +212,9 @@ llvm::Function *CodeGen::visitImpl(FunctionAST &A) {
   CGS->Builder.SetInsertPoint(BB);
 
   // record the function arguments in the NamedValues map
-  recordFuncArgs(*TheFunction);
+  NamedValues.clear();
+  for (auto &Arg : TheFunction->args())
+    NamedValues[(std::string)Arg.getName()] = &Arg;
 
   if (llvm::Value *RetVal = visit(A.getBody())) {
     if (auto S = P.getName(); S != "__anon_expr")
@@ -240,4 +242,18 @@ llvm::Function *CodeGen::visitImpl(PrototypeAST &A) {
     Arg.setName(Args[Idx++]);
 
   return F;
+}
+
+llvm::Function *CodeGen::getFunction(llvm::StringRef Name) {
+  // first, see if the function has already been added to the current module
+  if (auto *F = CGS->Module->getFunction(Name))
+    return F;
+
+  // if not, check whether we can codegen the declaration from some existing
+  // prototype
+  if (auto FI = FunctionProtos.find(Name.str()); FI != FunctionProtos.end())
+    return visit(*FI->second);
+
+  // if no existing prototype exists, return null
+  return nullptr;
 }

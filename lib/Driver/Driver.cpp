@@ -35,16 +35,14 @@ Driver::Driver()
                        .addBinopPrec('*', 40)
                        .addBinopPrec('/', 40)),
       CG(), JIT(ExitOnErr(KaleidoscopeJIT::create())) {
-  CG.getModule().setDataLayout(JIT->getDataLayout());
-  FPM = setUpFPM(&CG.getModule());
+  resetSession();
 }
 
 std::unique_ptr<CodeGen::Session> Driver::resetSession() {
   auto LastCGSess = CG.takeSession();
-  CG.getModule().setDataLayout(JIT->getDataLayout());
-
-  FPM = setUpFPM(&CG.getModule());
-
+  auto &Mod = CG.getModule();
+  Mod.setDataLayout(JIT->getDataLayout());
+  FPM = setUpFPM(&Mod);
   return LastCGSess;
 }
 
