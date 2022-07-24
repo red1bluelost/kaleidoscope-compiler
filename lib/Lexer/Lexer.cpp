@@ -9,7 +9,7 @@ using namespace kaleidoscope;
 
 int Lexer::handleIdentifier() {
   IdentifierStr = static_cast<char>(LastChar);
-  while (std::isalnum((LastChar = GetChar())))
+  while (std::isalnum((LastChar = GetChar())) || LastChar == '_')
     IdentifierStr += static_cast<char>(LastChar);
 
   return llvm::StringSwitch<int>(IdentifierStr)
@@ -54,7 +54,7 @@ int Lexer::gettok() {
   while (std::isspace(LastChar))
     LastChar = GetChar();
 
-  if (std::isalpha(LastChar))
+  if (std::isalpha(LastChar) || LastChar == '_')
     return handleIdentifier();
   if (std::isdigit(LastChar) || LastChar == '.')
     return handleNumber();

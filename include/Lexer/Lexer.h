@@ -40,7 +40,7 @@ private:
 
   int LastChar = ' ';
 
-  // Identifiers: [a-zA-Z][a-zA-Z0-9]*
+  // Identifiers: [_a-zA-Z][_a-zA-Z0-9]*
   int handleIdentifier();
 
   // Number: [0-9.]+

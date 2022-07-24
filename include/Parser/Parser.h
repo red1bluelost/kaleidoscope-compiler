@@ -24,7 +24,7 @@ class Parser {
 
   /// getTokPrecedence - Get the precedence of the pending binary operator
   /// token.
-  int getTokPrecedence();
+  int getTokPrecedence(int Tok) const;
 
   /// numberexpr ::= number
   std::unique_ptr<ExprAST> parseNumberExpr();
@@ -66,6 +66,10 @@ class Parser {
 
 public:
   Parser(Lexer &Lex) : Lex(Lex) {}
+  Parser() = delete;
+  Parser(const Parser &) = delete;
+  Parser(Parser &&) = default;
+  ~Parser() = default;
 
   /// addBinopPrec - installs a binary operator with a precedence
   /// 1 is lowest precedence

@@ -10,10 +10,10 @@
 
 using namespace kaleidoscope;
 
-int Parser::getTokPrecedence() {
-  if (!isascii(CurTok) || !BinopPrecedence.contains(static_cast<char>(CurTok)))
+int Parser::getTokPrecedence(int Tok) const {
+  if (!isascii(Tok) || !BinopPrecedence.contains(static_cast<char>(Tok)))
     return -1;
-  return BinopPrecedence[static_cast<char>(CurTok)];
+  return BinopPrecedence.at(static_cast<char>(Tok));
 }
 
 std::unique_ptr<ExprAST> Parser::parseNumberExpr() {
@@ -87,7 +87,7 @@ std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
                                                std::unique_ptr<ExprAST> LHS) {
   // if this is a binop, find its precedence
   while (CurTok != Lexer::tok_eof) {
-    int TokPrec = getTokPrecedence();
+    int TokPrec = getTokPrecedence(CurTok);
 
     // if this is a binop that binds at least as tightly as the current binop,
     // consume it, otherwise we are done
@@ -105,7 +105,7 @@ std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
 
     // if BinOp binds less tightly with RHS than the operator after RHS, let the
     // pending operator take RHS as its LHS
-    int NextPrec = getTokPrecedence();
+    int NextPrec = getTokPrecedence(CurTok);
     if (TokPrec < NextPrec &&
         (!(RHS = parseBinOpRHS(TokPrec + 1, std::move(RHS)))))
       return nullptr;
@@ -243,7 +243,7 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
 }
 
 std::unique_ptr<ASTNode> Parser::parse() {
-  switch (getCurToken()) {
+  switch (getNextToken()) {
   case Lexer::tok_eof:
     return nullptr;
   case Lexer::tok_def:
