@@ -114,7 +114,7 @@ std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
     LHS =
         std::make_unique<BinaryExprAST>(BinOp, std::move(LHS), std::move(RHS));
   } // loop around to top of the while loop
-  return logError<ExprAST>("ran into EOF too early");
+  return LHS;
 }
 
 std::unique_ptr<ExprAST> Parser::parseIfExpr() {

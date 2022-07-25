@@ -27,14 +27,15 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
             -Wextra
             -Wpedantic
             -Wconversion
-            # $<$<CONFIG:DEBUG>:-fsanitize=address>
+            -march=native
+            $<$<CONFIG:DEBUG>:-fsanitize=address>
             $<$<CONFIG:DEBUG>:-g3>
-            # $<$<CONFIG:DEBUG>:-Og>
+            $<$<CONFIG:DEBUG>:-Og>
             $<$<CONFIG:RELEASE>:-g0>
     )
     add_link_options(
             -rdynamic
-            # $<$<CONFIG:DEBUG>:-fsanitize=address>
+            $<$<CONFIG:DEBUG>:-fsanitize=address>
     )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # MSVC
