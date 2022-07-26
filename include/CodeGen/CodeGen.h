@@ -24,11 +24,11 @@ class CodeGen : public ASTVisitor<CodeGen> {
   llvm::Value *visitImpl(CallExprAST &A);
   llvm::Value *visitImpl(ForExprAST &A);
   llvm::Value *visitImpl(IfExprAST &A);
-  llvm::Value *visitImpl(NumberExprAST &A);
-  llvm::Value *visitImpl(VariableExprAST &A);
+  llvm::Value *visitImpl(NumberExprAST &A) const;
+  llvm::Value *visitImpl(VariableExprAST &A) const;
 
   llvm::Function *visitImpl(FunctionAST &A);
-  llvm::Function *visitImpl(PrototypeAST &A);
+  llvm::Function *visitImpl(PrototypeAST &A) const;
 
 public:
   struct Session {
@@ -46,6 +46,8 @@ private:
       FunctionProtos{};
   std::unordered_set<std::string> CompiledFunctions{};
 
+  llvm::Function *getFunction(llvm::StringRef Name) const;
+
 public:
   llvm::Module &getModule() { return *CGS->Module; }
 
@@ -56,9 +58,6 @@ public:
   PrototypeAST &addPrototype(std::unique_ptr<PrototypeAST> P) {
     return *(FunctionProtos[P->getName()] = std::move(P));
   }
-
-private:
-  llvm::Function *getFunction(llvm::StringRef Name);
 };
 
 } // namespace kaleidoscope

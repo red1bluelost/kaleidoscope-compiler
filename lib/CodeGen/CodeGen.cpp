@@ -176,13 +176,13 @@ llvm::Value *CodeGen::visitImpl(IfExprAST &A) {
   return PN;
 }
 
-llvm::Value *CodeGen::visitImpl(NumberExprAST &A) {
+llvm::Value *CodeGen::visitImpl(NumberExprAST &A) const {
   return llvm::ConstantFP::get(*CGS->Context, llvm::APFloat(A.getVal()));
 }
 
-llvm::Value *CodeGen::visitImpl(VariableExprAST &A) {
+llvm::Value *CodeGen::visitImpl(VariableExprAST &A) const {
   if (auto S = A.getName(); NamedValues.contains(S))
-    return NamedValues[S];
+    return NamedValues.at(S);
   return logErrorR<llvm::Value>("unknown variable name");
 }
 
@@ -229,7 +229,7 @@ llvm::Function *CodeGen::visitImpl(FunctionAST &A) {
   return logErrorR<llvm::Function>("Failed to codegen function body");
 }
 
-llvm::Function *CodeGen::visitImpl(PrototypeAST &A) {
+llvm::Function *CodeGen::visitImpl(PrototypeAST &A) const {
   auto &Args = A.getArgs();
   std::vector<llvm::Type *> Doubles(Args.size(),
                                     llvm::Type::getDoubleTy(*CGS->Context));
@@ -244,7 +244,7 @@ llvm::Function *CodeGen::visitImpl(PrototypeAST &A) {
   return F;
 }
 
-llvm::Function *CodeGen::getFunction(llvm::StringRef Name) {
+llvm::Function *CodeGen::getFunction(llvm::StringRef Name) const {
   // first, see if the function has already been added to the current module
   if (auto *F = CGS->Module->getFunction(Name))
     return F;
@@ -252,7 +252,7 @@ llvm::Function *CodeGen::getFunction(llvm::StringRef Name) {
   // if not, check whether we can codegen the declaration from some existing
   // prototype
   if (auto FI = FunctionProtos.find(Name.str()); FI != FunctionProtos.end())
-    return visit(*FI->second);
+    return visitImpl(*FI->second);
 
   // if no existing prototype exists, return null
   return nullptr;
