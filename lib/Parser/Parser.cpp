@@ -10,10 +10,18 @@
 
 using namespace kaleidoscope;
 
+static std::unordered_map<char, int> DefaultBinOpPrec{
+    {'<', 10}, {'>', 10}, {'+', 20}, {'-', 20}, {'*', 40}, {'/', 40}};
+
 int Parser::getTokPrecedence(int Tok) const {
-  if (!isascii(Tok) || !BinopPrecedence.contains(static_cast<char>(Tok)))
+  if (!isascii(Tok))
     return -1;
-  return BinopPrecedence.at(static_cast<char>(Tok));
+  char C = static_cast<char>(Tok);
+  if (UserBinOpPrec.contains(C))
+    return UserBinOpPrec.at(C);
+  if (DefaultBinOpPrec.contains(C))
+    return DefaultBinOpPrec.at(C);
+  return -1;
 }
 
 std::unique_ptr<ExprAST> Parser::parseNumberExpr() {

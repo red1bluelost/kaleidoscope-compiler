@@ -27,14 +27,7 @@ setUpFPM(llvm::Module *Mod) {
 }
 
 Driver::Driver()
-    : Lex(), Parse(std::move(Parser(Lex)
-                                 .addBinopPrec('<', 10)
-                                 .addBinopPrec('>', 10)
-                                 .addBinopPrec('+', 20)
-                                 .addBinopPrec('-', 20)
-                                 .addBinopPrec('*', 40)
-                                 .addBinopPrec('/', 40))),
-      CG(), JIT(ExitOnErr(KaleidoscopeJIT::create())) {
+    : Lex(), Parse(Lex), CG(), JIT(ExitOnErr(KaleidoscopeJIT::create())) {
   resetSession();
 }
 

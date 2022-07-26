@@ -6,8 +6,8 @@
 #include "AST/PrototypeAST.h"
 #include "Lexer/Lexer.h"
 
-#include <map>
 #include <memory>
+#include <unordered_map>
 
 namespace kaleidoscope {
 
@@ -18,9 +18,9 @@ class Parser {
   /// CurTok is the current token the parser is looking at.
   int CurTok;
 
-  /// BinopPrecedence - This holds the precedence for each binary operator that
+  /// UserBinOpPrec - This holds the precedence for each binary operator that
   /// is defined.
-  std::map<char, int> BinopPrecedence{};
+  std::unordered_map<char, int> UserBinOpPrec{};
 
   /// getTokPrecedence - Get the precedence of the pending binary operator
   /// token.
@@ -71,13 +71,6 @@ public:
   Parser(Parser &&) = default;
   ~Parser() = default;
 
-  /// addBinopPrec - installs a binary operator with a precedence
-  /// 1 is lowest precedence
-  Parser &addBinopPrec(char Op, int Prec) {
-    BinopPrecedence[Op] = Prec;
-    return *this;
-  }
-
   /// getNextToken - reads another token from the lexer and updates CurTok with
   /// its results.
   int getNextToken() { return CurTok = Lex.gettok(); }
@@ -93,6 +86,10 @@ public:
   std::unique_ptr<FunctionAST> parseTopLevelExpr();
 
 public:
+  /// addBinopPrec - installs a binary operator with a precedence 1 is lowest
+  /// precedence
+  void addBinOpPrec(char Op, int Prec) { UserBinOpPrec[Op] = Prec; }
+
   /// astnode ::= expression | external | definition
   std::unique_ptr<ASTNode> parse();
 };
