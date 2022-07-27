@@ -29,6 +29,7 @@ TEST(Parser, BinaryExprAST_0) {
   ASSERT_EQ('+', C.getOp());
   ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getLHS()));
   ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getRHS()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, BinaryExprAST_1) {
@@ -45,6 +46,7 @@ TEST(Parser, BinaryExprAST_1) {
   ASSERT_EQ('<', C.getOp());
   ASSERT_TRUE(llvm::isa<CallExprAST>(C.getLHS()));
   ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getRHS()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, BinaryExprAST_2) {
@@ -61,6 +63,7 @@ TEST(Parser, BinaryExprAST_2) {
   ASSERT_EQ('+', C.getOp());
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getLHS()));
   ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getRHS()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, BinaryExprAST_3) {
@@ -81,6 +84,7 @@ TEST(Parser, BinaryExprAST_3) {
   ASSERT_EQ('-', LHS.getOp());
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(LHS.getLHS()));
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(LHS.getRHS()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, CallExprAST_0) {
@@ -96,6 +100,7 @@ TEST(Parser, CallExprAST_0) {
   auto &C = llvm::cast<CallExprAST>(*AST);
   ASSERT_EQ("nullary_func", C.getCallee());
   ASSERT_EQ(0, C.getArgs().size());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, CallExprAST_1) {
@@ -113,6 +118,7 @@ TEST(Parser, CallExprAST_1) {
   ASSERT_EQ(1, C.getArgs().size());
   for (const auto &S : C.getArgs())
     ASSERT_NE(nullptr, S);
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, CallExprAST_2) {
@@ -130,6 +136,7 @@ TEST(Parser, CallExprAST_2) {
   ASSERT_EQ(2, C.getArgs().size());
   for (const auto &S : C.getArgs())
     ASSERT_NE(nullptr, S);
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, CallExprAST_3) {
@@ -148,6 +155,7 @@ TEST(Parser, CallExprAST_3) {
   ASSERT_EQ(7, C.getArgs().size());
   for (const auto &S : C.getArgs())
     ASSERT_NE(nullptr, S);
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, ForExprAST_0) {
@@ -166,6 +174,7 @@ TEST(Parser, ForExprAST_0) {
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getEnd()));
   ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getStep()));
   ASSERT_TRUE(llvm::isa<CallExprAST>(C.getBody()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, ForExprAST_1) {
@@ -185,6 +194,7 @@ TEST(Parser, ForExprAST_1) {
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getEnd()));
   ASSERT_TRUE(llvm::isa<CallExprAST>(C.getStep()));
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getBody()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, IfExprAST_0) {
@@ -201,6 +211,7 @@ TEST(Parser, IfExprAST_0) {
   ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getCond()));
   ASSERT_TRUE(llvm::isa<CallExprAST>(C.getThen()));
   ASSERT_TRUE(llvm::isa<CallExprAST>(C.getElse()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, IfExprAST_1) {
@@ -217,6 +228,7 @@ TEST(Parser, IfExprAST_1) {
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getCond()));
   ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getThen()));
   ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getElse()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, IfExprAST_2) {
@@ -234,6 +246,7 @@ TEST(Parser, IfExprAST_2) {
   ASSERT_TRUE(llvm::isa<CallExprAST>(C.getCond()));
   ASSERT_TRUE(llvm::isa<IfExprAST>(C.getThen()));
   ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getElse()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, NumberExprAST_0) {
@@ -247,6 +260,7 @@ TEST(Parser, NumberExprAST_0) {
   // Assert
   ASSERT_TRUE(llvm::isa<NumberExprAST>(AST));
   ASSERT_EQ(3.1415, llvm::cast<NumberExprAST>(*AST).getVal());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, NumberExprAST_1) {
@@ -260,6 +274,7 @@ TEST(Parser, NumberExprAST_1) {
   // Assert
   ASSERT_TRUE(llvm::isa<NumberExprAST>(AST));
   ASSERT_EQ(4.20, llvm::cast<NumberExprAST>(*AST).getVal());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, VariableExprAST_0) {
@@ -273,6 +288,7 @@ TEST(Parser, VariableExprAST_0) {
   // Assert
   ASSERT_TRUE(llvm::isa<VariableExprAST>(AST));
   ASSERT_EQ("x", llvm::cast<VariableExprAST>(*AST).getName());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, VariableExprAST_1) {
@@ -286,6 +302,7 @@ TEST(Parser, VariableExprAST_1) {
   // Assert
   ASSERT_TRUE(llvm::isa<VariableExprAST>(AST));
   ASSERT_EQ("longname", llvm::cast<VariableExprAST>(*AST).getName());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, VariableExprAST_2) {
@@ -299,6 +316,7 @@ TEST(Parser, VariableExprAST_2) {
   // Assert
   ASSERT_TRUE(llvm::isa<VariableExprAST>(AST));
   ASSERT_EQ("_u_n_d_e_r_", llvm::cast<VariableExprAST>(*AST).getName());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, FunctionExprAST_0) {
@@ -315,6 +333,7 @@ TEST(Parser, FunctionExprAST_0) {
   ASSERT_EQ("func", C.getProto().getName());
   ASSERT_EQ(0, C.getProto().getArgs().size());
   ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getBody()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, FunctionExprAST_1) {
@@ -332,6 +351,29 @@ TEST(Parser, FunctionExprAST_1) {
   ASSERT_EQ(1, C.getProto().getArgs().size());
   ASSERT_EQ(std::vector<std::string>{"x"}, C.getProto().getArgs());
   ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getBody()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, FunctionExprAST_2) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("def fib(x)\n"
+                                  "  if x < 3 then\n"
+                                  "    1\n"
+                                  "  else\n"
+                                  "    fib(x-1)+fib(x-2)")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<FunctionAST>(AST));
+  auto &C = llvm::cast<FunctionAST>(*AST);
+  ASSERT_EQ("fib", C.getProto().getName());
+  ASSERT_EQ(1, C.getProto().getArgs().size());
+  ASSERT_EQ(std::vector<std::string>{"x"}, C.getProto().getArgs());
+  ASSERT_TRUE(llvm::isa<IfExprAST>(C.getBody()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, PrototypeAST_0) {
@@ -347,6 +389,7 @@ TEST(Parser, PrototypeAST_0) {
   auto &C = llvm::cast<PrototypeAST>(*AST);
   ASSERT_EQ("zero_func", C.getName());
   ASSERT_EQ(0, C.getArgs().size());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, PrototypeAST_1) {
@@ -363,6 +406,7 @@ TEST(Parser, PrototypeAST_1) {
   ASSERT_EQ("one_func", C.getName());
   ASSERT_EQ(1, C.getArgs().size());
   ASSERT_EQ(std::vector<std::string>{"arg"}, C.getArgs());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
 TEST(Parser, PrototypeAST_2) {
@@ -380,5 +424,6 @@ TEST(Parser, PrototypeAST_2) {
   ASSERT_EQ(4, C.getArgs().size());
   ASSERT_EQ((std::vector<std::string>{"first", "s", "_third", "f_r"}),
             C.getArgs());
+  ASSERT_EQ(EOF, Parse.getCurToken());
 }
 } // namespace
