@@ -58,6 +58,8 @@ public:
   PrototypeAST &addPrototype(std::unique_ptr<PrototypeAST> P) {
     return *(FunctionProtos[P->getName()] = std::move(P));
   }
+
+  llvm::Function *handleAnonExpr(ExprAST &A);
 };
 
 } // namespace kaleidoscope

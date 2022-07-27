@@ -217,8 +217,7 @@ llvm::Function *CodeGen::visitImpl(FunctionAST &A) {
     NamedValues[(std::string)Arg.getName()] = &Arg;
 
   if (llvm::Value *RetVal = visit(A.getBody())) {
-    if (auto S = P.getName(); S != "__anon_expr")
-      CompiledFunctions.insert(S);
+    CompiledFunctions.insert(P.getName());
     CGS->Builder.CreateRet(RetVal); // Finish off the function
     llvm::verifyFunction(*TheFunction);
     return TheFunction;
@@ -256,4 +255,27 @@ llvm::Function *CodeGen::getFunction(llvm::StringRef Name) const {
 
   // if no existing prototype exists, return null
   return nullptr;
+}
+
+llvm::Function *CodeGen::handleAnonExpr(ExprAST &A) {
+  // make an anonymous proto
+  PrototypeAST Proto("__anon_expr", std::vector<std::string>());
+  llvm::Function *TheFunction = visit(Proto);
+  if (!TheFunction)
+    return nullptr;
+
+  // create a new basic block to start insertion into
+  llvm::BasicBlock *BB =
+      llvm::BasicBlock::Create(*CGS->Context, "entry", TheFunction);
+  CGS->Builder.SetInsertPoint(BB);
+
+  if (llvm::Value *RetVal = visit(A)) {
+    CGS->Builder.CreateRet(RetVal); // Finish off the function
+    llvm::verifyFunction(*TheFunction);
+    return TheFunction;
+  }
+
+  // Error reading body, remove function
+  TheFunction->eraseFromParent();
+  return logErrorR<llvm::Function>("Failed to codegen function body");
 }

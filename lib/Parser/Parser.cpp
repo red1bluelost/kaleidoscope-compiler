@@ -94,7 +94,7 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
 std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
                                                std::unique_ptr<ExprAST> LHS) {
   // if this is a binop, find its precedence
-  while (CurTok != Lexer::tok_eof) {
+  while (CurTok != Lexer::tok_eof && CurTok != ';') {
     int TokPrec = getTokPrecedence(CurTok);
 
     // if this is a binop that binds at least as tightly as the current binop,
@@ -252,6 +252,8 @@ std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
 
 std::unique_ptr<ASTNode> Parser::parse() {
   switch (getNextToken()) {
+  case ';':
+    return logError<ASTNode>("given semicolon where expression should start");
   case Lexer::tok_eof:
     return nullptr;
   case Lexer::tok_def:

@@ -30,7 +30,7 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
             -march=native
             $<$<CONFIG:DEBUG>:-fsanitize=address>
             $<$<CONFIG:DEBUG>:-g3>
-            $<$<CONFIG:DEBUG>:-Og>
+            # $<$<CONFIG:DEBUG>:-Og>
             $<$<CONFIG:RELEASE>:-g0>
     )
     add_link_options(

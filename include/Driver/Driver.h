@@ -1,6 +1,7 @@
 #ifndef KALEIDOSCOPE_DRIVER_DRIVER_H
 #define KALEIDOSCOPE_DRIVER_DRIVER_H
 
+#include "AST/ASTVisitor.h"
 #include "CodeGen/CodeGen.h"
 #include "JIT/KaleidoscopeJIT.h"
 #include "Lexer/Lexer.h"
@@ -11,8 +12,13 @@
 
 namespace kaleidoscope {
 
-class Driver {
-  using TLEntryPointer = double(*)();
+class Driver : public ASTVisitor<Driver, /*DelegateExprAST=*/false> {
+  using Parent = ASTVisitor<Driver, false>;
+  friend Parent;
+
+  using TLEntryPointer = double (*)();
+
+  enum class VisitRet { Success, Error, EndOfFile };
 
   llvm::ExitOnError ExitOnErr{};
 
@@ -25,9 +31,9 @@ class Driver {
 
   std::unique_ptr<CodeGen::Session> resetSession();
 
-  void handleDefinition();
-  void handleExtern();
-  void handleTopLevelExpression();
+  VisitRet visitImpl(ExprAST &A);
+  VisitRet visitImpl(FunctionAST &A);
+  VisitRet visitImpl(PrototypeAST &A);
 
 public:
   Driver();

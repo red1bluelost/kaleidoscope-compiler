@@ -22,13 +22,13 @@ public:
   };
 
 private:
-  const ASTNodeKind Kind;
+  const ASTNodeKind MyKind;
 
 protected:
-  ASTNode(ASTNodeKind K) : Kind(K) {}
+  ASTNode(ASTNodeKind K) : MyKind(K) {}
 
 public:
-  ASTNodeKind getKind() const { return Kind; }
+  ASTNodeKind getKind() const { return MyKind; }
 
   virtual ~ASTNode() = default;
 };

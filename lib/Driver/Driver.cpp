@@ -39,88 +39,83 @@ std::unique_ptr<CodeGen::Session> Driver::resetSession() {
   return LastCGSess;
 }
 
-void Driver::handleDefinition() {
-  if (auto FnAST = Parse.parseDefinition()) {
-    if (auto *FnIR = CG.visit(*FnAST)) {
-      FPM->run(*FnIR);
-      fmt::print(stderr, "Read function definition:\n");
-      llvm::errs() << *FnIR;
-      fmt::print(stderr, "\n");
-      auto CGSess = resetSession();
-      ExitOnErr(JIT->addModule(llvm::orc::ThreadSafeModule(
-          std::move(CGSess->Module), std::move(CGSess->Context))));
-    }
-  } else
-    Parse.getNextToken(); // skip token for error recovery
+Driver::VisitRet Driver::visitImpl(FunctionAST &A) {
+  auto *FnIR = CG.visit(A);
+  if (!FnIR)
+    return VisitRet::Error;
+
+  FPM->run(*FnIR);
+  fmt::print(stderr, "Read function definition:\n");
+  llvm::errs() << *FnIR;
+  fmt::print(stderr, "\n");
+  auto CGSess = resetSession();
+  ExitOnErr(JIT->addModule(llvm::orc::ThreadSafeModule(
+      std::move(CGSess->Module), std::move(CGSess->Context))));
+  return VisitRet::Success;
 }
 
-void Driver::handleExtern() {
-  if (auto ProtoAST = Parse.parseExtern()) {
-    if (auto *FnIR = CG.visit(*ProtoAST)) {
-      fmt::print(stderr, "Read extern:\n");
-      llvm::errs() << *FnIR;
-      fmt::print(stderr, "\n");
-      CG.addPrototype(std::move(ProtoAST));
-    }
-  } else
-    Parse.getNextToken(); // skip token for error recovery
+Driver::VisitRet Driver::visitImpl(PrototypeAST &A) {
+  auto *FnIR = CG.visit(A);
+  if (!FnIR)
+    return VisitRet::Error;
+
+  fmt::print(stderr, "Read extern:\n");
+  llvm::errs() << *FnIR;
+  fmt::print(stderr, "\n");
+  CG.addPrototype(std::make_unique<PrototypeAST>(A));
+  return VisitRet::Success;
 }
 
-void Driver::handleTopLevelExpression() {
-  // evaluate a top-level expression into an anonymous function
-  if (auto FnAST = Parse.parseTopLevelExpr()) {
-    if (auto *FnIR = CG.visit(*FnAST)) {
-      FPM->run(*FnIR);
-      fmt::print(stderr, "Read top-level expression:\n");
-      llvm::errs() << *FnIR;
-      fmt::print(stderr, "\n");
+Driver::VisitRet Driver::visitImpl(ExprAST &A) {
+  auto *FnIR = CG.handleAnonExpr(A);
+  if (!FnIR)
+    return VisitRet::Error;
 
-      // Create a ResourceTracker to track JIT'd memory allocated to our
-      // anonymous expression -- that way we can free it after executing.
-      auto RT = JIT->getMainJITDylib().createResourceTracker();
+  FPM->run(*FnIR);
+  fmt::print(stderr, "Read top-level expression:\n");
+  llvm::errs() << *FnIR;
+  fmt::print(stderr, "\n");
 
-      auto CGSess = resetSession();
-      auto TSM = llvm::orc::ThreadSafeModule(std::move(CGSess->Module),
-                                             std::move(CGSess->Context));
-      ExitOnErr(JIT->addModule(std::move(TSM), RT));
+  // Create a ResourceTracker to track JIT'd memory allocated to our
+  // anonymous expression -- that way we can free it after executing.
+  auto RT = JIT->getMainJITDylib().createResourceTracker();
 
-      // Search the JIT for the __anon_expr symbol.
-      auto ExprSymbol = ExitOnErr(JIT->lookup("__anon_expr"));
+  auto CGSess = resetSession();
+  auto TSM = llvm::orc::ThreadSafeModule(std::move(CGSess->Module),
+                                         std::move(CGSess->Context));
+  ExitOnErr(JIT->addModule(std::move(TSM), RT));
 
-      // Get the symbol's address and cast it to the right type (takes no
-      // arguments, returns a double) so we can call it as a native function.
-      TLEntryPointer FP =
-          (TLEntryPointer) static_cast<intptr_t>(ExprSymbol.getAddress());
-      fmt::print(stderr, "Evaluated to {}\n", FP());
+  // Search the JIT for the __anon_expr symbol.
+  auto ExprSymbol = ExitOnErr(JIT->lookup("__anon_expr"));
 
-      // Delete the anonymous expression module from the JIT.
-      ExitOnErr(RT->remove());
-    }
-  } else
-    Parse.getNextToken(); // skip token for error recovery
+  // Get the symbol's address and cast it to the right type (takes no
+  // arguments, returns a double) so we can call it as a native function.
+  TLEntryPointer FP =
+      (TLEntryPointer) static_cast<intptr_t>(ExprSymbol.getAddress());
+  fmt::print(stderr, "Evaluated to {}\n", FP());
+
+  // Delete the anonymous expression module from the JIT.
+  ExitOnErr(RT->remove());
+  return VisitRet::Success;
 }
 
 void Driver::mainLoop() {
-  fmt::print(stderr, "ready> ");
-  Parse.getNextToken();
   while (true) {
-    switch (Parse.getCurToken()) {
-    case kaleidoscope::Lexer::tok_eof:
+    fmt::print(stderr, "ready> ");
+
+    std::unique_ptr<ASTNode> AST = Parse.parse();
+    if (!AST) {
+      fmt::print(stderr, "parse failed in driver\n");
+      continue;
+    }
+
+    switch (visit(*AST)) {
+    case VisitRet::Success:
+      break;
+    case VisitRet::Error:
+    case VisitRet::EndOfFile:
       llvm::errs() << CG.getModule();
       return;
-    case ';': // ignore top-level semicolons
-      Parse.getNextToken();
-      break;
-    case kaleidoscope::Lexer::tok_def:
-      handleDefinition();
-      break;
-    case kaleidoscope::Lexer::tok_extern:
-      handleExtern();
-      break;
-    default:
-      handleTopLevelExpression();
-      break;
     }
-    fmt::print(stderr, "ready> ");
   }
 }

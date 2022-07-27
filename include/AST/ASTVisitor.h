@@ -31,29 +31,31 @@ public:
   }
 
 #define DELEGATE(AST) static_cast<SubClass *>(this)->visitImpl(AST)
-
-  template <typename = std::enable_if_t<DelegateExprAST>>
+  
   auto visit(ExprAST &A) {
+    if constexpr (DelegateExprAST) {
 #define HANDLE_EXPR_AST(AST_TYPE)                                              \
   case AST_TYPE::Kind:                                                         \
     return DELEGATE(llvm::cast<AST_TYPE>(A))
 
-    switch (A.getKind()) {
-      HANDLE_EXPR_AST(BinaryExprAST);
-      HANDLE_EXPR_AST(CallExprAST);
-      HANDLE_EXPR_AST(ForExprAST);
-      HANDLE_EXPR_AST(IfExprAST);
-      HANDLE_EXPR_AST(NumberExprAST);
-      HANDLE_EXPR_AST(VariableExprAST);
-    case ASTNode::ANK_ExprAST:
-    case ASTNode::ANK_LastExprAST:
-    case ASTNode::ANK_FunctionAST:
-    case ASTNode::ANK_PrototypeAST:
-      break;
-    }
-
-    llvm_unreachable("Missing an AST type being handled");
+      switch (A.getKind()) {
+        HANDLE_EXPR_AST(BinaryExprAST);
+        HANDLE_EXPR_AST(CallExprAST);
+        HANDLE_EXPR_AST(ForExprAST);
+        HANDLE_EXPR_AST(IfExprAST);
+        HANDLE_EXPR_AST(NumberExprAST);
+        HANDLE_EXPR_AST(VariableExprAST);
+      case ASTNode::ANK_ExprAST:
+      case ASTNode::ANK_LastExprAST:
+      case ASTNode::ANK_FunctionAST:
+      case ASTNode::ANK_PrototypeAST:
+        break;
+      }
+      llvm_unreachable("Missing an AST type being handled");
 #undef HANDLE_EXPR_AST
+    } else {
+      return DELEGATE(A);
+    }
   }
 
 #define VISIT_AST(AST_TYPE)                                                    \
