@@ -54,6 +54,7 @@ set(KALEIDOSCOPE_SOURCES
         lib/AST/ForExprAST.cpp
         lib/AST/PrototypeAST.cpp
         lib/AST/FunctionAST.cpp
+        lib/AST/Dump/XMLDump.cpp
         lib/Parser/Parser.cpp
         lib/CodeGen/CodeGen.cpp
         lib/Driver/Driver.cpp
@@ -71,6 +72,7 @@ set(KALEIDOSCOPE_HEADERS
         include/kaleidoscope/AST/ForExprAST.h
         include/kaleidoscope/AST/PrototypeAST.h
         include/kaleidoscope/AST/FunctionAST.h
+        include/kaleidoscope/AST/Dump/XMLDump.h
         include/kaleidoscope/Parser/Parser.h
         include/kaleidoscope/CodeGen/CodeGen.h
         include/kaleidoscope/Util/Error/Log.h

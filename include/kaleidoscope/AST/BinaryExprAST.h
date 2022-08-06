@@ -14,6 +14,7 @@ class BinaryExprAST : public ExprAST {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_BinaryExprAST;
+  static constexpr std::string_view NodeName = "BinaryExprAST";
 
   BinaryExprAST(char Op, std::unique_ptr<ExprAST> LHS,
                 std::unique_ptr<ExprAST> RHS)

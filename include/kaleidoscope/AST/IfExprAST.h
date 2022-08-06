@@ -13,6 +13,7 @@ class IfExprAST : public ExprAST {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_IfExprAST;
+  static constexpr std::string_view NodeName = "IfExprAST";
 
   IfExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Then,
             std::unique_ptr<ExprAST> Else)

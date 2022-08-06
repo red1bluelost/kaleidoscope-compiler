@@ -17,6 +17,7 @@ class CallExprAST : public ExprAST {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_CallExprAST;
+  static constexpr std::string_view NodeName = "CallExprAST";
 
   CallExprAST(std::string Callee, std::vector<std::unique_ptr<ExprAST>> Args)
       : ExprAST(Kind), Callee(std::move(Callee)), Args(std::move(Args)) {}

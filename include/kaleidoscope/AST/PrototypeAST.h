@@ -17,6 +17,7 @@ class PrototypeAST : public ASTNode {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_PrototypeAST;
+  static constexpr std::string_view NodeName = "PrototypeAST";
 
   PrototypeAST(std::string Name, std::vector<std::string> Args)
       : ASTNode(Kind), Name(std::move(Name)), Args(std::move(Args)) {}

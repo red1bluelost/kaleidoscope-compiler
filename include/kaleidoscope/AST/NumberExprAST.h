@@ -10,6 +10,7 @@ class NumberExprAST : public ExprAST {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_NumberExprAST;
+  static constexpr std::string_view NodeName = "NumberExprAST";
 
   NumberExprAST(double Val) : ExprAST(Kind), Val(Val) {}
 

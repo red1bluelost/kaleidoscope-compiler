@@ -15,6 +15,7 @@ class ForExprAST : public ExprAST {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_ForExprAST;
+  static constexpr std::string_view NodeName = "ForExprAST";
 
   ForExprAST(std::string VarName, std::unique_ptr<ExprAST> Start,
              std::unique_ptr<ExprAST> End, std::unique_ptr<ExprAST> Step,

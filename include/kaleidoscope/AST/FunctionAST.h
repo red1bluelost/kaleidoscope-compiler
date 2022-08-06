@@ -16,6 +16,7 @@ class FunctionAST : public ASTNode {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_FunctionAST;
+  static constexpr std::string_view NodeName = "FunctionAST";
 
   FunctionAST(std::unique_ptr<PrototypeAST> Proto,
               std::unique_ptr<ExprAST> Body)

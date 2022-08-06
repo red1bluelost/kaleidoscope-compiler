@@ -13,6 +13,7 @@ class VariableExprAST : public ExprAST {
 
 public:
   static constexpr ASTNodeKind Kind = ANK_VariableExprAST;
+  static constexpr std::string_view NodeName = "VariableExprAST";
 
   VariableExprAST(std::string Name) : ExprAST(Kind), Name(std::move(Name)) {}
 

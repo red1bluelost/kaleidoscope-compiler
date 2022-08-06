@@ -20,16 +20,6 @@ class CodeGen : public ASTVisitor<CodeGen> {
   using Parent = ASTVisitor<CodeGen>;
   friend Parent;
 
-  llvm::Value *visitImpl(BinaryExprAST &A);
-  llvm::Value *visitImpl(CallExprAST &A);
-  llvm::Value *visitImpl(ForExprAST &A);
-  llvm::Value *visitImpl(IfExprAST &A);
-  llvm::Value *visitImpl(NumberExprAST &A) const;
-  llvm::Value *visitImpl(VariableExprAST &A) const;
-
-  llvm::Function *visitImpl(FunctionAST &A);
-  llvm::Function *visitImpl(PrototypeAST &A) const;
-
 public:
   struct Session {
     std::unique_ptr<llvm::LLVMContext> Context =
@@ -45,6 +35,16 @@ private:
   std::unordered_map<std::string, std::unique_ptr<PrototypeAST>>
       FunctionProtos{};
   std::unordered_set<std::string> CompiledFunctions{};
+
+  llvm::Value *visitImpl(BinaryExprAST &A);
+  llvm::Value *visitImpl(CallExprAST &A);
+  llvm::Value *visitImpl(ForExprAST &A);
+  llvm::Value *visitImpl(IfExprAST &A);
+  llvm::Value *visitImpl(NumberExprAST &A) const;
+  llvm::Value *visitImpl(VariableExprAST &A) const;
+
+  llvm::Function *visitImpl(FunctionAST &A);
+  llvm::Function *visitImpl(PrototypeAST &A) const;
 
   llvm::Function *getFunction(llvm::StringRef Name) const;
 
