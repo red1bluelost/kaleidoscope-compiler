@@ -1,4 +1,5 @@
-#include "Lexer/Lexer.h"
+#include "kaleidoscope/Lexer/Lexer.h"
+
 #include "TestUtil.h"
 
 #include <gtest/gtest.h>

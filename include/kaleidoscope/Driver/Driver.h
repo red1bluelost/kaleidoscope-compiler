@@ -1,11 +1,11 @@
 #ifndef KALEIDOSCOPE_DRIVER_DRIVER_H
 #define KALEIDOSCOPE_DRIVER_DRIVER_H
 
-#include "AST/ASTVisitor.h"
-#include "CodeGen/CodeGen.h"
-#include "JIT/KaleidoscopeJIT.h"
-#include "Lexer/Lexer.h"
-#include "Parser/Parser.h"
+#include "kaleidoscope/AST/ASTVisitor.h"
+#include "kaleidoscope/CodeGen/CodeGen.h"
+#include "kaleidoscope/JIT/KaleidoscopeJIT.h"
+#include "kaleidoscope/Lexer/Lexer.h"
+#include "kaleidoscope/Parser/Parser.h"
 
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/Support/Error.h>

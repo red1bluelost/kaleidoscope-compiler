@@ -1,7 +1,7 @@
 #ifndef KALEIDOSCOPE_AST_BINARYEXPRAST_H
 #define KALEIDOSCOPE_AST_BINARYEXPRAST_H
 
-#include "AST/ExprAST.h"
+#include "kaleidoscope/AST/ExprAST.h"
 
 #include <memory>
 

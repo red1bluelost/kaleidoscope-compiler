@@ -1,3 +1,3 @@
-#include "AST/FunctionAST.h"
+#include "kaleidoscope/AST/FunctionAST.h"
 
 using namespace kaleidoscope;

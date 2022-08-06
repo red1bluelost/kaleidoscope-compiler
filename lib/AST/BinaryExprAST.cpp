@@ -1,3 +1,3 @@
-#include "AST/BinaryExprAST.h"
+#include "kaleidoscope/AST/BinaryExprAST.h"
 
 using namespace kaleidoscope;

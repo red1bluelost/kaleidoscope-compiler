@@ -1,15 +1,15 @@
 #ifndef KALEIDOSCOPE_ASTVISITOR_H
 #define KALEIDOSCOPE_ASTVISITOR_H
 
-#include "AST/BinaryExprAST.h"
-#include "AST/CallExprAST.h"
-#include "AST/ExprAST.h"
-#include "AST/ForExprAST.h"
-#include "AST/FunctionAST.h"
-#include "AST/IfExprAST.h"
-#include "AST/NumberExprAST.h"
-#include "AST/PrototypeAST.h"
-#include "AST/VariableExprAST.h"
+#include "kaleidoscope/AST/BinaryExprAST.h"
+#include "kaleidoscope/AST/CallExprAST.h"
+#include "kaleidoscope/AST/ExprAST.h"
+#include "kaleidoscope/AST/ForExprAST.h"
+#include "kaleidoscope/AST/FunctionAST.h"
+#include "kaleidoscope/AST/IfExprAST.h"
+#include "kaleidoscope/AST/NumberExprAST.h"
+#include "kaleidoscope/AST/PrototypeAST.h"
+#include "kaleidoscope/AST/VariableExprAST.h"
 
 #include <llvm/Support/ErrorHandling.h>
 
@@ -31,7 +31,7 @@ public:
   }
 
 #define DELEGATE(AST) static_cast<SubClass *>(this)->visitImpl(AST)
-  
+
   auto visit(ExprAST &A) {
     if constexpr (DelegateExprAST) {
 #define HANDLE_EXPR_AST(AST_TYPE)                                              \

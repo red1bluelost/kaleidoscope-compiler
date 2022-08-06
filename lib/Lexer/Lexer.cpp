@@ -1,4 +1,4 @@
-#include "Lexer/Lexer.h"
+#include "kaleidoscope/Lexer/Lexer.h"
 
 #include <llvm/ADT/StringSwitch.h>
 

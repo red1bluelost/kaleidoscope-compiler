@@ -1,9 +1,9 @@
 #ifndef KALEIDOSCOPE_AST_FUNCTIONAST_H
 #define KALEIDOSCOPE_AST_FUNCTIONAST_H
 
-#include "AST/AST.h"
-#include "AST/ExprAST.h"
-#include "AST/PrototypeAST.h"
+#include "kaleidoscope/AST/AST.h"
+#include "kaleidoscope/AST/ExprAST.h"
+#include "kaleidoscope/AST/PrototypeAST.h"
 
 #include <memory>
 

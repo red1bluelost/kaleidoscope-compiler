@@ -1,16 +1,16 @@
-#include "Parser/Parser.h"
+#include "kaleidoscope/Parser/Parser.h"
 
-#include "AST/BinaryExprAST.h"
-#include "AST/CallExprAST.h"
-#include "AST/ForExprAST.h"
-#include "AST/IfExprAST.h"
-#include "AST/NumberExprAST.h"
-#include "AST/VariableExprAST.h"
-#include "Util/Error/Log.h"
+#include "kaleidoscope/AST/BinaryExprAST.h"
+#include "kaleidoscope/AST/CallExprAST.h"
+#include "kaleidoscope/AST/ForExprAST.h"
+#include "kaleidoscope/AST/IfExprAST.h"
+#include "kaleidoscope/AST/NumberExprAST.h"
+#include "kaleidoscope/AST/VariableExprAST.h"
+#include "kaleidoscope/Util/Error/Log.h"
 
 using namespace kaleidoscope;
 
-static std::unordered_map<char, int> DefaultBinOpPrec{
+static const std::unordered_map<char, int> DefaultBinOpPrec{
     {'<', 10}, {'>', 10}, {'+', 20}, {'-', 20}, {'*', 40}, {'/', 40}};
 
 int Parser::getTokPrecedence(int Tok) const {

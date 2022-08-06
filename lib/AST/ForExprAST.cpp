@@ -1,3 +1,3 @@
-#include "AST/ForExprAST.h"
+#include "kaleidoscope/AST/ForExprAST.h"
 
 using namespace kaleidoscope;

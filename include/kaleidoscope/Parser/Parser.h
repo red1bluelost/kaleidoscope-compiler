@@ -1,10 +1,10 @@
 #ifndef KALEIDOSCOPE_PARSER_PARSER_H
 #define KALEIDOSCOPE_PARSER_PARSER_H
 
-#include "AST/ExprAST.h"
-#include "AST/FunctionAST.h"
-#include "AST/PrototypeAST.h"
-#include "Lexer/Lexer.h"
+#include "kaleidoscope/AST/ExprAST.h"
+#include "kaleidoscope/AST/FunctionAST.h"
+#include "kaleidoscope/AST/PrototypeAST.h"
+#include "kaleidoscope/Lexer/Lexer.h"
 
 #include <memory>
 #include <unordered_map>

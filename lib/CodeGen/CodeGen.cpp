@@ -1,6 +1,6 @@
-#include "CodeGen/CodeGen.h"
+#include "kaleidoscope/CodeGen/CodeGen.h"
 
-#include "Util/Error/Log.h"
+#include "kaleidoscope/Util/Error/Log.h"
 
 #include <llvm/IR/Verifier.h>
 

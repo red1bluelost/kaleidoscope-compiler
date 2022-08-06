@@ -59,23 +59,23 @@ set(KALEIDOSCOPE_SOURCES
         lib/Driver/Driver.cpp
         lib/JIT/KaleidoscopeJIT.cpp)
 set(KALEIDOSCOPE_HEADERS
-        include/Lexer/Lexer.h
-        include/AST/AST.h
-        include/AST/ASTVisitor.h
-        include/AST/ExprAST.h
-        include/AST/NumberExprAST.h
-        include/AST/VariableExprAST.h
-        include/AST/BinaryExprAST.h
-        include/AST/CallExprAST.h
-        include/AST/IfExprAST.h
-        include/AST/ForExprAST.h
-        include/AST/PrototypeAST.h
-        include/AST/FunctionAST.h
-        include/Parser/Parser.h
-        include/CodeGen/CodeGen.h
-        include/Util/Error/Log.h
-        include/Driver/Driver.h
-        include/JIT/KaleidoscopeJIT.h)
+        include/kaleidoscope/Lexer/Lexer.h
+        include/kaleidoscope/AST/AST.h
+        include/kaleidoscope/AST/ASTVisitor.h
+        include/kaleidoscope/AST/ExprAST.h
+        include/kaleidoscope/AST/NumberExprAST.h
+        include/kaleidoscope/AST/VariableExprAST.h
+        include/kaleidoscope/AST/BinaryExprAST.h
+        include/kaleidoscope/AST/CallExprAST.h
+        include/kaleidoscope/AST/IfExprAST.h
+        include/kaleidoscope/AST/ForExprAST.h
+        include/kaleidoscope/AST/PrototypeAST.h
+        include/kaleidoscope/AST/FunctionAST.h
+        include/kaleidoscope/Parser/Parser.h
+        include/kaleidoscope/CodeGen/CodeGen.h
+        include/kaleidoscope/Util/Error/Log.h
+        include/kaleidoscope/Driver/Driver.h
+        include/kaleidoscope/JIT/KaleidoscopeJIT.h)
 
 include_directories(include)
 include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})

@@ -1,3 +1,3 @@
-#include "AST/VariableExprAST.h"
+#include "kaleidoscope/AST/VariableExprAST.h"
 
 using namespace kaleidoscope;

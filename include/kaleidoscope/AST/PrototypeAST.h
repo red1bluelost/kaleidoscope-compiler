@@ -1,7 +1,7 @@
 #ifndef KALEIDOSCOPE_AST_PROTOTYPEAST_H
 #define KALEIDOSCOPE_AST_PROTOTYPEAST_H
 
-#include "AST/AST.h"
+#include "kaleidoscope/AST/AST.h"
 
 #include <string>
 #include <vector>

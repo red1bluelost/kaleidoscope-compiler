@@ -1,7 +1,7 @@
 #ifndef KALEIDOSCOPE_AST_NUMBEREXPRAST_H
 #define KALEIDOSCOPE_AST_NUMBEREXPRAST_H
 
-#include "AST/ExprAST.h"
+#include "kaleidoscope/AST/ExprAST.h"
 
 namespace kaleidoscope {
 

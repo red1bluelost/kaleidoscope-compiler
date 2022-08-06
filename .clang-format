@@ -1,2 +1,12 @@
-BasedOnStyle: LLVM
-ColumnLimit: 80
+BasedOnStyle:  LLVM
+ColumnLimit:   80
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:    '"kaleidoscope/.*"'
+    Priority: 1
+  - Regex:    '^<.*\.h(pp)?>$'
+    Priority: 4
+  - Regex:    '^<.*>$'
+    Priority: 5
+  - Regex:    '.*.h'
+    Priority: 3

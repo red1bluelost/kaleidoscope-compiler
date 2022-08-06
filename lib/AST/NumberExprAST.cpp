@@ -1,3 +1,3 @@
-#include "AST/NumberExprAST.h"
+#include "kaleidoscope/AST/NumberExprAST.h"
 
 using namespace kaleidoscope;

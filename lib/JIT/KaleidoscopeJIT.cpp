@@ -1,3 +1,3 @@
-#include "JIT/KaleidoscopeJIT.h"
+#include "kaleidoscope/JIT/KaleidoscopeJIT.h"
 
 using namespace kaleidoscope;
