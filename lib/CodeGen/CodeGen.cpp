@@ -6,7 +6,7 @@
 
 using namespace kaleidoscope;
 
-llvm::Value *CodeGen::visitImpl(BinaryExprAST &A) {
+llvm::Value *CodeGen::visitImpl(const BinaryExprAST &A) {
   auto *L = visit(A.getLHS()), *R = visit(A.getRHS());
   if (!L || !R)
     return logErrorR<llvm::Value>("missing rhs and/or lhs");
@@ -36,7 +36,7 @@ llvm::Value *CodeGen::visitImpl(BinaryExprAST &A) {
   }
 }
 
-llvm::Value *CodeGen::visitImpl(CallExprAST &A) {
+llvm::Value *CodeGen::visitImpl(const CallExprAST &A) {
   // Look up the name in the global module table.
   llvm::Function *CalleeF = getFunction(A.getCallee());
   if (!CalleeF)
@@ -58,7 +58,7 @@ llvm::Value *CodeGen::visitImpl(CallExprAST &A) {
   return CGS->Builder.CreateCall(CalleeF, ArgsV, "calltmp");
 }
 
-llvm::Value *CodeGen::visitImpl(ForExprAST &A) {
+llvm::Value *CodeGen::visitImpl(const ForExprAST &A) {
   // Emit the start code first, without 'variable' in scope
   llvm::Value *StartV = visit(A.getStart());
   if (!StartV)
@@ -122,7 +122,7 @@ llvm::Value *CodeGen::visitImpl(ForExprAST &A) {
   return llvm::Constant::getNullValue(llvm::Type::getDoubleTy(Context));
 }
 
-llvm::Value *CodeGen::visitImpl(IfExprAST &A) {
+llvm::Value *CodeGen::visitImpl(const IfExprAST &A) {
   llvm::Value *CondV = visit(A.getCond());
   if (!CondV)
     return nullptr;
@@ -176,17 +176,17 @@ llvm::Value *CodeGen::visitImpl(IfExprAST &A) {
   return PN;
 }
 
-llvm::Value *CodeGen::visitImpl(NumberExprAST &A) const {
+llvm::Value *CodeGen::visitImpl(const NumberExprAST &A) const {
   return llvm::ConstantFP::get(*CGS->Context, llvm::APFloat(A.getVal()));
 }
 
-llvm::Value *CodeGen::visitImpl(VariableExprAST &A) const {
+llvm::Value *CodeGen::visitImpl(const VariableExprAST &A) const {
   if (auto S = A.getName(); NamedValues.contains(S))
     return NamedValues.at(S);
   return logErrorR<llvm::Value>("unknown variable name");
 }
 
-llvm::Function *CodeGen::visitImpl(FunctionAST &A) {
+llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
   assert(!CompiledFunctions.contains(A.getProto().getName()) &&
          "function with name has already been compiled");
 
@@ -228,7 +228,7 @@ llvm::Function *CodeGen::visitImpl(FunctionAST &A) {
   return logErrorR<llvm::Function>("Failed to codegen function body");
 }
 
-llvm::Function *CodeGen::visitImpl(PrototypeAST &A) const {
+llvm::Function *CodeGen::visitImpl(const PrototypeAST &A) const {
   auto &Args = A.getArgs();
   std::vector<llvm::Type *> Doubles(Args.size(),
                                     llvm::Type::getDoubleTy(*CGS->Context));
@@ -257,7 +257,7 @@ llvm::Function *CodeGen::getFunction(llvm::StringRef Name) const {
   return nullptr;
 }
 
-llvm::Function *CodeGen::handleAnonExpr(ExprAST &A) {
+llvm::Function *CodeGen::handleAnonExpr(const ExprAST &A) {
   // make an anonymous proto
   PrototypeAST Proto("__anon_expr", std::vector<std::string>());
   llvm::Function *TheFunction = visit(Proto);

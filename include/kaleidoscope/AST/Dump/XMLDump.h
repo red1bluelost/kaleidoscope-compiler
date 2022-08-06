@@ -18,15 +18,15 @@ class XMLDump : private ASTVisitor<XMLDump> {
   std::ostream &Out;
   const std::size_t Spaces;
 
-  auto visitImpl(BinaryExprAST &A) -> XMLDump &;
-  auto visitImpl(CallExprAST &A) -> XMLDump &;
-  auto visitImpl(ForExprAST &A) -> XMLDump &;
-  auto visitImpl(IfExprAST &A) -> XMLDump &;
-  auto visitImpl(NumberExprAST &A) -> XMLDump &;
-  auto visitImpl(VariableExprAST &A) -> XMLDump &;
+  auto visitImpl(const BinaryExprAST &A) -> XMLDump &;
+  auto visitImpl(const CallExprAST &A) -> XMLDump &;
+  auto visitImpl(const ForExprAST &A) -> XMLDump &;
+  auto visitImpl(const IfExprAST &A) -> XMLDump &;
+  auto visitImpl(const NumberExprAST &A) -> XMLDump &;
+  auto visitImpl(const VariableExprAST &A) -> XMLDump &;
 
-  auto visitImpl(FunctionAST &A) -> XMLDump &;
-  auto visitImpl(PrototypeAST &A) -> XMLDump &;
+  auto visitImpl(const FunctionAST &A) -> XMLDump &;
+  auto visitImpl(const PrototypeAST &A) -> XMLDump &;
 
   [[nodiscard]] auto padding(std::size_t MS = 0) -> std::string {
     return std::string(Spaces + MS, ' ');

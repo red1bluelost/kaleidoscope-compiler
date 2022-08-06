@@ -36,15 +36,15 @@ private:
       FunctionProtos{};
   std::unordered_set<std::string> CompiledFunctions{};
 
-  llvm::Value *visitImpl(BinaryExprAST &A);
-  llvm::Value *visitImpl(CallExprAST &A);
-  llvm::Value *visitImpl(ForExprAST &A);
-  llvm::Value *visitImpl(IfExprAST &A);
-  llvm::Value *visitImpl(NumberExprAST &A) const;
-  llvm::Value *visitImpl(VariableExprAST &A) const;
+  llvm::Value *visitImpl(const BinaryExprAST &A);
+  llvm::Value *visitImpl(const CallExprAST &A);
+  llvm::Value *visitImpl(const ForExprAST &A);
+  llvm::Value *visitImpl(const IfExprAST &A);
+  llvm::Value *visitImpl(const NumberExprAST &A) const;
+  llvm::Value *visitImpl(const VariableExprAST &A) const;
 
-  llvm::Function *visitImpl(FunctionAST &A);
-  llvm::Function *visitImpl(PrototypeAST &A) const;
+  llvm::Function *visitImpl(const FunctionAST &A);
+  llvm::Function *visitImpl(const PrototypeAST &A) const;
 
   llvm::Function *getFunction(llvm::StringRef Name) const;
 
@@ -59,7 +59,7 @@ public:
     return *(FunctionProtos[P->getName()] = std::move(P));
   }
 
-  llvm::Function *handleAnonExpr(ExprAST &A);
+  llvm::Function *handleAnonExpr(const ExprAST &A);
 };
 
 } // namespace kaleidoscope

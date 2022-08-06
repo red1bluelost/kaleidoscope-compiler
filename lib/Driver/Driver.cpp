@@ -39,7 +39,7 @@ std::unique_ptr<CodeGen::Session> Driver::resetSession() {
   return LastCGSess;
 }
 
-Driver::VisitRet Driver::visitImpl(FunctionAST &A) {
+Driver::VisitRet Driver::visitImpl(const FunctionAST &A) {
   auto *FnIR = CG.visit(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -54,7 +54,7 @@ Driver::VisitRet Driver::visitImpl(FunctionAST &A) {
   return VisitRet::Success;
 }
 
-Driver::VisitRet Driver::visitImpl(PrototypeAST &A) {
+Driver::VisitRet Driver::visitImpl(const PrototypeAST &A) {
   auto *FnIR = CG.visit(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -66,7 +66,7 @@ Driver::VisitRet Driver::visitImpl(PrototypeAST &A) {
   return VisitRet::Success;
 }
 
-Driver::VisitRet Driver::visitImpl(ExprAST &A) {
+Driver::VisitRet Driver::visitImpl(const ExprAST &A) {
   auto *FnIR = CG.handleAnonExpr(A);
   if (!FnIR)
     return VisitRet::Error;

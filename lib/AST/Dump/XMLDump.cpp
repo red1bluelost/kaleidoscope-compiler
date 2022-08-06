@@ -34,7 +34,7 @@ XMLDump &XMLDump::printSubAST(std::string_view Tag, ASTNode &A,
   return *this;
 }
 
-auto XMLDump::visitImpl(BinaryExprAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const BinaryExprAST &A) -> XMLDump & {
   return open(A.NodeName)
       .printSubItem("Op", A.getOp())
       .printSubAST("LHS", A.getLHS())
@@ -42,14 +42,14 @@ auto XMLDump::visitImpl(BinaryExprAST &A) -> XMLDump & {
       .close(A.NodeName);
 }
 
-auto XMLDump::visitImpl(CallExprAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const CallExprAST &A) -> XMLDump & {
   open(A.NodeName).printSubItem("Callee", A.getCallee()).open("Args", 2);
   for (int Idx = 0; const auto &Arg : A.getArgs())
     printSubAST(fmt::format("Arg[{}]", Idx++), *Arg, 2);
   return close("Args", 2).close(A.NodeName);
 }
 
-auto XMLDump::visitImpl(ForExprAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const ForExprAST &A) -> XMLDump & {
   return open(A.NodeName)
       .printSubItem("VarName", A.getVarName())
       .printSubAST("Start", A.getStart())
@@ -59,7 +59,7 @@ auto XMLDump::visitImpl(ForExprAST &A) -> XMLDump & {
       .close(A.NodeName);
 }
 
-auto XMLDump::visitImpl(IfExprAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const IfExprAST &A) -> XMLDump & {
   return open(A.NodeName)
       .printSubAST("Cond", A.getCond())
       .printSubAST("Then", A.getThen())
@@ -67,22 +67,22 @@ auto XMLDump::visitImpl(IfExprAST &A) -> XMLDump & {
       .close(A.NodeName);
 }
 
-auto XMLDump::visitImpl(NumberExprAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const NumberExprAST &A) -> XMLDump & {
   return open(A.NodeName).printSubItem("Val", A.getVal()).close(A.NodeName);
 }
 
-auto XMLDump::visitImpl(VariableExprAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const VariableExprAST &A) -> XMLDump & {
   return open(A.NodeName).printSubItem("Name", A.getName()).close(A.NodeName);
 }
 
-auto XMLDump::visitImpl(FunctionAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const FunctionAST &A) -> XMLDump & {
   return open(A.NodeName)
       .printSubAST("Proto", A.getProto())
       .printSubAST("Body", A.getBody())
       .close(A.NodeName);
 }
 
-auto XMLDump::visitImpl(PrototypeAST &A) -> XMLDump & {
+auto XMLDump::visitImpl(const PrototypeAST &A) -> XMLDump & {
   open(A.NodeName).printSubItem("Name", A.getName()).open("Args", 2);
   for (int Idx = 0; const auto &Arg : A.getArgs())
     printSubItem(fmt::format("Arg[{}]", Idx++), Arg, 2);

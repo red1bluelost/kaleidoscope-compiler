@@ -31,9 +31,9 @@ class Driver : public ASTVisitor<Driver, /*DelegateExprAST=*/false> {
 
   std::unique_ptr<CodeGen::Session> resetSession();
 
-  VisitRet visitImpl(ExprAST &A);
-  VisitRet visitImpl(FunctionAST &A);
-  VisitRet visitImpl(PrototypeAST &A);
+  VisitRet visitImpl(const ExprAST &A);
+  VisitRet visitImpl(const FunctionAST &A);
+  VisitRet visitImpl(const PrototypeAST &A);
 
 public:
   Driver();
