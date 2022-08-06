@@ -64,6 +64,12 @@ class Parser {
   ///   ::= id '(' id* ')'
   std::unique_ptr<PrototypeAST> parsePrototype();
 
+  /// definition ::= 'def' prototype expression
+  std::unique_ptr<FunctionAST> parseDefinition();
+
+  /// external ::= 'extern' prototype
+  std::unique_ptr<PrototypeAST> parseExtern();
+
 public:
   Parser(Lexer &Lex) : Lex(Lex) {}
   Parser() = delete;
@@ -76,16 +82,6 @@ public:
   int getNextToken() { return CurTok = Lex.gettok(); }
   int getCurToken() { return CurTok; }
 
-  /// definition ::= 'def' prototype expression
-  std::unique_ptr<FunctionAST> parseDefinition();
-
-  /// external ::= 'extern' prototype
-  std::unique_ptr<PrototypeAST> parseExtern();
-
-  /// toplevelexpr ::= expression
-  std::unique_ptr<FunctionAST> parseTopLevelExpr();
-
-public:
   /// addBinopPrec - installs a binary operator with a precedence 1 is lowest
   /// precedence
   void addBinOpPrec(char Op, int Prec) { UserBinOpPrec[Op] = Prec; }

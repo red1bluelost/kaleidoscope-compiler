@@ -240,16 +240,6 @@ std::unique_ptr<PrototypeAST> Parser::parseExtern() {
   return parsePrototype();
 }
 
-std::unique_ptr<FunctionAST> Parser::parseTopLevelExpr() {
-  if (auto E = parseExpression()) {
-    // make an anonymous proto
-    auto Proto = std::make_unique<PrototypeAST>("__anon_expr",
-                                                std::vector<std::string>());
-    return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
-  }
-  return nullptr;
-}
-
 std::unique_ptr<ASTNode> Parser::parse() {
   switch (getNextToken()) {
   case ';':

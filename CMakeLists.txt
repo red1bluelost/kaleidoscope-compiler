@@ -20,7 +20,6 @@ FetchContent_Declare(fmt
         GIT_TAG 8.1.0)
 FetchContent_MakeAvailable(fmt)
 
-# Let's set compiler-specific flags
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
     add_compile_options(
             -Wall
@@ -30,7 +29,7 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
             -march=native
             $<$<CONFIG:DEBUG>:-fsanitize=address>
             $<$<CONFIG:DEBUG>:-g3>
-            # $<$<CONFIG:DEBUG>:-Og>
+            $<$<CONFIG:DEBUG>:-Og>
             $<$<CONFIG:RELEASE>:-g0>
     )
     add_link_options(
@@ -38,7 +37,6 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
             $<$<CONFIG:DEBUG>:-fsanitize=address>
     )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    # MSVC
     add_compile_options(
             /W4
     )
