@@ -22,7 +22,7 @@ public:
               std::unique_ptr<ExprAST> Body)
       : ASTNode(Kind), Proto(std::move(Proto)), Body(std::move(Body)) {}
 
-  static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

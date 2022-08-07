@@ -1,5 +1,5 @@
-#ifndef KALEIDOSCOPE_AST_DUMP_TREEDUMP_H
-#define KALEIDOSCOPE_AST_DUMP_TREEDUMP_H
+#ifndef KALEIDOSCOPE_AST_DUMP_XMLDUMP_H
+#define KALEIDOSCOPE_AST_DUMP_XMLDUMP_H
 
 #include "kaleidoscope/AST/ASTVisitor.h"
 
@@ -53,4 +53,4 @@ public:
 
 } // namespace kaleidoscope::ast
 
-#endif // KALEIDOSCOPE_AST_DUMP_TREEDUMP_H
+#endif // KALEIDOSCOPE_AST_DUMP_XMLDUMP_H

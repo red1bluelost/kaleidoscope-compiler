@@ -14,7 +14,7 @@ public:
 
   NumberExprAST(double Val) : ExprAST(Kind), Val(Val) {}
 
-  static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

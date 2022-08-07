@@ -22,7 +22,7 @@ public:
   CallExprAST(std::string Callee, std::vector<std::unique_ptr<ExprAST>> Args)
       : ExprAST(Kind), Callee(std::move(Callee)), Args(std::move(Args)) {}
 
-  static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

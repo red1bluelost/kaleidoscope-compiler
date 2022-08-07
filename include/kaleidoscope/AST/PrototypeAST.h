@@ -24,7 +24,7 @@ public:
   PrototypeAST(const PrototypeAST &) = default;
   PrototypeAST(PrototypeAST &&) = default;
 
-  static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

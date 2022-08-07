@@ -20,7 +20,7 @@ public:
       : ExprAST(Kind), Cond(std::move(Cond)), Then(std::move(Then)),
         Else(std::move(Else)) {}
 
-  static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

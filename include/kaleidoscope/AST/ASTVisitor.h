@@ -1,5 +1,5 @@
-#ifndef KALEIDOSCOPE_ASTVISITOR_H
-#define KALEIDOSCOPE_ASTVISITOR_H
+#ifndef KALEIDOSCOPE_AST_ASTVISITOR_H
+#define KALEIDOSCOPE_AST_ASTVISITOR_H
 
 #include "kaleidoscope/AST/BinaryExprAST.h"
 #include "kaleidoscope/AST/CallExprAST.h"
@@ -17,7 +17,8 @@
 
 namespace kaleidoscope {
 
-template <typename SubClass, bool DelegateExprAST = true> class ASTVisitor {
+template <typename SubClass, bool DelegateExprAST = true>
+class ASTVisitor {
 public:
   auto visit(const ASTNode &A) {
     const ASTNode *AP = &A;
@@ -76,4 +77,4 @@ public:
 };
 } // namespace kaleidoscope
 
-#endif // KALEIDOSCOPE_ASTVISITOR_H
+#endif // KALEIDOSCOPE_AST_ASTVISITOR_H

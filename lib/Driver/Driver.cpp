@@ -1,10 +1,11 @@
 #include "kaleidoscope/Driver/Driver.h"
 
-#include <fmt/core.h>
 #include <llvm/Support/Error.h>
 #include <llvm/Transforms/InstCombine/InstCombine.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Scalar/GVN.h>
+
+#include <fmt/core.h>
 
 using namespace kaleidoscope;
 

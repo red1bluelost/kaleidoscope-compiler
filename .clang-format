@@ -1,12 +1,15 @@
 BasedOnStyle:  LLVM
+AlwaysBreakTemplateDeclarations: Yes
 ColumnLimit:   80
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex:    '"kaleidoscope/.*"'
+  - Regex:    '^"kaleidoscope/'
     Priority: 1
+  - Regex:    '^".*.h(pp)?'
+    Priority: 2
+  - Regex:    '^<(llvm|llvm-c|clang|clang-c)/'
+    Priority: 3
   - Regex:    '^<.*\.h(pp)?>$'
     Priority: 4
   - Regex:    '^<.*>$'
     Priority: 5
-  - Regex:    '.*.h'
-    Priority: 3

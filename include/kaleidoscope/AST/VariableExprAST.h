@@ -17,7 +17,7 @@ public:
 
   VariableExprAST(std::string Name) : ExprAST(Kind), Name(std::move(Name)) {}
 
-  static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

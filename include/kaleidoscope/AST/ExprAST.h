@@ -15,7 +15,7 @@ protected:
 public:
   static constexpr ASTNodeKind Kind = ANK_ExprAST;
 
-  static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
     return A->getKind() >= ANK_ExprAST && A->getKind() <= ANK_LastExprAST;
   }
 
