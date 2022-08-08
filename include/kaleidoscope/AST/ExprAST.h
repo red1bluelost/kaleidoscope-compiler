@@ -10,16 +10,16 @@ class ExprAST : public ASTNode {
   ExprAST() = delete;
 
 protected:
-  ExprAST(ASTNodeKind K) : ASTNode(K) {}
+  constexpr ExprAST(ASTNodeKind K) noexcept : ASTNode(K) {}
 
 public:
   static constexpr ASTNodeKind Kind = ANK_ExprAST;
 
-  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
     return A->getKind() >= ANK_ExprAST && A->getKind() <= ANK_LastExprAST;
   }
 
-  virtual ~ExprAST() = default;
+  constexpr virtual ~ExprAST() noexcept = default;
 };
 
 } // namespace kaleidoscope

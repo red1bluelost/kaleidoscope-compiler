@@ -72,15 +72,16 @@ class Parser {
 
 public:
   Parser(Lexer &Lex) : Lex(Lex) {}
+  ~Parser() = default;
+
   Parser() = delete;
   Parser(const Parser &) = delete;
-  Parser(Parser &&) = default;
-  ~Parser() = default;
+  Parser(Parser &&) = delete;
 
   /// getNextToken - reads another token from the lexer and updates CurTok with
   /// its results.
   int getNextToken() { return CurTok = Lex.gettok(); }
-  int getCurToken() { return CurTok; }
+  [[nodiscard]] int getCurToken() const noexcept { return CurTok; }
 
   /// addBinopPrec - installs a binary operator with a precedence 1 is lowest
   /// precedence

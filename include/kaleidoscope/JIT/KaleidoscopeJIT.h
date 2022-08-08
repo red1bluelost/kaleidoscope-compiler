@@ -20,9 +20,9 @@ namespace kaleidoscope {
 
 class KaleidoscopeJIT {
 private:
-  std::unique_ptr<llvm::orc::ExecutionSession> ES;
+  const std::unique_ptr<llvm::orc::ExecutionSession> ES;
 
-  llvm::DataLayout DL;
+  const llvm::DataLayout DL;
   llvm::orc::MangleAndInterner Mangle;
 
   llvm::orc::RTDyldObjectLinkingLayer ObjectLayer;

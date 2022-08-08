@@ -12,17 +12,18 @@ namespace kaleidoscope {
 
 /// CallExprAST - Expression class for function calls.
 class CallExprAST : public ExprAST {
-  std::string Callee;
-  std::vector<std::unique_ptr<ExprAST>> Args;
+  const std::string Callee;
+  const std::vector<std::unique_ptr<ExprAST>> Args;
 
 public:
   static constexpr ASTNodeKind Kind = ANK_CallExprAST;
   static constexpr std::string_view NodeName = "CallExprAST";
 
-  CallExprAST(std::string Callee, std::vector<std::unique_ptr<ExprAST>> Args)
+  CallExprAST(std::string Callee,
+              std::vector<std::unique_ptr<ExprAST>> Args) noexcept
       : ExprAST(Kind), Callee(std::move(Callee)), Args(std::move(Args)) {}
 
-  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

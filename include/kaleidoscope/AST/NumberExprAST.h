@@ -6,15 +6,15 @@
 namespace kaleidoscope {
 
 class NumberExprAST : public ExprAST {
-  double Val;
+  const double Val;
 
 public:
   static constexpr ASTNodeKind Kind = ANK_NumberExprAST;
   static constexpr std::string_view NodeName = "NumberExprAST";
 
-  NumberExprAST(double Val) : ExprAST(Kind), Val(Val) {}
+  constexpr NumberExprAST(double Val) noexcept : ExprAST(Kind), Val(Val) {}
 
-  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

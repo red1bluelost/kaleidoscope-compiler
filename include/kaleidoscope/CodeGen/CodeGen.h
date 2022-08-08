@@ -49,13 +49,13 @@ private:
   llvm::Function *getFunction(llvm::StringRef Name) const;
 
 public:
-  llvm::Module &getModule() { return *CGS->Module; }
+  llvm::Module &getModule() noexcept { return *CGS->Module; }
 
   std::unique_ptr<Session> takeSession() {
     return std::exchange(CGS, std::make_unique<Session>());
   }
 
-  PrototypeAST &addPrototype(std::unique_ptr<PrototypeAST> P) {
+  const PrototypeAST &addPrototype(std::unique_ptr<PrototypeAST> P) {
     return *(FunctionProtos[P->getName()] = std::move(P));
   }
 

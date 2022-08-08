@@ -20,12 +20,12 @@ class Driver : public ASTVisitor<Driver, /*DelegateExprAST=*/false> {
 
   enum class VisitRet { Success, Error, EndOfFile };
 
-  llvm::ExitOnError ExitOnErr{};
+  const llvm::ExitOnError ExitOnErr{};
 
   Lexer Lex;
   Parser Parse;
   CodeGen CG;
-  std::unique_ptr<KaleidoscopeJIT> JIT;
+  const std::unique_ptr<KaleidoscopeJIT> JIT;
 
   std::unique_ptr<llvm::legacy::FunctionPassManager> FPM;
 

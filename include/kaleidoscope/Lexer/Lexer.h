@@ -50,10 +50,13 @@ private:
   int handleComment();
 
 public:
-  Lexer(std::function<int()> GetChar = std::getchar) : GetChar(GetChar) {}
+  Lexer(std::function<int()> GetChar = std::getchar) noexcept
+      : GetChar(std::move(GetChar)) {}
 
-  const std::string &getIdentifierStr() { return IdentifierStr; }
-  double getNumVal() { return NumVal; }
+  [[nodiscard]] const std::string &getIdentifierStr() const noexcept {
+    return IdentifierStr;
+  }
+  [[nodiscard]] double getNumVal() const noexcept { return NumVal; }
 
   /// gettok - Return the next token from standard input.
   int gettok();

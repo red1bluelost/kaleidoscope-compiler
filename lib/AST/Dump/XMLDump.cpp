@@ -26,7 +26,7 @@ auto XMLDump::printSubItem(const std::string_view Tag, const T &Content,
   return *this;
 }
 
-XMLDump &XMLDump::printSubAST(std::string_view Tag, ASTNode &A,
+XMLDump &XMLDump::printSubAST(std::string_view Tag, const ASTNode &A,
                               std::size_t MS) {
   open(Tag, 2 + MS);
   child(4 + MS).visit(A);

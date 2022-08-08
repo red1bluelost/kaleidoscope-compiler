@@ -3,6 +3,8 @@
 
 #include <llvm/Support/Casting.h>
 
+#include <string_view>
+
 namespace kaleidoscope {
 class ASTNode {
   ASTNode() = delete;
@@ -25,12 +27,12 @@ private:
   const ASTNodeKind MyKind;
 
 protected:
-  ASTNode(ASTNodeKind K) : MyKind(K) {}
+  constexpr ASTNode(ASTNodeKind K) noexcept : MyKind(K) {}
 
 public:
-  ASTNodeKind getKind() const { return MyKind; }
+  constexpr ASTNodeKind getKind() const noexcept { return MyKind; }
 
-  virtual ~ASTNode() = default;
+  constexpr virtual ~ASTNode() noexcept = default;
 };
 } // namespace kaleidoscope
 

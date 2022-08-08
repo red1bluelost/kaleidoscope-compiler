@@ -12,19 +12,19 @@ namespace kaleidoscope {
 /// which captures its name, and its argument names (thus implicitly the number
 /// of arguments the function takes).
 class PrototypeAST : public ASTNode {
-  std::string Name;
-  std::vector<std::string> Args;
+  const std::string Name;
+  const std::vector<std::string> Args;
 
 public:
   static constexpr ASTNodeKind Kind = ANK_PrototypeAST;
   static constexpr std::string_view NodeName = "PrototypeAST";
 
-  PrototypeAST(std::string Name, std::vector<std::string> Args)
+  PrototypeAST(std::string Name, std::vector<std::string> Args) noexcept
       : ASTNode(Kind), Name(std::move(Name)), Args(std::move(Args)) {}
-  PrototypeAST(const PrototypeAST &) = default;
-  PrototypeAST(PrototypeAST &&) = default;
+  PrototypeAST(const PrototypeAST &) noexcept = default;
+  PrototypeAST(PrototypeAST &&) noexcept = default;
 
-  [[maybe_unused]] static bool classof(const ASTNode *A) noexcept {
+  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
     return A->getKind() == Kind;
   }
 

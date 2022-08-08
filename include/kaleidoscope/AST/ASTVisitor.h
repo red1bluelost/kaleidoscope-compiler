@@ -19,6 +19,10 @@ namespace kaleidoscope {
 
 template <typename SubClass, bool DelegateExprAST = true>
 class ASTVisitor {
+protected:
+  constexpr ASTVisitor() noexcept = default;
+  constexpr ~ASTVisitor() noexcept = default;
+
 public:
   auto visit(const ASTNode &A) {
     const ASTNode *AP = &A;

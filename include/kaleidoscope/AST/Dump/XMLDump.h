@@ -39,7 +39,7 @@ class XMLDump : private ASTVisitor<XMLDump> {
   auto printSubItem(std::string_view Tag, const T &Content, std::size_t MS = 0)
       -> std::enable_if_t<fmt::is_formattable<T>::value, XMLDump &>;
 
-  auto printSubAST(std::string_view Tag, ASTNode &A, std::size_t MS = 0)
+  auto printSubAST(std::string_view Tag, const ASTNode &A, std::size_t MS = 0)
       -> XMLDump &;
 
   auto child(std::size_t MS) -> XMLDump { return Self(Out, Spaces + MS); }
