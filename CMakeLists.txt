@@ -106,4 +106,5 @@ if (CMAKE_BUILD_TYPE STREQUAL Release)
     set_property(TARGET kaleidoscope PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
 
+enable_testing()
 add_subdirectory(unittests)
