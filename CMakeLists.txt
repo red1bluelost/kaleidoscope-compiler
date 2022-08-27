@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.20)
 project(kaleidoscope)
 
 include(FetchContent)
-include(CheckIPOSupported)
-check_ipo_supported(RESULT supported OUTPUT error)
 
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
@@ -19,6 +17,12 @@ FetchContent_Declare(fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
         GIT_TAG 8.1.0)
 FetchContent_MakeAvailable(fmt)
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT supported OUTPUT error)
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+    set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
 
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
     add_compile_options(
@@ -101,10 +105,8 @@ add_executable(
 target_link_libraries(
         kaleidoscope
         kaleidoscope_library
+        ${llvm_libs}
 )
-if (CMAKE_BUILD_TYPE STREQUAL Release)
-    set_property(TARGET kaleidoscope PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif ()
 
 enable_testing()
 add_subdirectory(unittests)
