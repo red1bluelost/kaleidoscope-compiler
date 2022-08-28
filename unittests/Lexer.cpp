@@ -80,6 +80,30 @@ TEST(LexerTest, In) {
   ASSERT_EQ("in", Lex.getIdentifierStr());
 }
 
+TEST(LexerTest, Binary) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("binary")};
+
+  // Act
+  int Tok = Lex.gettok();
+
+  // Assert
+  ASSERT_EQ(Lexer::tok_binary, Tok);
+  ASSERT_EQ("binary", Lex.getIdentifierStr());
+}
+
+TEST(LexerTest, Unary) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("unary")};
+
+  // Act
+  int Tok = Lex.gettok();
+
+  // Assert
+  ASSERT_EQ(Lexer::tok_unary, Tok);
+  ASSERT_EQ("unary", Lex.getIdentifierStr());
+}
+
 TEST(LexerTest, Identifier_variable) {
   // Arrange
   Lexer Lex{makeGetCharWithString("variable")};

@@ -29,6 +29,10 @@ public:
     tok_for = -9,
     tok_in = -10,
 
+    // operators
+    tok_binary = -11,
+    tok_unary = -12,
+
     // tok_err
     tok_err = -256,
   };
