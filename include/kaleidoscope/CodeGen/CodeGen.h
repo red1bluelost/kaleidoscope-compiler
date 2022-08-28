@@ -1,8 +1,8 @@
 #ifndef KALEIDOSCOPE_CODEGEN_CODEGEN_H
 #define KALEIDOSCOPE_CODEGEN_CODEGEN_H
 
+#include "kaleidoscope/AST/AST.h"
 #include "kaleidoscope/AST/ASTVisitor.h"
-#include "kaleidoscope/AST/PrototypeAST.h"
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>

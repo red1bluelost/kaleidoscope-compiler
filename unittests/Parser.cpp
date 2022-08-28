@@ -1,16 +1,6 @@
 #include "kaleidoscope/Parser/Parser.h"
 
-#include "kaleidoscope/AST/BinaryExprAST.h"
-#include "kaleidoscope/AST/CallExprAST.h"
-#include "kaleidoscope/AST/ForExprAST.h"
-#include "kaleidoscope/AST/FunctionAST.h"
-#include "kaleidoscope/AST/IfExprAST.h"
-#include "kaleidoscope/AST/NumberExprAST.h"
-#include "kaleidoscope/AST/ProtoBinaryAST.h"
-#include "kaleidoscope/AST/ProtoUnaryAST.h"
-#include "kaleidoscope/AST/PrototypeAST.h"
-#include "kaleidoscope/AST/UnaryExprAST.h"
-#include "kaleidoscope/AST/VariableExprAST.h"
+#include "kaleidoscope/AST/AST.h"
 #include "kaleidoscope/Lexer/Lexer.h"
 
 #include "TestUtil.h"

@@ -1,9 +1,7 @@
 #ifndef KALEIDOSCOPE_PARSER_PARSER_H
 #define KALEIDOSCOPE_PARSER_PARSER_H
 
-#include "kaleidoscope/AST/ExprAST.h"
-#include "kaleidoscope/AST/FunctionAST.h"
-#include "kaleidoscope/AST/PrototypeAST.h"
+#include "kaleidoscope/AST/AST.h"
 #include "kaleidoscope/Lexer/Lexer.h"
 
 #include <memory>

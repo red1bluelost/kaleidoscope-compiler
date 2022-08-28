@@ -49,17 +49,6 @@ endif ()
 
 set(KALEIDOSCOPE_SOURCES
         lib/Lexer/Lexer.cpp
-        lib/AST/NumberExprAST.cpp
-        lib/AST/VariableExprAST.cpp
-        lib/AST/BinaryExprAST.cpp
-        lib/AST/UnaryExprAST.cpp
-        lib/AST/CallExprAST.cpp
-        lib/AST/IfExprAST.cpp
-        lib/AST/ForExprAST.cpp
-        lib/AST/PrototypeAST.cpp
-        lib/AST/ProtoUnaryAST.cpp
-        lib/AST/ProtoBinaryAST.cpp
-        lib/AST/FunctionAST.cpp
         lib/AST/Dump/XMLDump.cpp
         lib/Parser/Parser.cpp
         lib/CodeGen/CodeGen.cpp
@@ -69,18 +58,6 @@ set(KALEIDOSCOPE_HEADERS
         include/kaleidoscope/Lexer/Lexer.h
         include/kaleidoscope/AST/AST.h
         include/kaleidoscope/AST/ASTVisitor.h
-        include/kaleidoscope/AST/ExprAST.h
-        include/kaleidoscope/AST/NumberExprAST.h
-        include/kaleidoscope/AST/VariableExprAST.h
-        include/kaleidoscope/AST/BinaryExprAST.h
-        include/kaleidoscope/AST/UnaryExprAST.h
-        include/kaleidoscope/AST/CallExprAST.h
-        include/kaleidoscope/AST/IfExprAST.h
-        include/kaleidoscope/AST/ForExprAST.h
-        include/kaleidoscope/AST/PrototypeAST.h
-        include/kaleidoscope/AST/ProtoUnaryAST.h
-        include/kaleidoscope/AST/ProtoBinaryAST.h
-        include/kaleidoscope/AST/FunctionAST.h
         include/kaleidoscope/AST/Dump/XMLDump.h
         include/kaleidoscope/Parser/Parser.h
         include/kaleidoscope/CodeGen/CodeGen.h
