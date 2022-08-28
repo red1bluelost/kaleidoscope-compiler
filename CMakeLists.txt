@@ -24,7 +24,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Release)
     set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
 
-if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
+if (CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
     add_compile_options(
             -Wall
             -Wextra
@@ -33,7 +33,6 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
             -march=native
             $<$<CONFIG:DEBUG>:-fsanitize=address>
             $<$<CONFIG:DEBUG>:-g3>
-            $<$<CONFIG:DEBUG>:-Og>
             $<$<CONFIG:RELEASE>:-g0>
     )
     add_link_options(

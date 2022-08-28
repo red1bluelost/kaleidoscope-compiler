@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace kaleidoscope {
 
@@ -21,6 +22,9 @@ class Parser {
   /// UserBinOpPrec - This holds the precedence for each binary operator that
   /// is defined.
   std::unordered_map<char, int> UserBinOpPrec{};
+
+  /// UserUnaryOps - This holds each unary operator that is defined.
+  std::unordered_set<char> UserUnaryOps{};
 
   /// getTokPrecedence - Get the precedence of the pending binary operator
   /// token.
@@ -37,10 +41,15 @@ class Parser {
   ///   ::= identifier '(' expression* ')'
   std::unique_ptr<ExprAST> parseIdentifierExpr();
 
+  /// unaryexpr
+  ///   ::= unaryop expression
+  std::unique_ptr<ExprAST> parseUnaryExpr();
+
   /// primary
   ///   ::= identifierexpr
   ///   ::= numberexpr
   ///   ::= parenexpr
+  ///   ::= unaryexpr
   std::unique_ptr<ExprAST> parsePrimary();
 
   /// binoprhs
@@ -60,8 +69,18 @@ class Parser {
   ///   ::= primary binoprhs
   std::unique_ptr<ExprAST> parseExpression();
 
+  /// protobinary
+  ///   ::= binary char number (id, id)
+  std::unique_ptr<PrototypeAST> parseProtoBinary();
+
+  /// protounary
+  ///   ::= unary char (id)
+  std::unique_ptr<PrototypeAST> parseProtoUnary();
+
   /// prototype
   ///   ::= id '(' id* ')'
+  ///   ::= protobinary
+  ///   ::= protounary
   std::unique_ptr<PrototypeAST> parsePrototype();
 
   /// definition ::= 'def' prototype expression
@@ -82,10 +101,6 @@ public:
   /// its results.
   int getNextToken() { return CurTok = Lex.gettok(); }
   [[nodiscard]] int getCurToken() const noexcept { return CurTok; }
-
-  /// addBinopPrec - installs a binary operator with a precedence 1 is lowest
-  /// precedence
-  void addBinOpPrec(char Op, int Prec) { UserBinOpPrec[Op] = Prec; }
 
   /// astnode ::= expression | external | definition
   std::unique_ptr<ASTNode> parse();

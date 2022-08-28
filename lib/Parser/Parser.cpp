@@ -5,6 +5,9 @@
 #include "kaleidoscope/AST/ForExprAST.h"
 #include "kaleidoscope/AST/IfExprAST.h"
 #include "kaleidoscope/AST/NumberExprAST.h"
+#include "kaleidoscope/AST/ProtoBinaryAST.h"
+#include "kaleidoscope/AST/ProtoUnaryAST.h"
+#include "kaleidoscope/AST/UnaryExprAST.h"
 #include "kaleidoscope/AST/VariableExprAST.h"
 #include "kaleidoscope/Util/Error/Log.h"
 
@@ -74,10 +77,23 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
   return std::make_unique<CallExprAST>(std::move(IdName), std::move(Args));
 }
 
+std::unique_ptr<ExprAST> Parser::parseUnaryExpr() {
+  if (!isascii(CurTok) || !UserUnaryOps.contains(static_cast<char>(CurTok)))
+    return logError<ExprAST>("Unknown unary expression.");
+
+  char Opcode = static_cast<char>(CurTok);
+  getNextToken(); // Eat the unary operator
+
+  if (auto A = parseExpression())
+    return std::make_unique<UnaryExprAST>(Opcode, std::move(A));
+
+  return logError<ExprAST>("Failed to parse operand expression for unary op");
+}
+
 std::unique_ptr<ExprAST> Parser::parsePrimary() {
   switch (CurTok) {
   default:
-    return logError<ExprAST>("unknown token when expecting an expression");
+    return parseUnaryExpr();
   case Lexer::tok_identifier:
     return parseIdentifierExpr();
   case Lexer::tok_number:
@@ -204,9 +220,78 @@ std::unique_ptr<ExprAST> Parser::parseExpression() {
   return parseBinOpRHS(0, std::move(LHS));
 }
 
+std::unique_ptr<PrototypeAST> Parser::parseProtoBinary() {
+  if (!isascii(getNextToken()))
+    return logError<PrototypeAST>("Expected binary operator");
+  char Op = static_cast<char>(CurTok);
+
+  if (getNextToken() != Lexer::tok_number)
+    return logError<PrototypeAST>(
+        "Binary prototype requires precedence number");
+
+  if (double V = Lex.getNumVal(); V < 1 || V > 100)
+    return logError<PrototypeAST>("Precedence should be in range [1,100]");
+  int Prec = static_cast<int>(Lex.getNumVal());
+
+  if (getNextToken() != '(')
+    return logError<PrototypeAST>("expected '(' in binary prototype");
+
+  if (getNextToken() != Lexer::tok_identifier)
+    return logError<PrototypeAST>(
+        "Expecting left side identifier in binary operator parameter list");
+  std::string LHS = Lex.getIdentifierStr();
+
+  if (getNextToken() != Lexer::tok_identifier)
+    return logError<PrototypeAST>(
+        "Expecting right side identifier in binary operator parameter list");
+  std::string RHS = Lex.getIdentifierStr();
+
+  if (getNextToken() != ')')
+    return logError<PrototypeAST>("expected ')' in binary prototype");
+  getNextToken(); // eat )
+
+  // Install the new operator once the prototype is successfully parsed
+  UserBinOpPrec[Op] = Prec;
+
+  return std::make_unique<ProtoBinaryAST>(
+      Op, std::array{std::move(LHS), std::move(RHS)}, Prec);
+}
+
+std::unique_ptr<PrototypeAST> Parser::parseProtoUnary() {
+  if (!isascii(getNextToken()))
+    return logError<PrototypeAST>("Expected unary operator");
+  char Op = static_cast<char>(CurTok);
+
+  if (getNextToken() != '(')
+    return logError<PrototypeAST>("expected '(' in unary prototype");
+
+  if (getNextToken() != Lexer::tok_identifier)
+    return logError<PrototypeAST>(
+        "Expecting single identifier in unary operator parameter list");
+  std::string Arg = Lex.getIdentifierStr();
+
+  if (getNextToken() != ')')
+    return logError<PrototypeAST>("expected ')' in unary prototype");
+  getNextToken(); // eat )
+
+  // Install the new operator once the prototype is successfully parsed
+  UserUnaryOps.insert(Op);
+
+  return std::make_unique<ProtoUnaryAST>(Op, std::array{std::move(Arg)});
+}
+
 std::unique_ptr<PrototypeAST> Parser::parsePrototype() {
-  if (CurTok != Lexer::tok_identifier)
-    return logError<PrototypeAST>("expected function name in prototype");
+  switch (CurTok) {
+  default:
+    return logError<PrototypeAST>(
+        "expected function name or operator in prototype");
+  case Lexer::tok_binary:
+    return parseProtoBinary();
+  case Lexer::tok_unary:
+    return parseProtoUnary();
+  case Lexer::tok_identifier:
+    break; // Keep doing the default behavior
+  }
 
   std::string FnName = Lex.getIdentifierStr();
   getNextToken();

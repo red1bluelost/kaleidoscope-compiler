@@ -6,7 +6,10 @@
 #include "kaleidoscope/AST/FunctionAST.h"
 #include "kaleidoscope/AST/IfExprAST.h"
 #include "kaleidoscope/AST/NumberExprAST.h"
+#include "kaleidoscope/AST/ProtoBinaryAST.h"
+#include "kaleidoscope/AST/ProtoUnaryAST.h"
 #include "kaleidoscope/AST/PrototypeAST.h"
+#include "kaleidoscope/AST/UnaryExprAST.h"
 #include "kaleidoscope/AST/VariableExprAST.h"
 #include "kaleidoscope/Lexer/Lexer.h"
 
@@ -86,6 +89,111 @@ TEST(Parser, BinaryExprAST_3) {
   ASSERT_EQ('-', LHS.getOp());
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(LHS.getLHS()));
   ASSERT_TRUE(llvm::isa<BinaryExprAST>(LHS.getRHS()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, Custom_BinaryExprAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern binary| 5(RHS LHS);\n"
+                                  "5.0 | x")};
+  Parser Parse{Lex};
+
+  // Act
+  ASSERT_TRUE(llvm::isa<ProtoBinaryAST>(Parse.parse()));
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(AST));
+  auto &C = llvm::cast<BinaryExprAST>(*AST);
+  ASSERT_EQ('|', C.getOp());
+  ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getLHS()));
+  ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getRHS()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, Custom_BinaryExprAST_1) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern binary= 9(RHS RHS);\n"
+                                  "52 = func() - x * 3 < 1000")};
+  Parser Parse{Lex};
+
+  // Act
+  ASSERT_TRUE(llvm::isa<ProtoBinaryAST>(Parse.parse()));
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(AST));
+  auto &C = llvm::cast<BinaryExprAST>(*AST);
+  ASSERT_EQ('=', C.getOp());
+  ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getLHS()));
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getRHS()));
+  auto &RHS = llvm::cast<BinaryExprAST>(C.getRHS());
+  ASSERT_EQ('<', RHS.getOp());
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(RHS.getLHS()));
+  ASSERT_TRUE(llvm::isa<NumberExprAST>(RHS.getRHS()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, Custom_UnaryExprAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern unary!(v);\n"
+                                  "!v")};
+  Parser Parse{Lex};
+
+  // Act
+  ASSERT_TRUE(llvm::isa<ProtoUnaryAST>(Parse.parse()));
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<UnaryExprAST>(AST));
+  auto &C = llvm::cast<UnaryExprAST>(*AST);
+  ASSERT_EQ('!', C.getOpcode());
+  ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getOperand()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, Custom_UnaryExprAST_1) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern unary~(x);\n"
+                                  "5 + ~func()")};
+  Parser Parse{Lex};
+
+  // Act
+  ASSERT_TRUE(llvm::isa<ProtoUnaryAST>(Parse.parse()));
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(AST));
+  auto &C = llvm::cast<BinaryExprAST>(*AST);
+  ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getLHS()));
+  ASSERT_TRUE(llvm::isa<UnaryExprAST>(C.getRHS()));
+  auto &U = llvm::cast<UnaryExprAST>(C.getRHS());
+  ASSERT_EQ('~', U.getOpcode());
+  ASSERT_TRUE(llvm::isa<CallExprAST>(U.getOperand()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, Custom_BinaryUnaryExprAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern binary= 9(RHS LHS);\n"
+                                  "extern unary!(v);\n"
+                                  "52 = !x")};
+  Parser Parse{Lex};
+
+  // Act
+  ASSERT_TRUE(llvm::isa<ProtoBinaryAST>(Parse.parse()));
+  ASSERT_TRUE(llvm::isa<ProtoUnaryAST>(Parse.parse()));
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(AST));
+  auto &C = llvm::cast<BinaryExprAST>(*AST);
+  ASSERT_EQ('=', C.getOp());
+  ASSERT_TRUE(llvm::isa<NumberExprAST>(C.getLHS()));
+  ASSERT_TRUE(llvm::isa<UnaryExprAST>(C.getRHS()));
+  auto &RHS = llvm::cast<UnaryExprAST>(C.getRHS());
+  ASSERT_EQ('!', RHS.getOpcode());
+  ASSERT_TRUE(llvm::isa<VariableExprAST>(RHS.getOperand()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -321,7 +429,26 @@ TEST(Parser, VariableExprAST_2) {
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
-TEST(Parser, FunctionExprAST_0) {
+TEST(Parser, Multiple_ExprAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("v;\n"
+                                  "5 + 10 - 3;\n"
+                                  "if func() then 1 else 3")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST0 = Parse.parse();
+  auto AST1 = Parse.parse();
+  auto AST2 = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<VariableExprAST>(AST0));
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(AST1));
+  ASSERT_TRUE(llvm::isa<IfExprAST>(AST2));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, FunctionAST_0) {
   // Arrange
   Lexer Lex{makeGetCharWithString("def func() 3")};
   Parser Parse{Lex};
@@ -338,7 +465,7 @@ TEST(Parser, FunctionExprAST_0) {
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
-TEST(Parser, FunctionExprAST_1) {
+TEST(Parser, FunctionAST_1) {
   // Arrange
   Lexer Lex{makeGetCharWithString("def i(x) x")};
   Parser Parse{Lex};
@@ -356,7 +483,7 @@ TEST(Parser, FunctionExprAST_1) {
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
-TEST(Parser, FunctionExprAST_2) {
+TEST(Parser, FunctionAST_2) {
   // Arrange
   Lexer Lex{makeGetCharWithString("def fib(x)\n"
                                   "  if x < 3 then\n"
@@ -374,6 +501,53 @@ TEST(Parser, FunctionExprAST_2) {
   ASSERT_EQ("fib", C.getProto().getName());
   ASSERT_EQ(1, C.getProto().getArgs().size());
   ASSERT_EQ(std::vector<std::string>{"x"}, C.getProto().getArgs());
+  ASSERT_TRUE(llvm::isa<IfExprAST>(C.getBody()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, FuncBinaryAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("def binary| 9 (LHS RHS)\n"
+                                  "  if LHS then\n"
+                                  "    1\n"
+                                  "  else \n"
+                                  "    if RHS then 1 else 0")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<FunctionAST>(AST));
+  auto &C = llvm::cast<FunctionAST>(*AST);
+  ASSERT_TRUE(llvm::isa<ProtoBinaryAST>(C.getProto()));
+  auto &P = llvm::cast<ProtoBinaryAST>(C.getProto());
+  ASSERT_EQ("binary|", P.getName());
+  ASSERT_EQ('|', P.getOperator());
+  ASSERT_EQ(2, P.getArgs().size());
+  ASSERT_EQ((std::vector<std::string>{"LHS", "RHS"}), P.getArgs());
+  ASSERT_TRUE(llvm::isa<IfExprAST>(C.getBody()));
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, FuncUnaryAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("def unary!(v)\n"
+                                  "  if v then 0 else 1")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<FunctionAST>(AST));
+  auto &C = llvm::cast<FunctionAST>(*AST);
+  ASSERT_TRUE(llvm::isa<ProtoUnaryAST>(C.getProto()));
+  auto &P = llvm::cast<ProtoUnaryAST>(C.getProto());
+  ASSERT_EQ("unary!", P.getName());
+  ASSERT_EQ('!', P.getOperator());
+  ASSERT_EQ(1, P.getArgs().size());
+  ASSERT_EQ(std::vector<std::string>{"v"}, P.getArgs());
   ASSERT_TRUE(llvm::isa<IfExprAST>(C.getBody()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
@@ -426,6 +600,80 @@ TEST(Parser, PrototypeAST_2) {
   ASSERT_EQ(4, C.getArgs().size());
   ASSERT_EQ((std::vector<std::string>{"first", "s", "_third", "f_r"}),
             C.getArgs());
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, ProtoBinaryAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern binary=9(LHS RHS)")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<ProtoBinaryAST>(AST));
+  auto &C = llvm::cast<ProtoBinaryAST>(*AST);
+  ASSERT_EQ("binary=", C.getName());
+  ASSERT_EQ('=', C.getOperator());
+  ASSERT_EQ(9, C.getPrecedence());
+  ASSERT_EQ(2, C.getArgs().size());
+  ASSERT_EQ((std::vector<std::string>{"LHS", "RHS"}), C.getArgs());
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, ProtoBinaryAST_1) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern binary | 30 ( x y ) ")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<ProtoBinaryAST>(AST));
+  auto &C = llvm::cast<ProtoBinaryAST>(*AST);
+  ASSERT_EQ("binary|", C.getName());
+  ASSERT_EQ('|', C.getOperator());
+  ASSERT_EQ(30, C.getPrecedence());
+  ASSERT_EQ(2, C.getArgs().size());
+  ASSERT_EQ((std::vector<std::string>{"x", "y"}), C.getArgs());
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, ProtoUnaryAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern unary!(v)")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<ProtoUnaryAST>(AST));
+  auto &C = llvm::cast<ProtoUnaryAST>(*AST);
+  ASSERT_EQ("unary!", C.getName());
+  ASSERT_EQ('!', C.getOperator());
+  ASSERT_EQ(1, C.getArgs().size());
+  ASSERT_EQ((std::vector<std::string>{"v"}), C.getArgs());
+  ASSERT_EQ(EOF, Parse.getCurToken());
+}
+
+TEST(Parser, ProtoUnaryAST_1) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("extern unary ~ ( arg )")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<ProtoUnaryAST>(AST));
+  auto &C = llvm::cast<ProtoUnaryAST>(*AST);
+  ASSERT_EQ("unary~", C.getName());
+  ASSERT_EQ('~', C.getOperator());
+  ASSERT_EQ(1, C.getArgs().size());
+  ASSERT_EQ((std::vector<std::string>{"arg"}), C.getArgs());
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 } // namespace
