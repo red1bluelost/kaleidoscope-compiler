@@ -12,7 +12,7 @@
 
 namespace kaleidoscope {
 
-class Driver : public ASTVisitor<Driver, /*DelegateExprAST=*/false> {
+class Driver : public ASTVisitor<Driver, /*DelegateAST=*/false> {
   using Parent = ASTVisitor<Driver, false>;
   friend Parent;
 

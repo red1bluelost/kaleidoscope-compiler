@@ -37,6 +37,10 @@ private:
   std::unordered_set<std::string> CompiledFunctions{};
 
   llvm::Value *visitImpl(const BinaryExprAST &A);
+  llvm::Value *visitImpl(const UnaryExprAST &A) {
+    assert(false);
+    return nullptr;
+  }
   llvm::Value *visitImpl(const CallExprAST &A);
   llvm::Value *visitImpl(const ForExprAST &A);
   llvm::Value *visitImpl(const IfExprAST &A);
@@ -44,7 +48,16 @@ private:
   llvm::Value *visitImpl(const VariableExprAST &A) const;
 
   llvm::Function *visitImpl(const FunctionAST &A);
+
   llvm::Function *visitImpl(const PrototypeAST &A) const;
+  llvm::Function *visitImpl(const ProtoBinaryAST &A) const {
+    assert(false);
+    return nullptr;
+  }
+  llvm::Function *visitImpl(const ProtoUnaryAST &A) const {
+    assert(false);
+    return nullptr;
+  }
 
   llvm::Function *getFunction(llvm::StringRef Name) const;
 

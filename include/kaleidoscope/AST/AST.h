@@ -13,6 +13,7 @@ public:
   enum ASTNodeKind {
     ANK_ExprAST,
     ANK_BinaryExprAST,
+    ANK_UnaryExprAST,
     ANK_CallExprAST,
     ANK_ForExprAST,
     ANK_IfExprAST,
@@ -21,6 +22,9 @@ public:
     ANK_LastExprAST,
     ANK_FunctionAST,
     ANK_PrototypeAST,
+    ANK_ProtoUnaryAST,
+    ANK_ProtoBinaryAST,
+    ANK_LastPrototypeAST,
   };
 
 private:
