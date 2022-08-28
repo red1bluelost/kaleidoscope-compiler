@@ -196,7 +196,7 @@ llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
   if (!TheFunction)
     return nullptr;
 
-  auto &PArgs = P.getArgs();
+  auto PArgs = P.getArgs();
   if (PArgs.size() != TheFunction->arg_size())
     return logError("arg names do not match length in prototype");
   for (unsigned Idx = 0; auto &Arg : TheFunction->args())
@@ -228,7 +228,7 @@ llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
 }
 
 llvm::Function *CodeGen::visitImpl(const PrototypeAST &A) const {
-  auto &Args = A.getArgs();
+  auto Args = A.getArgs();
   std::vector<llvm::Type *> Doubles(Args.size(),
                                     llvm::Type::getDoubleTy(*CGS->Context));
   llvm::FunctionType *FT = llvm::FunctionType::get(

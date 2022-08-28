@@ -3,6 +3,7 @@
 
 #include "kaleidoscope/AST/AST.h"
 
+#include <span>
 #include <string>
 #include <utility>
 #include <vector>
@@ -36,8 +37,8 @@ public:
   }
 
   [[nodiscard]] const std::string &getName() const noexcept { return Name; }
-  [[nodiscard]] const std::vector<std::string> &getArgs() const noexcept {
-    return Args;
+  [[nodiscard]] std::span<const std::string> getArgs() const noexcept {
+    return std::span(Args);
   }
 };
 

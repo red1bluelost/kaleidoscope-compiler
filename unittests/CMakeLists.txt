@@ -13,6 +13,7 @@ add_executable(
 target_link_libraries(
         unittests
         gtest_main
+        gmock
         kaleidoscope_library
 )
 

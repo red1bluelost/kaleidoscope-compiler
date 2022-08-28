@@ -15,11 +15,21 @@
 
 #include "TestUtil.h"
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <functional>
 
 using namespace kaleidoscope;
 
 namespace {
+using ::testing::ResultOf, ::testing::ElementsAre, ::testing::Truly;
+
+template <typename AstType>
+auto Isa() { // NOLINT(readability-identifier-naming)
+  return Truly([](const auto &A) { return llvm::isa<AstType>(A); });
+}
+
 TEST(Parser, BinaryExprAST_0) {
   // Arrange
   Lexer Lex{makeGetCharWithString("5.0 + x")};
@@ -226,8 +236,7 @@ TEST(Parser, CallExprAST_1) {
   auto &C = llvm::cast<CallExprAST>(*AST);
   ASSERT_EQ("unary_func", C.getCallee());
   ASSERT_EQ(1, C.getArgs().size());
-  for (const auto &S : C.getArgs())
-    ASSERT_NE(nullptr, S);
+  ASSERT_THAT(C.getArgs(), ElementsAre(Isa<VariableExprAST>()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -244,8 +253,8 @@ TEST(Parser, CallExprAST_2) {
   auto &C = llvm::cast<CallExprAST>(*AST);
   ASSERT_EQ("binary_func", C.getCallee());
   ASSERT_EQ(2, C.getArgs().size());
-  for (const auto &S : C.getArgs())
-    ASSERT_NE(nullptr, S);
+  ASSERT_THAT(C.getArgs(),
+              ElementsAre(Isa<CallExprAST>(), Isa<BinaryExprAST>()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -263,8 +272,11 @@ TEST(Parser, CallExprAST_3) {
   auto &C = llvm::cast<CallExprAST>(*AST);
   ASSERT_EQ("longfunc", C.getCallee());
   ASSERT_EQ(7, C.getArgs().size());
-  for (const auto &S : C.getArgs())
-    ASSERT_NE(nullptr, S);
+  ASSERT_THAT(C.getArgs(),
+              ElementsAre(Isa<VariableExprAST>(), Isa<VariableExprAST>(),
+                          Isa<VariableExprAST>(), Isa<VariableExprAST>(),
+                          Isa<VariableExprAST>(), Isa<NumberExprAST>(),
+                          Isa<IfExprAST>()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -478,7 +490,7 @@ TEST(Parser, FunctionAST_1) {
   auto &C = llvm::cast<FunctionAST>(*AST);
   ASSERT_EQ("i", C.getProto().getName());
   ASSERT_EQ(1, C.getProto().getArgs().size());
-  ASSERT_EQ(std::vector<std::string>{"x"}, C.getProto().getArgs());
+  ASSERT_THAT(C.getProto().getArgs(), ElementsAre("x"));
   ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getBody()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
@@ -500,7 +512,7 @@ TEST(Parser, FunctionAST_2) {
   auto &C = llvm::cast<FunctionAST>(*AST);
   ASSERT_EQ("fib", C.getProto().getName());
   ASSERT_EQ(1, C.getProto().getArgs().size());
-  ASSERT_EQ(std::vector<std::string>{"x"}, C.getProto().getArgs());
+  ASSERT_THAT(C.getProto().getArgs(), ElementsAre("x"));
   ASSERT_TRUE(llvm::isa<IfExprAST>(C.getBody()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
@@ -525,7 +537,7 @@ TEST(Parser, FuncBinaryAST_0) {
   ASSERT_EQ("binary|", P.getName());
   ASSERT_EQ('|', P.getOperator());
   ASSERT_EQ(2, P.getArgs().size());
-  ASSERT_EQ((std::vector<std::string>{"LHS", "RHS"}), P.getArgs());
+  ASSERT_THAT(P.getArgs(), ElementsAre("LHS", "RHS"));
   ASSERT_TRUE(llvm::isa<IfExprAST>(C.getBody()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
@@ -547,7 +559,7 @@ TEST(Parser, FuncUnaryAST_0) {
   ASSERT_EQ("unary!", P.getName());
   ASSERT_EQ('!', P.getOperator());
   ASSERT_EQ(1, P.getArgs().size());
-  ASSERT_EQ(std::vector<std::string>{"v"}, P.getArgs());
+  ASSERT_THAT(P.getArgs(), ElementsAre("v"));
   ASSERT_TRUE(llvm::isa<IfExprAST>(C.getBody()));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
@@ -581,7 +593,7 @@ TEST(Parser, PrototypeAST_1) {
   auto &C = llvm::cast<PrototypeAST>(*AST);
   ASSERT_EQ("one_func", C.getName());
   ASSERT_EQ(1, C.getArgs().size());
-  ASSERT_EQ(std::vector<std::string>{"arg"}, C.getArgs());
+  ASSERT_THAT(C.getArgs(), ElementsAre("arg"));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -598,8 +610,7 @@ TEST(Parser, PrototypeAST_2) {
   auto &C = llvm::cast<PrototypeAST>(*AST);
   ASSERT_EQ("many_func", C.getName());
   ASSERT_EQ(4, C.getArgs().size());
-  ASSERT_EQ((std::vector<std::string>{"first", "s", "_third", "f_r"}),
-            C.getArgs());
+  ASSERT_THAT(C.getArgs(), ElementsAre("first", "s", "_third", "f_r"));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -618,7 +629,7 @@ TEST(Parser, ProtoBinaryAST_0) {
   ASSERT_EQ('=', C.getOperator());
   ASSERT_EQ(9, C.getPrecedence());
   ASSERT_EQ(2, C.getArgs().size());
-  ASSERT_EQ((std::vector<std::string>{"LHS", "RHS"}), C.getArgs());
+  ASSERT_THAT(C.getArgs(), ElementsAre("LHS", "RHS"));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -637,7 +648,7 @@ TEST(Parser, ProtoBinaryAST_1) {
   ASSERT_EQ('|', C.getOperator());
   ASSERT_EQ(30, C.getPrecedence());
   ASSERT_EQ(2, C.getArgs().size());
-  ASSERT_EQ((std::vector<std::string>{"x", "y"}), C.getArgs());
+  ASSERT_THAT(C.getArgs(), ElementsAre("x", "y"));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -655,7 +666,7 @@ TEST(Parser, ProtoUnaryAST_0) {
   ASSERT_EQ("unary!", C.getName());
   ASSERT_EQ('!', C.getOperator());
   ASSERT_EQ(1, C.getArgs().size());
-  ASSERT_EQ((std::vector<std::string>{"v"}), C.getArgs());
+  ASSERT_THAT(C.getArgs(), ElementsAre("v"));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 
@@ -673,7 +684,7 @@ TEST(Parser, ProtoUnaryAST_1) {
   ASSERT_EQ("unary~", C.getName());
   ASSERT_EQ('~', C.getOperator());
   ASSERT_EQ(1, C.getArgs().size());
-  ASSERT_EQ((std::vector<std::string>{"arg"}), C.getArgs());
+  ASSERT_THAT(C.getArgs(), ElementsAre("arg"));
   ASSERT_EQ(EOF, Parse.getCurToken());
 }
 } // namespace
