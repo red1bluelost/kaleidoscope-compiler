@@ -9,12 +9,12 @@ using namespace kaleidoscope;
 llvm::Value *CodeGen::visitImpl(const BinaryExprAST &A) {
   auto *L = visit(A.getLHS()), *R = visit(A.getRHS());
   if (!L || !R)
-    return logErrorR<llvm::Value>("missing rhs and/or lhs");
+    return logError("missing rhs and/or lhs");
 
   auto &Builder = CGS->Builder;
   switch (A.getOp()) {
   default:
-    return logErrorR<llvm::Value>("invalid binary operator");
+    return logError("invalid binary operator");
   case '+':
     return Builder.CreateFAdd(L, R, "addtmp");
   case '-':
@@ -40,18 +40,18 @@ llvm::Value *CodeGen::visitImpl(const CallExprAST &A) {
   // Look up the name in the global module table.
   llvm::Function *CalleeF = getFunction(A.getCallee());
   if (!CalleeF)
-    return logErrorR<llvm::Value>("Unknown function referenced");
+    return logError("Unknown function referenced");
 
   // If argument mismatch error.
   auto Args = A.getArgs();
   if (CalleeF->arg_size() != Args.size())
-    return logErrorR<llvm::Value>("Incorrect # arguments passed");
+    return logError("Incorrect # arguments passed");
 
   std::vector<llvm::Value *> ArgsV;
   for (auto &Arg : Args) {
     auto *ArgV = visit(*Arg);
     if (!ArgV)
-      return logErrorR<llvm::Value>("Could not codegen arg");
+      return logError("Could not codegen arg");
     ArgsV.push_back(ArgV);
   }
 
@@ -183,7 +183,7 @@ llvm::Value *CodeGen::visitImpl(const NumberExprAST &A) const {
 llvm::Value *CodeGen::visitImpl(const VariableExprAST &A) const {
   if (auto S = A.getName(); NamedValues.contains(S))
     return NamedValues.at(S);
-  return logErrorR<llvm::Value>("unknown variable name");
+  return logError("unknown variable name");
 }
 
 llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
@@ -198,13 +198,12 @@ llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
 
   auto &PArgs = P.getArgs();
   if (PArgs.size() != TheFunction->arg_size())
-    return logErrorR<llvm::Function>(
-        "arg names do not match length in prototype");
+    return logError("arg names do not match length in prototype");
   for (unsigned Idx = 0; auto &Arg : TheFunction->args())
     if (Arg.getName() != PArgs[Idx])
-      return logErrorR<llvm::Function>("arg names do not match prototype");
+      return logError("arg names do not match prototype");
   if (!TheFunction->empty())
-    return logErrorR<llvm::Function>("Function cannot be redefined");
+    return logError("Function cannot be redefined");
 
   // create a new basic block to start insertion into
   llvm::BasicBlock *BB =
@@ -225,7 +224,7 @@ llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
 
   // Error reading body, remove function
   TheFunction->eraseFromParent();
-  return logErrorR<llvm::Function>("Failed to codegen function body");
+  return logError("Failed to codegen function body");
 }
 
 llvm::Function *CodeGen::visitImpl(const PrototypeAST &A) const {
@@ -277,5 +276,5 @@ llvm::Function *CodeGen::handleAnonExpr(const ExprAST &A) {
 
   // Error reading body, remove function
   TheFunction->eraseFromParent();
-  return logErrorR<llvm::Function>("Failed to codegen function body");
+  return logError("Failed to codegen function body");
 }

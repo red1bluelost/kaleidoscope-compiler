@@ -39,7 +39,7 @@ std::unique_ptr<ExprAST> Parser::parseParenExpr() {
   if (!V)
     return nullptr;
   if (CurTok != ')')
-    return logError<ExprAST>("expected ')'");
+    return logError("expected ')'");
   getNextToken(); // eat )
   return V;
 }
@@ -70,7 +70,7 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
       break;
 
     if (CurTok != ',')
-      return logError<ExprAST>("Expected ')' or ',' in argument list");
+      return logError("Expected ')' or ',' in argument list");
     getNextToken();
   }
   getNextToken(); // eat )
@@ -79,7 +79,7 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
 
 std::unique_ptr<ExprAST> Parser::parseUnaryExpr() {
   if (!isascii(CurTok) || !UserUnaryOps.contains(static_cast<char>(CurTok)))
-    return logError<ExprAST>("Unknown unary expression.");
+    return logError("Unknown unary expression.");
 
   char Opcode = static_cast<char>(CurTok);
   getNextToken(); // Eat the unary operator
@@ -87,7 +87,7 @@ std::unique_ptr<ExprAST> Parser::parseUnaryExpr() {
   if (auto A = parseExpression())
     return std::make_unique<UnaryExprAST>(Opcode, std::move(A));
 
-  return logError<ExprAST>("Failed to parse operand expression for unary op");
+  return logError("Failed to parse operand expression for unary op");
 }
 
 std::unique_ptr<ExprAST> Parser::parsePrimary() {
@@ -149,7 +149,7 @@ std::unique_ptr<ExprAST> Parser::parseIfExpr() {
     return nullptr;
 
   if (CurTok != Lexer::tok_then)
-    return logError<ExprAST>("expected \"then\" token");
+    return logError("expected \"then\" token");
   getNextToken(); // eat the "then"
 
   auto Then = parseExpression();
@@ -157,7 +157,7 @@ std::unique_ptr<ExprAST> Parser::parseIfExpr() {
     return nullptr;
 
   if (CurTok != Lexer::tok_else)
-    return logError<ExprAST>("expected \"else\" token");
+    return logError("expected \"else\" token");
   getNextToken(); // eat the "else"
 
   auto Else = parseExpression();
@@ -172,19 +172,19 @@ std::unique_ptr<ExprAST> Parser::parseForExpr() {
   getNextToken(); // eat "for"
 
   if (CurTok != Lexer::tok_identifier)
-    return logError<ExprAST>("expected identifier after \"for\"");
+    return logError("expected identifier after \"for\"");
   std::string IdName = Lex.getIdentifierStr();
   getNextToken(); // eat identifier
 
   if (CurTok != '=')
-    return logError<ExprAST>("expected '=' after \"for\"");
+    return logError("expected '=' after \"for\"");
   getNextToken(); // eat '='
 
   auto Start = parseExpression();
   if (!Start)
     return nullptr;
   if (CurTok != ',')
-    return logError<ExprAST>("expected ',' after for-loop start value");
+    return logError("expected ',' after for-loop start value");
   getNextToken(); // eat ','
 
   auto End = parseExpression();
@@ -202,7 +202,7 @@ std::unique_ptr<ExprAST> Parser::parseForExpr() {
     Step = std::make_unique<NumberExprAST>(1.0); // default to 1.0
 
   if (CurTok != Lexer::tok_in)
-    return logError<ExprAST>("expected 'in' after for");
+    return logError("expected 'in' after for");
   getNextToken(); // eat "in"
 
   auto Body = parseExpression();
@@ -222,32 +222,31 @@ std::unique_ptr<ExprAST> Parser::parseExpression() {
 
 std::unique_ptr<PrototypeAST> Parser::parseProtoBinary() {
   if (!isascii(getNextToken()))
-    return logError<PrototypeAST>("Expected binary operator");
+    return logError("Expected binary operator");
   char Op = static_cast<char>(CurTok);
 
   if (getNextToken() != Lexer::tok_number)
-    return logError<PrototypeAST>(
-        "Binary prototype requires precedence number");
+    return logError("Binary prototype requires precedence number");
 
   if (double V = Lex.getNumVal(); V < 1 || V > 100)
-    return logError<PrototypeAST>("Precedence should be in range [1,100]");
+    return logError("Precedence should be in range [1,100]");
   int Prec = static_cast<int>(Lex.getNumVal());
 
   if (getNextToken() != '(')
-    return logError<PrototypeAST>("expected '(' in binary prototype");
+    return logError("expected '(' in binary prototype");
 
   if (getNextToken() != Lexer::tok_identifier)
-    return logError<PrototypeAST>(
+    return logError(
         "Expecting left side identifier in binary operator parameter list");
   std::string LHS = Lex.getIdentifierStr();
 
   if (getNextToken() != Lexer::tok_identifier)
-    return logError<PrototypeAST>(
+    return logError(
         "Expecting right side identifier in binary operator parameter list");
   std::string RHS = Lex.getIdentifierStr();
 
   if (getNextToken() != ')')
-    return logError<PrototypeAST>("expected ')' in binary prototype");
+    return logError("expected ')' in binary prototype");
   getNextToken(); // eat )
 
   // Install the new operator once the prototype is successfully parsed
@@ -259,19 +258,19 @@ std::unique_ptr<PrototypeAST> Parser::parseProtoBinary() {
 
 std::unique_ptr<PrototypeAST> Parser::parseProtoUnary() {
   if (!isascii(getNextToken()))
-    return logError<PrototypeAST>("Expected unary operator");
+    return logError("Expected unary operator");
   char Op = static_cast<char>(CurTok);
 
   if (getNextToken() != '(')
-    return logError<PrototypeAST>("expected '(' in unary prototype");
+    return logError("expected '(' in unary prototype");
 
   if (getNextToken() != Lexer::tok_identifier)
-    return logError<PrototypeAST>(
+    return logError(
         "Expecting single identifier in unary operator parameter list");
   std::string Arg = Lex.getIdentifierStr();
 
   if (getNextToken() != ')')
-    return logError<PrototypeAST>("expected ')' in unary prototype");
+    return logError("expected ')' in unary prototype");
   getNextToken(); // eat )
 
   // Install the new operator once the prototype is successfully parsed
@@ -283,8 +282,7 @@ std::unique_ptr<PrototypeAST> Parser::parseProtoUnary() {
 std::unique_ptr<PrototypeAST> Parser::parsePrototype() {
   switch (CurTok) {
   default:
-    return logError<PrototypeAST>(
-        "expected function name or operator in prototype");
+    return logError("expected function name or operator in prototype");
   case Lexer::tok_binary:
     return parseProtoBinary();
   case Lexer::tok_unary:
@@ -297,14 +295,14 @@ std::unique_ptr<PrototypeAST> Parser::parsePrototype() {
   getNextToken();
 
   if (CurTok != '(')
-    return logError<PrototypeAST>("expected '(' in prototype");
+    return logError("expected '(' in prototype");
 
   // read the list of argument names
   std::vector<std::string> ArgNames;
   while (getNextToken() == Lexer::tok_identifier)
     ArgNames.push_back(Lex.getIdentifierStr());
   if (CurTok != ')')
-    return logError<PrototypeAST>("expected ')' in prototype");
+    return logError("expected ')' in prototype");
 
   getNextToken(); // eat )
   return std::make_unique<PrototypeAST>(std::move(FnName), std::move(ArgNames));
@@ -328,7 +326,7 @@ std::unique_ptr<PrototypeAST> Parser::parseExtern() {
 std::unique_ptr<ASTNode> Parser::parse() {
   switch (getNextToken()) {
   case ';':
-    return logError<ASTNode>("given semicolon where expression should start");
+    return logError("given semicolon where expression should start");
   case Lexer::tok_eof:
     return nullptr;
   case Lexer::tok_def:
