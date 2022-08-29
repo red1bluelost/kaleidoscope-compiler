@@ -20,7 +20,7 @@ using namespace kaleidoscope;
 
 TEST(XMLDumpTest, BinaryExprAST_0) {
   // Arrange
-  auto AST = convertAST("5.0 + x");
+  auto AST = convertAST("5.0 + x;");
   std::stringstream SS{};
 
   // Act
@@ -45,7 +45,7 @@ TEST(XMLDumpTest, BinaryExprAST_0) {
 
 TEST(XMLDumpTest, BinaryExprAST_1) {
   // Arrange
-  auto AST = convertAST("func(x > 1) < 10");
+  auto AST = convertAST("func(x > 1) < 10;");
   std::stringstream SS{};
 
   // Act
@@ -87,7 +87,7 @@ TEST(XMLDumpTest, BinaryExprAST_1) {
 
 TEST(XMLDumpTest, BinaryExprAST_2) {
   // Arrange
-  auto AST = convertAST("10 * 3 + 2");
+  auto AST = convertAST("10 * 3 + 2;");
   std::stringstream SS{};
 
   // Act
@@ -122,7 +122,7 @@ TEST(XMLDumpTest, BinaryExprAST_2) {
 
 TEST(XMLDumpTest, BinaryExprAST_3) {
   // Arrange
-  auto AST = convertAST("52 / func() - x * 3 < 1000");
+  auto AST = convertAST("52 / func() - x * 3 < 1000;");
   std::stringstream SS{};
 
   // Act
@@ -179,7 +179,7 @@ TEST(XMLDumpTest, BinaryExprAST_3) {
 
 TEST(XMLDumpTest, CallExprAST_0) {
   // Arrange
-  auto AST = convertAST("nullary_func()");
+  auto AST = convertAST("nullary_func();");
   std::stringstream SS{};
 
   // Act
@@ -196,7 +196,7 @@ TEST(XMLDumpTest, CallExprAST_0) {
 
 TEST(XMLDumpTest, CallExprAST_1) {
   // Arrange
-  auto AST = convertAST("unary_func(x)");
+  auto AST = convertAST("unary_func(x);");
   std::stringstream SS{};
 
   // Act
@@ -218,7 +218,7 @@ TEST(XMLDumpTest, CallExprAST_1) {
 
 TEST(XMLDumpTest, CallExprAST_2) {
   // Arrange
-  auto AST = convertAST("binary_func(nullary_func(), 4.20 + x)");
+  auto AST = convertAST("binary_func(nullary_func(), 4.20 + x);");
   std::stringstream SS{};
 
   // Act
@@ -258,7 +258,7 @@ TEST(XMLDumpTest, CallExprAST_2) {
 TEST(XMLDumpTest, CallExprAST_3) {
   // Arrange
   auto AST =
-      convertAST("longfunc(a, b, c, d, e, 1.34, if 1 > 0 then 2 else 4)");
+      convertAST("longfunc(a, b, c, d, e, 1.34, if 1 > 0 then 2 else 4);");
   std::stringstream SS{};
 
   // Act
@@ -334,7 +334,7 @@ TEST(XMLDumpTest, CallExprAST_3) {
 
 TEST(XMLDumpTest, ForExprAST_0) {
   // Arrange
-  auto AST = convertAST("for i = 1, i < 10 in func()");
+  auto AST = convertAST("for i = 1, i < 10 in func();");
   std::stringstream SS{};
 
   // Act
@@ -382,7 +382,7 @@ TEST(XMLDumpTest, ForExprAST_0) {
 TEST(XMLDumpTest, ForExprAST_1) {
   // Arrange
   auto AST = convertAST("for idx = start(x), idx < y, step(x) in"
-                        "  100 + func(x, idx)");
+                        "  100 + func(x, idx);");
   std::stringstream SS{};
 
   // Act
@@ -463,7 +463,7 @@ TEST(XMLDumpTest, ForExprAST_1) {
 
 TEST(XMLDumpTest, IfExprAST_0) {
   // Arrange
-  auto AST = convertAST("if y then func1(y) else func2(y, x)");
+  auto AST = convertAST("if y then func1(y) else func2(y, x);");
   std::stringstream SS{};
 
   // Act
@@ -511,7 +511,7 @@ TEST(XMLDumpTest, IfExprAST_0) {
 
 TEST(XMLDumpTest, IfExprAST_1) {
   // Arrange
-  auto AST = convertAST("if 32 < h then y else 3");
+  auto AST = convertAST("if 32 < h then y else 3;");
   std::stringstream SS{};
 
   // Act
@@ -551,7 +551,7 @@ TEST(XMLDumpTest, IfExprAST_1) {
 TEST(XMLDumpTest, IfExprAST_2) {
   // Arrange
   auto AST = convertAST("if func() then "
-                        "if func() then 100 else 20 else x");
+                        "if func() then 100 else 20 else x;");
   std::stringstream SS{};
 
   // Act
@@ -598,7 +598,7 @@ TEST(XMLDumpTest, IfExprAST_2) {
 
 TEST(XMLDumpTest, NumberExprAST_0) {
   // Arrange
-  auto AST = convertAST("3.14");
+  auto AST = convertAST("3.14;");
   std::stringstream SS{};
 
   // Act
@@ -613,7 +613,7 @@ TEST(XMLDumpTest, NumberExprAST_0) {
 
 TEST(XMLDumpTest, NumberExprAST_1) {
   // Arrange
-  auto AST = convertAST("42.0");
+  auto AST = convertAST("42.0;");
   std::stringstream SS{};
 
   // Act
@@ -628,7 +628,7 @@ TEST(XMLDumpTest, NumberExprAST_1) {
 
 TEST(XMLDumpTest, VariableExprAST_0) {
   // Arrange
-  auto AST = convertAST("x");
+  auto AST = convertAST("x;");
   std::stringstream SS{};
 
   // Act
@@ -643,7 +643,7 @@ TEST(XMLDumpTest, VariableExprAST_0) {
 
 TEST(XMLDumpTest, VariableExprAST_1) {
   // Arrange
-  auto AST = convertAST("temp");
+  auto AST = convertAST("temp;");
   std::stringstream SS{};
 
   // Act
@@ -658,7 +658,7 @@ TEST(XMLDumpTest, VariableExprAST_1) {
 
 TEST(XMLDumpTest, FunctionExprAST_0) {
   // Arrange
-  auto AST = convertAST("def func() 3");
+  auto AST = convertAST("def func() 3;");
   std::stringstream SS{};
 
   // Act
@@ -684,7 +684,7 @@ TEST(XMLDumpTest, FunctionExprAST_0) {
 
 TEST(XMLDumpTest, FunctionExprAST_1) {
   // Arrange
-  auto AST = convertAST("def i(x) x");
+  auto AST = convertAST("def i(x) x;");
   std::stringstream SS{};
 
   // Act
@@ -715,7 +715,7 @@ TEST(XMLDumpTest, FunctionExprAST_2) {
                         "  if x < 3 then\n"
                         "    1\n"
                         "  else\n"
-                        "    fib(x-1)+fib(x-2)");
+                        "    fib(x-1)+fib(x-2);");
   std::stringstream SS{};
 
   // Act
@@ -810,7 +810,7 @@ TEST(XMLDumpTest, FunctionExprAST_2) {
 
 TEST(XMLDumpTest, PrototypeAST_0) {
   // Arrange
-  auto AST = convertAST("extern zero_func()");
+  auto AST = convertAST("extern zero_func();");
   std::stringstream SS{};
 
   // Act
@@ -827,7 +827,7 @@ TEST(XMLDumpTest, PrototypeAST_0) {
 
 TEST(XMLDumpTest, PrototypeAST_1) {
   // Arrange
-  auto AST = convertAST("extern one_func(arg)");
+  auto AST = convertAST("extern one_func(arg);");
   std::stringstream SS{};
 
   // Act
@@ -845,7 +845,7 @@ TEST(XMLDumpTest, PrototypeAST_1) {
 
 TEST(XMLDumpTest, PrototypeAST_2) {
   // Arrange
-  auto AST = convertAST("extern many_func(first s _third f_r)");
+  auto AST = convertAST("extern many_func(first s _third f_r);");
   std::stringstream SS{};
 
   // Act

@@ -19,7 +19,7 @@ extern "C" DLLEXPORT [[maybe_unused]] double putchard(double X) {
 
 /// printd - print that takes a double prints it with newline, returning 0.
 extern "C" DLLEXPORT [[maybe_unused]] double printd(double X) {
-  fmt::print(stderr, "{}\n", X);
+  fmt::print(stderr, "{}", X);
   return 0;
 }
 

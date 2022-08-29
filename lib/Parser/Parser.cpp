@@ -304,14 +304,22 @@ std::unique_ptr<FunctionAST> Parser::parseDefinition() {
   auto Proto = parsePrototype();
   if (!Proto)
     return nullptr;
-  if (auto E = parseExpression())
-    return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
-  return nullptr;
+  auto E = parseExpression();
+  if (!E)
+    return nullptr;
+  if (CurTok != ';')
+    return nullptr;
+  return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
 }
 
 std::unique_ptr<PrototypeAST> Parser::parseExtern() {
   getNextToken(); // eat extern
-  return parsePrototype();
+  auto P = parsePrototype();
+  if (!P)
+    return logError("failed to parse prototype for extern");
+  if (CurTok != ';')
+    return logError("expected ; at end of extern declaration");
+  return P;
 }
 
 std::unique_ptr<ASTNode> Parser::parse() {
@@ -319,7 +327,7 @@ std::unique_ptr<ASTNode> Parser::parse() {
   case ';':
     return logError("given semicolon where expression should start");
   case Lexer::tok_eof:
-    return nullptr;
+    return std::make_unique<EndOfFileAST>();
   case Lexer::tok_def:
     return parseDefinition();
   case Lexer::tok_extern:

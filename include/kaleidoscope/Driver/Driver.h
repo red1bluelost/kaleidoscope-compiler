@@ -12,8 +12,8 @@
 
 namespace kaleidoscope {
 
-class Driver : public ASTVisitor<Driver, /*DelegateAST=*/false> {
-  using Parent = ASTVisitor<Driver, false>;
+class Driver : public ASTVisitor<Driver, AVDelegation::None> {
+  using Parent = ASTVisitor<Driver, AVDelegation::None>;
   friend Parent;
 
   using TLEntryPointer = double (*)();
@@ -34,9 +34,12 @@ class Driver : public ASTVisitor<Driver, /*DelegateAST=*/false> {
   VisitRet visitImpl(const ExprAST &A);
   VisitRet visitImpl(const FunctionAST &A);
   VisitRet visitImpl(const PrototypeAST &A);
+  VisitRet visitImpl(const EndOfFileAST &) const noexcept {
+    return VisitRet::EndOfFile;
+  }
 
 public:
-  Driver();
+  explicit Driver();
   /// top ::= definition | external | expression | ';'
   void mainLoop();
 };

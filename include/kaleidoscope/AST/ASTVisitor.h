@@ -9,7 +9,16 @@
 
 namespace kaleidoscope {
 
-template <typename SubClass, bool DelegateAST = true>
+struct AVDelegation {
+  enum Type {
+    None = 0,
+    ExprAST = (1 << 0),
+    PrototypeAST = (1 << 1),
+    All = (1 << 2) - 1,
+  };
+};
+
+template <typename SubClass, AVDelegation::Type Delegate>
 class ASTVisitor {
 #define DELEGATE(AST) static_cast<SubClass *>(this)->visitImpl(AST)
 
@@ -27,17 +36,21 @@ protected:
 public:
   auto visit(const ASTNode &A) {
     const ASTNode *AP = &A;
-    if (const auto *E = llvm::dyn_cast<ExprAST>(AP))
-      return visit(*E);
-    if (const auto *E = llvm::dyn_cast<FunctionAST>(AP))
-      return visit(*E);
-    if (const auto *E = llvm::dyn_cast<PrototypeAST>(AP))
-      return visit(*E);
+#define VISIT_CAST(_type_)                                                     \
+  if (const auto *E = llvm::dyn_cast<_type_>(AP))                              \
+  return visit(*E)
+
+    VISIT_CAST(ExprAST);
+    VISIT_CAST(FunctionAST);
+    VISIT_CAST(PrototypeAST);
+    VISIT_CAST(EndOfFileAST);
+
     llvm_unreachable("invalid ASTNode class type");
+#undef VISIT_CAST
   }
 
   auto visit(const ExprAST &A) {
-    if constexpr (DelegateAST) {
+    if constexpr (Delegate & AVDelegation::ExprAST) {
       switch (A.getKind()) {
         HANDLE_EXPR_AST(BinaryExprAST);
         HANDLE_EXPR_AST(UnaryExprAST);
@@ -53,6 +66,7 @@ public:
       case ASTNode::ANK_ProtoUnaryAST:
       case ASTNode::ANK_ProtoBinaryAST:
       case ASTNode::ANK_LastPrototypeAST:
+      case ASTNode::ANK_EndOfFileAST:
         break;
       }
       llvm_unreachable("Missing an AST type being handled");
@@ -69,10 +83,8 @@ public:
   VISIT_AST(NumberExprAST)
   VISIT_AST(VariableExprAST)
 
-  VISIT_AST(FunctionAST)
-
   auto visit(const PrototypeAST &A) {
-    if constexpr (DelegateAST) {
+    if constexpr (Delegate & AVDelegation::PrototypeAST) {
       switch (A.getKind()) {
         HANDLE_EXPR_AST(PrototypeAST);
         HANDLE_EXPR_AST(ProtoUnaryAST);
@@ -88,6 +100,7 @@ public:
       case ASTNode::ANK_VariableExprAST:
       case ASTNode::ANK_LastExprAST:
       case ASTNode::ANK_FunctionAST:
+      case ASTNode::ANK_EndOfFileAST:
         break;
       }
       llvm_unreachable("Missing an AST type being handled");
@@ -98,6 +111,10 @@ public:
 
   VISIT_AST(ProtoBinaryAST)
   VISIT_AST(ProtoUnaryAST)
+
+  VISIT_AST(FunctionAST)
+
+  VISIT_AST(EndOfFileAST)
 
 #undef HANDLE_EXPR_AST
 #undef VISIT_AST

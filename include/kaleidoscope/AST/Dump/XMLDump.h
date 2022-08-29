@@ -10,9 +10,9 @@
 namespace kaleidoscope::ast {
 
 /// Technically this isn't true XML and just XML inspired
-class XMLDump : private ASTVisitor<XMLDump> {
+class XMLDump : private ASTVisitor<XMLDump, AVDelegation::All> {
   using Self = XMLDump;
-  using Parent = ASTVisitor<Self>;
+  using Parent = ASTVisitor<XMLDump, AVDelegation::All>;
   friend Parent;
 
   std::ostream &Out;
@@ -37,6 +37,11 @@ class XMLDump : private ASTVisitor<XMLDump> {
     return *this;
   }
   auto visitImpl(const ProtoUnaryAST &A) -> XMLDump & {
+    assert(false);
+    return *this;
+  }
+
+  auto visitImpl(const EndOfFileAST &A) -> XMLDump & {
     assert(false);
     return *this;
   }

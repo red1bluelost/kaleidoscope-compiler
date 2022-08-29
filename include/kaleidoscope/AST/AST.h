@@ -40,6 +40,7 @@ public:
     ANK_ProtoBinaryAST,
     ANK_LastPrototypeAST,
     ANK_FunctionAST,
+    ANK_EndOfFileAST,
   };
 
 private:
@@ -332,6 +333,19 @@ public:
 
   [[nodiscard]] const PrototypeAST &getProto() const noexcept { return *Proto; }
   [[nodiscard]] const ExprAST &getBody() const noexcept { return *Body; }
+};
+
+/// ExprAST - Base class for all expression nodes.
+class EndOfFileAST : public ASTNode {
+public:
+  static constexpr ASTNodeKind Kind = ANK_EndOfFileAST;
+  static constexpr std::string_view NodeName = "EndOfFileAST";
+
+  constexpr EndOfFileAST() noexcept : ASTNode(Kind) {}
+
+  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
+    return A->getKind() == Kind;
+  }
 };
 
 } // namespace kaleidoscope

@@ -4,6 +4,9 @@
 
 #include <llvm/IR/Verifier.h>
 
+#include <fmt/compile.h>
+#include <fmt/core.h>
+
 using namespace kaleidoscope;
 
 llvm::Value *CodeGen::visitImpl(const BinaryExprAST &A) {
@@ -13,8 +16,6 @@ llvm::Value *CodeGen::visitImpl(const BinaryExprAST &A) {
 
   auto &Builder = CGS->Builder;
   switch (A.getOp()) {
-  default:
-    return logError("invalid binary operator");
   case '+':
     return Builder.CreateFAdd(L, R, "addtmp");
   case '-':
@@ -33,7 +34,29 @@ llvm::Value *CodeGen::visitImpl(const BinaryExprAST &A) {
     return Builder.CreateUIToFP(Builder.CreateFCmpUGT(L, R, "cmptmp"),
                                 llvm::Type::getDoubleTy(Builder.getContext()),
                                 "booltmp");
+  default:
+    break; // Handle a non-builtin operator
   }
+
+  llvm::Function *BinFun =
+      getFunction(fmt::format(FMT_COMPILE("binary{}"), A.getOp()));
+  if (!BinFun)
+    return logError("Unknown binary operator referenced");
+
+  return CGS->Builder.CreateCall(BinFun, {L, R}, "binoptmp");
+}
+
+llvm::Value *CodeGen::visitImpl(const UnaryExprAST &A) {
+  auto *V = visit(A.getOperand());
+  if (!V)
+    return logError("failed to codegen operand");
+
+  llvm::Function *UnFun =
+      getFunction(fmt::format(FMT_COMPILE("unary{}"), A.getOpcode()));
+  if (!UnFun)
+    return logError("Unknown binary operator referenced");
+
+  return CGS->Builder.CreateCall(UnFun, {V}, "unoptmp");
 }
 
 llvm::Value *CodeGen::visitImpl(const CallExprAST &A) {
@@ -87,7 +110,7 @@ llvm::Value *CodeGen::visitImpl(const ForExprAST &A) {
 
   // Emit the body of the loop. This can change the current BB. Note that the
   // value computed by the body is ignored but don't allow an error
-  if (visit(A.getBody()))
+  if (!visit(A.getBody()))
     return nullptr;
 
   // Emit the step value
@@ -200,7 +223,7 @@ llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
   if (PArgs.size() != TheFunction->arg_size())
     return logError("arg names do not match length in prototype");
   for (unsigned Idx = 0; auto &Arg : TheFunction->args())
-    if (Arg.getName() != PArgs[Idx])
+    if (Arg.getName() != PArgs[Idx++])
       return logError("arg names do not match prototype");
   if (!TheFunction->empty())
     return logError("Function cannot be redefined");
