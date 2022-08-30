@@ -12,49 +12,50 @@ namespace kaleidoscope::ast {
 /// Technically this isn't true XML and just XML inspired
 class XMLDump : private ASTVisitor<XMLDump, AVDelegation::All> {
   using Self = XMLDump;
-  using Parent = ASTVisitor<XMLDump, AVDelegation::All>;
+  using Parent = ASTVisitor<Self, AVDelegation::All>;
   friend Parent;
 
   std::ostream &Out;
   const std::size_t Spaces;
-
-  auto visitImpl(const BinaryExprAST &A) -> XMLDump &;
-  auto visitImpl(const UnaryExprAST &A) -> XMLDump &;
-  auto visitImpl(const CallExprAST &A) -> XMLDump &;
-  auto visitImpl(const ForExprAST &A) -> XMLDump &;
-  auto visitImpl(const IfExprAST &A) -> XMLDump &;
-  auto visitImpl(const NumberExprAST &A) -> XMLDump &;
-  auto visitImpl(const VariableExprAST &A) -> XMLDump &;
-
-  auto visitImpl(const FunctionAST &A) -> XMLDump &;
-
-  auto visitImpl(const PrototypeAST &A) -> XMLDump &;
-  auto visitImpl(const ProtoBinaryAST &A) -> XMLDump &;
-  auto visitImpl(const ProtoUnaryAST &A) -> XMLDump &;
-
-  auto visitImpl(const EndOfFileAST &A) -> XMLDump &;
-
-  [[nodiscard]] auto padding(std::size_t MS = 0) -> std::string {
-    return std::string(Spaces + MS, ' ');
-  }
-
-  auto open(std::string_view S, std::size_t MS = 0) -> XMLDump &;
-  auto close(std::string_view S, std::size_t MS = 0) -> XMLDump &;
-
-  template <typename T>
-  auto printSubItem(std::string_view Tag, const T &Content, std::size_t MS = 0)
-      -> std::enable_if_t<fmt::is_formattable<T>::value, XMLDump &>;
-
-  auto printSubAST(std::string_view Tag, const ASTNode &A, std::size_t MS = 0)
-      -> XMLDump &;
-
-  auto child(std::size_t MS) -> XMLDump { return Self(Out, Spaces + MS); }
 
 public:
   XMLDump(std::ostream &Out, std::size_t Spaces = 0) noexcept
       : Out(Out), Spaces(Spaces) {}
 
   using Parent::visit;
+
+private:
+  auto visitImpl(const BinaryExprAST &A) -> Self &;
+  auto visitImpl(const UnaryExprAST &A) -> Self &;
+  auto visitImpl(const CallExprAST &A) -> Self &;
+  auto visitImpl(const ForExprAST &A) -> Self &;
+  auto visitImpl(const IfExprAST &A) -> Self &;
+  auto visitImpl(const NumberExprAST &A) -> Self &;
+  auto visitImpl(const VariableExprAST &A) -> Self &;
+
+  auto visitImpl(const FunctionAST &A) -> Self &;
+
+  auto visitImpl(const PrototypeAST &A) -> Self &;
+  auto visitImpl(const ProtoBinaryAST &A) -> Self &;
+  auto visitImpl(const ProtoUnaryAST &A) -> Self &;
+
+  auto visitImpl(const EndOfFileAST &A) -> Self &;
+
+  [[nodiscard]] auto padding(std::size_t MS = 0) -> std::string {
+    return std::string(Spaces + MS, ' ');
+  }
+
+  auto open(std::string_view S, std::size_t MS = 0) -> Self &;
+  auto close(std::string_view S, std::size_t MS = 0) -> Self &;
+
+  template <typename T>
+  auto printSubItem(std::string_view Tag, const T &Content, std::size_t MS = 0)
+      -> std::enable_if_t<fmt::is_formattable<T>::value, Self &>;
+
+  auto printSubAST(std::string_view Tag, const ASTNode &A, std::size_t MS = 0)
+      -> Self &;
+
+  auto child(std::size_t MS) -> Self { return Self(Out, Spaces + MS); }
 };
 
 } // namespace kaleidoscope::ast
