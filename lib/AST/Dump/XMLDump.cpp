@@ -42,6 +42,13 @@ auto XMLDump::visitImpl(const BinaryExprAST &A) -> XMLDump & {
       .close(A.NodeName);
 }
 
+auto XMLDump::visitImpl(const UnaryExprAST &A) -> XMLDump & {
+  return open(A.NodeName)
+      .printSubItem("Opcode", A.getOpcode())
+      .printSubAST("Operand", A.getOperand())
+      .close(A.NodeName);
+}
+
 auto XMLDump::visitImpl(const CallExprAST &A) -> XMLDump & {
   open(A.NodeName).printSubItem("Callee", A.getCallee()).open("Args", 2);
   for (int Idx = 0; const auto &Arg : A.getArgs())
@@ -87,4 +94,20 @@ auto XMLDump::visitImpl(const PrototypeAST &A) -> XMLDump & {
   for (int Idx = 0; const auto &Arg : A.getArgs())
     printSubItem(fmt::format("Arg[{}]", Idx++), Arg, 2);
   return close("Args", 2).close(A.NodeName);
+}
+
+auto XMLDump::visitImpl(const ProtoBinaryAST &A) -> XMLDump & {
+  open(A.NodeName).child(2).visitImpl(llvm::cast<PrototypeAST>(A));
+  return printSubItem("Operator", A.getOperator())
+      .printSubItem("Precedence", A.getPrecedence())
+      .close(A.NodeName);
+}
+
+auto XMLDump::visitImpl(const ProtoUnaryAST &A) -> XMLDump & {
+  open(A.NodeName).child(2).visitImpl(llvm::cast<PrototypeAST>(A));
+  return printSubItem("Operator", A.getOperator()).close(A.NodeName);
+}
+
+auto XMLDump::visitImpl(const EndOfFileAST &A) -> XMLDump & {
+  return open(A.NodeName).close(A.NodeName);
 }

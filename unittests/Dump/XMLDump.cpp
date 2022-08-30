@@ -10,9 +10,11 @@
 using namespace kaleidoscope;
 using namespace std::string_view_literals;
 
-auto convertAST(std::string_view S) -> std::unique_ptr<ASTNode> {
+auto convertAST(std::string_view S, int Skip = 0) -> std::unique_ptr<ASTNode> {
   Lexer Lex{makeGetCharWithString(std::string(S))};
   Parser Parse{Lex};
+  for (int I = 0; I < Skip; ++I)
+    Parse.parse();
   return Parse.parse();
 }
 
@@ -115,6 +117,62 @@ TEST(XMLDumpTest, BinaryExprAST_2) {
             "    <NumberExprAST>\n"
             "      <Val>2</Val>\n"
             "    </NumberExprAST>\n"
+            "  </RHS>\n"
+            "</BinaryExprAST>\n"sv,
+            SS.view());
+}
+
+TEST(XMLDumpTest, Custom_UnaryExprAST_0) {
+  // Arrange
+  auto AST = convertAST("extern unary!(v);\n"
+                        "!v;",
+                        1);
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<UnaryExprAST>\n"
+            "  <Opcode>!</Opcode>\n"
+            "  <Operand>\n"
+            "    <VariableExprAST>\n"
+            "      <Name>v</Name>\n"
+            "    </VariableExprAST>\n"
+            "  </Operand>\n"
+            "</UnaryExprAST>\n"sv,
+            SS.view());
+}
+
+TEST(XMLDumpTest, Custom_UnaryExprAST_1) {
+  // Arrange
+  auto AST = convertAST("extern unary~(x);\n"
+                        "5 + ~func();",
+                        1);
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<BinaryExprAST>\n"
+            "  <Op>+</Op>\n"
+            "  <LHS>\n"
+            "    <NumberExprAST>\n"
+            "      <Val>5</Val>\n"
+            "    </NumberExprAST>\n"
+            "  </LHS>\n"
+            "  <RHS>\n"
+            "    <UnaryExprAST>\n"
+            "      <Opcode>~</Opcode>\n"
+            "      <Operand>\n"
+            "        <CallExprAST>\n"
+            "          <Callee>func</Callee>\n"
+            "          <Args>\n"
+            "          </Args>\n"
+            "        </CallExprAST>\n"
+            "      </Operand>\n"
+            "    </UnaryExprAST>\n"
             "  </RHS>\n"
             "</BinaryExprAST>\n"sv,
             SS.view());
@@ -808,6 +866,79 @@ TEST(XMLDumpTest, FunctionExprAST_2) {
             SS.view());
 }
 
+TEST(XMLDumpTest, FuncBinaryAST_0) {
+  // Arrange
+  auto AST = convertAST("def binary : 1 (x y) y;");
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<FunctionAST>\n"
+            "  <Proto>\n"
+            "    <ProtoBinaryAST>\n"
+            "      <PrototypeAST>\n"
+            "        <Name>binary:</Name>\n"
+            "        <Args>\n"
+            "          <Arg[0]>x</Arg[0]>\n"
+            "          <Arg[1]>y</Arg[1]>\n"
+            "        </Args>\n"
+            "      </PrototypeAST>\n"
+            "      <Operator>:</Operator>\n"
+            "      <Precedence>1</Precedence>\n"
+            "    </ProtoBinaryAST>\n"
+            "  </Proto>\n"
+            "  <Body>\n"
+            "    <VariableExprAST>\n"
+            "      <Name>y</Name>\n"
+            "    </VariableExprAST>\n"
+            "  </Body>\n"
+            "</FunctionAST>\n"sv,
+            SS.view());
+}
+
+TEST(XMLDumpTest, FuncUnaryAST_0) {
+  // Arrange
+  auto AST = convertAST("def unary-(v)\n"
+                        "  0-v;");
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<FunctionAST>\n"
+            "  <Proto>\n"
+            "    <ProtoUnaryAST>\n"
+            "      <PrototypeAST>\n"
+            "        <Name>unary-</Name>\n"
+            "        <Args>\n"
+            "          <Arg[0]>v</Arg[0]>\n"
+            "        </Args>\n"
+            "      </PrototypeAST>\n"
+            "      <Operator>-</Operator>\n"
+            "    </ProtoUnaryAST>\n"
+            "  </Proto>\n"
+            "  <Body>\n"
+            "    <BinaryExprAST>\n"
+            "      <Op>-</Op>\n"
+            "      <LHS>\n"
+            "        <NumberExprAST>\n"
+            "          <Val>0</Val>\n"
+            "        </NumberExprAST>\n"
+            "      </LHS>\n"
+            "      <RHS>\n"
+            "        <VariableExprAST>\n"
+            "          <Name>v</Name>\n"
+            "        </VariableExprAST>\n"
+            "      </RHS>\n"
+            "    </BinaryExprAST>\n"
+            "  </Body>\n"
+            "</FunctionAST>\n"sv,
+            SS.view());
+}
+
 TEST(XMLDumpTest, PrototypeAST_0) {
   // Arrange
   auto AST = convertAST("extern zero_func();");
@@ -861,5 +992,63 @@ TEST(XMLDumpTest, PrototypeAST_2) {
             "    <Arg[3]>f_r</Arg[3]>\n"
             "  </Args>\n"
             "</PrototypeAST>\n"sv,
+            SS.view());
+}
+
+TEST(XMLDumpTest, ProtoBinaryAST_0) {
+  // Arrange
+  auto AST = convertAST("extern binary=9(LHS RHS);");
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<ProtoBinaryAST>\n"
+            "  <PrototypeAST>\n"
+            "    <Name>binary=</Name>\n"
+            "    <Args>\n"
+            "      <Arg[0]>LHS</Arg[0]>\n"
+            "      <Arg[1]>RHS</Arg[1]>\n"
+            "    </Args>\n"
+            "  </PrototypeAST>\n"
+            "  <Operator>=</Operator>\n"
+            "  <Precedence>9</Precedence>\n"
+            "</ProtoBinaryAST>\n"sv,
+            SS.view());
+}
+
+TEST(XMLDumpTest, ProtoUnaryAST_0) {
+  // Arrange
+  auto AST = convertAST("extern unary!(v);");
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<ProtoUnaryAST>\n"
+            "  <PrototypeAST>\n"
+            "    <Name>unary!</Name>\n"
+            "    <Args>\n"
+            "      <Arg[0]>v</Arg[0]>\n"
+            "    </Args>\n"
+            "  </PrototypeAST>\n"
+            "  <Operator>!</Operator>\n"
+            "</ProtoUnaryAST>\n"sv,
+            SS.view());
+}
+
+TEST(XMLDumpTest, EndOfFileAST_0) {
+  // Arrange
+  auto AST = convertAST("");
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<EndOfFileAST>\n"
+            "</EndOfFileAST>\n"sv,
             SS.view());
 }
