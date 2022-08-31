@@ -1,11 +1,18 @@
 #include "kaleidoscope/AST/Dump/XMLDump.h"
 
+#include <fmt/core.h>
 #include <fmt/ostream.h>
 
 #include <string>
 
 using namespace kaleidoscope;
 using namespace kaleidoscope::ast;
+
+auto XMLDump::child(std::size_t MS) -> Self { return Self(Out, Spaces + MS); }
+
+auto XMLDump::padding(std::size_t MS) -> std::string {
+  return std::string(Spaces + MS, ' ');
+}
 
 auto XMLDump::open(std::string_view S, const std::size_t MS) -> Self & {
   fmt::print(Out, "{}<{}>\n", padding(MS), S);

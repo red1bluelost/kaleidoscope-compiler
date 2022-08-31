@@ -3,8 +3,6 @@
 
 #include "kaleidoscope/AST/ASTVisitor.h"
 
-#include <fmt/core.h>
-
 #include <ostream>
 
 namespace kaleidoscope::ast {
@@ -25,6 +23,20 @@ public:
   using Parent::visit;
 
 private:
+  auto child(std::size_t MS) -> Self;
+
+  [[nodiscard]] auto padding(std::size_t MS = 0) -> std::string;
+
+  auto open(std::string_view S, std::size_t MS = 0) -> Self &;
+  auto close(std::string_view S, std::size_t MS = 0) -> Self &;
+
+  template <typename T>
+  auto printSubItem(std::string_view Tag, const T &Content, std::size_t MS = 0)
+      -> std::enable_if_t<fmt::is_formattable<T>::value, Self &>;
+
+  auto printSubAST(std::string_view Tag, const ASTNode &A, std::size_t MS = 0)
+      -> Self &;
+
   auto visitImpl(const BinaryExprAST &A) -> Self &;
   auto visitImpl(const UnaryExprAST &A) -> Self &;
   auto visitImpl(const CallExprAST &A) -> Self &;
@@ -40,22 +52,6 @@ private:
   auto visitImpl(const ProtoUnaryAST &A) -> Self &;
 
   auto visitImpl(const EndOfFileAST &A) -> Self &;
-
-  [[nodiscard]] auto padding(std::size_t MS = 0) -> std::string {
-    return std::string(Spaces + MS, ' ');
-  }
-
-  auto open(std::string_view S, std::size_t MS = 0) -> Self &;
-  auto close(std::string_view S, std::size_t MS = 0) -> Self &;
-
-  template <typename T>
-  auto printSubItem(std::string_view Tag, const T &Content, std::size_t MS = 0)
-      -> std::enable_if_t<fmt::is_formattable<T>::value, Self &>;
-
-  auto printSubAST(std::string_view Tag, const ASTNode &A, std::size_t MS = 0)
-      -> Self &;
-
-  auto child(std::size_t MS) -> Self { return Self(Out, Spaces + MS); }
 };
 
 } // namespace kaleidoscope::ast

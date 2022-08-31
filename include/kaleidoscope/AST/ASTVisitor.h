@@ -5,8 +5,6 @@
 
 #include <llvm/Support/ErrorHandling.h>
 
-#include <type_traits>
-
 namespace kaleidoscope {
 
 enum class AVDelType {
