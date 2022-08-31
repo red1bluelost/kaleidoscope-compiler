@@ -1,7 +1,7 @@
-BasedOnStyle:  LLVM
+BasedOnStyle:                    LLVM
 AlwaysBreakTemplateDeclarations: Yes
-ColumnLimit:   80
-IncludeBlocks: Regroup
+ColumnLimit:                     80
+IncludeBlocks:                   Regroup
 IncludeCategories:
   - Regex:    '^"kaleidoscope/'
     Priority: 1
@@ -13,3 +13,12 @@ IncludeCategories:
     Priority: 4
   - Regex:    '^<.*>$'
     Priority: 5
+QualifierAlignment:              Custom
+QualifierOrder:
+  - 'inline'
+  - 'static'
+  - 'constexpr'
+  - 'const'
+  - 'volatile'
+  - 'type'
+  - 'restrict'
