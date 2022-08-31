@@ -16,8 +16,8 @@
 
 namespace kaleidoscope {
 
-class CodeGen : public ASTVisitor<CodeGen, AVDelegation::ExprAST> {
-  using Parent = ASTVisitor<CodeGen, AVDelegation::ExprAST>;
+class CodeGen : public ASTVisitor<CodeGen, AVDelType::ExprAST> {
+  using Parent = ASTVisitor<CodeGen, AVDelType::ExprAST>;
   friend Parent;
 
 public:

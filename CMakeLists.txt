@@ -62,6 +62,7 @@ set(KALEIDOSCOPE_HEADERS
         include/kaleidoscope/Parser/Parser.h
         include/kaleidoscope/CodeGen/CodeGen.h
         include/kaleidoscope/Util/Error/Log.h
+        include/kaleidoscope/Util/BitmaskType.def
         include/kaleidoscope/Driver/Driver.h
         include/kaleidoscope/JIT/KaleidoscopeJIT.h)
 

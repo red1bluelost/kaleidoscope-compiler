@@ -9,16 +9,18 @@
 
 namespace kaleidoscope {
 
-struct AVDelegation {
-  enum Type {
-    None = 0,
-    ExprAST = (1 << 0),
-    PrototypeAST = (1 << 1),
-    All = (1 << 2) - 1,
-  };
+enum class AVDelType {
+  None = 0,
+  ExprAST = (1 << 0),
+  PrototypeAST = (1 << 1),
+  All = (1 << 2) - 1,
 };
 
-template <typename SubClass, AVDelegation::Type Delegate>
+#define BITMASK_TYPE AVDelType
+#include "kaleidoscope/Util/BitmaskType.def"
+#undef BITMASK_TYPE
+
+template <typename SubClass, AVDelType Delegate>
 class ASTVisitor {
 #define DELEGATE(AST) static_cast<SubClass *>(this)->visitImpl(AST)
 
@@ -50,7 +52,7 @@ public:
   }
 
   auto visit(const ExprAST &A) {
-    if constexpr (Delegate & AVDelegation::ExprAST) {
+    if constexpr ((Delegate & AVDelType::ExprAST) != AVDelType::None) {
       switch (A.getKind()) {
         HANDLE_EXPR_AST(BinaryExprAST);
         HANDLE_EXPR_AST(UnaryExprAST);
@@ -84,7 +86,7 @@ public:
   VISIT_AST(VariableExprAST)
 
   auto visit(const PrototypeAST &A) {
-    if constexpr (Delegate & AVDelegation::PrototypeAST) {
+    if constexpr ((Delegate & AVDelType::PrototypeAST) != AVDelType::None) {
       switch (A.getKind()) {
         HANDLE_EXPR_AST(PrototypeAST);
         HANDLE_EXPR_AST(ProtoUnaryAST);

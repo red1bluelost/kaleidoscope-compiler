@@ -10,9 +10,9 @@
 namespace kaleidoscope::ast {
 
 /// Technically this isn't true XML and just XML inspired
-class XMLDump : private ASTVisitor<XMLDump, AVDelegation::All> {
+class XMLDump : private ASTVisitor<XMLDump, AVDelType::All> {
   using Self = XMLDump;
-  using Parent = ASTVisitor<Self, AVDelegation::All>;
+  using Parent = ASTVisitor<Self, AVDelType::All>;
   friend Parent;
 
   std::ostream &Out;

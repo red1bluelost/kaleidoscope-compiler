@@ -12,8 +12,8 @@
 
 namespace kaleidoscope {
 
-class Driver : public ASTVisitor<Driver, AVDelegation::None> {
-  using Parent = ASTVisitor<Driver, AVDelegation::None>;
+class Driver : public ASTVisitor<Driver, AVDelType::None> {
+  using Parent = ASTVisitor<Driver, AVDelType::None>;
   friend Parent;
 
   using TLEntryPointer = double (*)();
