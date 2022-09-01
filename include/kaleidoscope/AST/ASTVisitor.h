@@ -16,7 +16,6 @@ enum class AVDelType {
 
 #define BITMASK_TYPE AVDelType
 #include "kaleidoscope/Util/BitmaskType.def"
-#undef BITMASK_TYPE
 
 template <typename SubClass, AVDelType Delegate>
 class ASTVisitor {
