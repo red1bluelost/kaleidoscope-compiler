@@ -66,7 +66,7 @@ llvm::Value *CodeGen::visitImpl(const CallExprAST &A) {
     return logError("Unknown function referenced");
 
   // If argument mismatch error.
-  auto Args = A.getArgs();
+  auto &Args = A.getArgs();
   if (CalleeF->arg_size() != Args.size())
     return logError("Incorrect # arguments passed");
 
@@ -251,7 +251,7 @@ llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
 }
 
 llvm::Function *CodeGen::visitImpl(const PrototypeAST &A) const {
-  auto Args = A.getArgs();
+  auto &Args = A.getArgs();
   std::vector<llvm::Type *> Doubles(Args.size(),
                                     llvm::Type::getDoubleTy(*CGS->Context));
   llvm::FunctionType *FT = llvm::FunctionType::get(

@@ -9,7 +9,6 @@
 #include <array>
 #include <iterator>
 #include <memory>
-#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -100,8 +99,8 @@ public:
 
 /// UnaryExprAST - Expression class for a unary operator.
 class UnaryExprAST : public ExprAST {
-  char Opcode;
-  std::unique_ptr<ExprAST> Operand;
+  const char Opcode;
+  const std::unique_ptr<ExprAST> Operand;
 
 public:
   static constexpr ASTNodeKind Kind = ANK_UnaryExprAST;
@@ -136,9 +135,9 @@ public:
   }
 
   [[nodiscard]] const std::string &getCallee() const noexcept { return Callee; }
-  [[nodiscard]] std::span<const std::unique_ptr<ExprAST>>
+  [[nodiscard]] const std::vector<std::unique_ptr<ExprAST>> &
   getArgs() const noexcept {
-    return std::span(Args);
+    return Args;
   }
 };
 
@@ -258,15 +257,15 @@ public:
   }
 
   [[nodiscard]] const std::string &getName() const noexcept { return Name; }
-  [[nodiscard]] std::span<const std::string> getArgs() const noexcept {
-    return std::span(Args);
+  [[nodiscard]] const std::vector<std::string> &getArgs() const noexcept {
+    return Args;
   }
 };
 
 /// ProtoBinaryAST - This class represents the "prototype" for a binary
 /// operator, which captures its symbol, and its argument names.
 class ProtoBinaryAST : public PrototypeAST {
-  int Precedence;
+  const int Precedence;
 
 public:
   static constexpr ASTNodeKind Kind = ANK_ProtoBinaryAST;

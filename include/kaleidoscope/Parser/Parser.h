@@ -29,7 +29,7 @@ class Parser {
   int getTokPrecedence(int Tok) const;
 
   /// numberexpr ::= number
-  std::unique_ptr<ExprAST> parseNumberExpr();
+  std::unique_ptr<NumberExprAST> parseNumberExpr();
 
   /// parenexpr ::= '(' expression ')'
   std::unique_ptr<ExprAST> parseParenExpr();
@@ -37,11 +37,11 @@ class Parser {
   /// identifierexpr
   ///   ::= identifier
   ///   ::= identifier '(' expression* ')'
-  std::unique_ptr<ExprAST> parseIdentifierExpr();
+  std::unique_ptr<ExprAST> parseIdentifierOrCallExpr();
 
   /// unaryexpr
   ///   ::= unaryop expression
-  std::unique_ptr<ExprAST> parseUnaryExpr();
+  std::unique_ptr<UnaryExprAST> parseUnaryExpr();
 
   /// primary
   ///   ::= identifierexpr
@@ -57,11 +57,11 @@ class Parser {
 
   /// ifexpr
   ///   ::= 'if' expression 'then' expression 'else' expression
-  std::unique_ptr<ExprAST> parseIfExpr();
+  std::unique_ptr<IfExprAST> parseIfExpr();
 
   /// forexpr
   ///   ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
-  std::unique_ptr<ExprAST> parseForExpr();
+  std::unique_ptr<ForExprAST> parseForExpr();
 
   /// expression
   ///   ::= primary binoprhs
@@ -69,11 +69,11 @@ class Parser {
 
   /// protobinary
   ///   ::= binary char number (id, id)
-  std::unique_ptr<PrototypeAST> parseProtoBinary();
+  std::unique_ptr<ProtoBinaryAST> parseProtoBinary();
 
   /// protounary
   ///   ::= unary char (id)
-  std::unique_ptr<PrototypeAST> parseProtoUnary();
+  std::unique_ptr<ProtoUnaryAST> parseProtoUnary();
 
   /// prototype
   ///   ::= id '(' id* ')'

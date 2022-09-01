@@ -18,7 +18,7 @@ int Parser::getTokPrecedence(int Tok) const {
   return -1;
 }
 
-std::unique_ptr<ExprAST> Parser::parseNumberExpr() {
+std::unique_ptr<NumberExprAST> Parser::parseNumberExpr() {
   auto Res = std::make_unique<NumberExprAST>(Lex.getNumVal());
   getNextToken();
   return Res;
@@ -35,7 +35,7 @@ std::unique_ptr<ExprAST> Parser::parseParenExpr() {
   return V;
 }
 
-std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
+std::unique_ptr<ExprAST> Parser::parseIdentifierOrCallExpr() {
   std::string IdName = Lex.getIdentifierStr();
   getNextToken(); // eat identifier
 
@@ -68,7 +68,7 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
   return std::make_unique<CallExprAST>(std::move(IdName), std::move(Args));
 }
 
-std::unique_ptr<ExprAST> Parser::parseUnaryExpr() {
+std::unique_ptr<UnaryExprAST> Parser::parseUnaryExpr() {
   if (!isascii(CurTok) || !UserUnaryOps.contains(static_cast<char>(CurTok)))
     return logError("Unknown unary expression.");
 
@@ -86,7 +86,7 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
   default:
     return parseUnaryExpr();
   case Lexer::tok_identifier:
-    return parseIdentifierExpr();
+    return parseIdentifierOrCallExpr();
   case Lexer::tok_number:
     return parseNumberExpr();
   case '(':
@@ -132,7 +132,7 @@ std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
   return LHS;
 }
 
-std::unique_ptr<ExprAST> Parser::parseIfExpr() {
+std::unique_ptr<IfExprAST> Parser::parseIfExpr() {
   getNextToken(); // eat the "if"
 
   auto Cond = parseExpression();
@@ -159,7 +159,7 @@ std::unique_ptr<ExprAST> Parser::parseIfExpr() {
                                      std::move(Else));
 }
 
-std::unique_ptr<ExprAST> Parser::parseForExpr() {
+std::unique_ptr<ForExprAST> Parser::parseForExpr() {
   getNextToken(); // eat "for"
 
   if (CurTok != Lexer::tok_identifier)
@@ -211,7 +211,7 @@ std::unique_ptr<ExprAST> Parser::parseExpression() {
   return parseBinOpRHS(0, std::move(LHS));
 }
 
-std::unique_ptr<PrototypeAST> Parser::parseProtoBinary() {
+std::unique_ptr<ProtoBinaryAST> Parser::parseProtoBinary() {
   if (!isascii(getNextToken()))
     return logError("Expected binary operator");
   char Op = static_cast<char>(CurTok);
@@ -247,7 +247,7 @@ std::unique_ptr<PrototypeAST> Parser::parseProtoBinary() {
       Op, std::array{std::move(LHS), std::move(RHS)}, Prec);
 }
 
-std::unique_ptr<PrototypeAST> Parser::parseProtoUnary() {
+std::unique_ptr<ProtoUnaryAST> Parser::parseProtoUnary() {
   if (!isascii(getNextToken()))
     return logError("Expected unary operator");
   char Op = static_cast<char>(CurTok);
