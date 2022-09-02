@@ -9,7 +9,25 @@
 
 using namespace kaleidoscope;
 
+auto CodeGen::genAssignment(const BinaryExprAST &A) -> llvm::Value * {
+  auto *AV = llvm::dyn_cast<VariableExprAST>(&A.getLHS());
+  if (!AV)
+    return logError("for assignment the lhs must be a variable");
+  auto *R = visit(A.getRHS());
+  if (!R)
+    return logError("failed to codegen RHS");
+  auto *L = NamedValues[AV->getName()];
+  if (!L)
+    return logError("unknown variable on LHS of assignment");
+  CGS->Builder.CreateStore(R, L);
+  return R;
+}
+
 auto CodeGen::visitImpl(const BinaryExprAST &A) -> llvm::Value * {
+  // Special case with assignment since we don't want to CodeGen the LHS
+  if (A.getOp() == '=')
+    return genAssignment(A);
+
   auto *L = visit(A.getLHS()), *R = visit(A.getRHS());
   if (!L || !R)
     return logError("missing rhs and/or lhs");

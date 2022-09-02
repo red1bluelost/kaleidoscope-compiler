@@ -5,7 +5,8 @@
 using namespace kaleidoscope;
 
 static const std::unordered_map<char, int> DefaultBinOpPrec{
-    {':', 1}, {'<', 10}, {'>', 10}, {'+', 20}, {'-', 20}, {'*', 40}, {'/', 40}};
+    {':', 1},  {'=', 2},  {'<', 10}, {'>', 10},
+    {'+', 20}, {'-', 20}, {'*', 40}, {'/', 40}};
 
 int Parser::getTokPrecedence(int Tok) const {
   if (!isascii(Tok))

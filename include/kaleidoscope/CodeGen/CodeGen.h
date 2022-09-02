@@ -36,6 +36,8 @@ private:
       FunctionProtos{};
   std::unordered_set<std::string> CompiledFunctions{};
 
+  auto genAssignment(const BinaryExprAST &A) -> llvm::Value *;
+
   auto visitImpl(const BinaryExprAST &A) -> llvm::Value *;
   auto visitImpl(const UnaryExprAST &A) -> llvm::Value *;
   auto visitImpl(const CallExprAST &A) -> llvm::Value *;
@@ -51,7 +53,7 @@ private:
   auto getFunction(llvm::StringRef Name) const -> llvm::Function *;
 
   auto createEntryBlockAlloca(llvm::Function *TheFunction,
-                         const llvm::Twine &VarName) -> llvm::AllocaInst *;
+                              const llvm::Twine &VarName) -> llvm::AllocaInst *;
 
 public:
   auto getModule() noexcept -> llvm::Module & { return *CGS->Module; }

@@ -12,15 +12,14 @@
 
 /// putchard - putchar that takes a double and returns 0.
 extern "C" DLLEXPORT [[maybe_unused]] double putchard(double X) {
-  char C = (char)X;
-  fmt::print(stderr, "{}", C);
-  return 0;
+  fmt::print(stderr, "{}", static_cast<char>(X));
+  return X;
 }
 
 /// printd - print that takes a double prints it with newline, returning 0.
 extern "C" DLLEXPORT [[maybe_unused]] double printd(double X) {
   fmt::print(stderr, "{}", X);
-  return 0;
+  return X;
 }
 
 int main() {
