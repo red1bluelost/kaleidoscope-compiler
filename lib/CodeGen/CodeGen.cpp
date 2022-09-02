@@ -16,6 +16,8 @@ auto CodeGen::visitImpl(const BinaryExprAST &A) -> llvm::Value * {
 
   auto &Builder = CGS->Builder;
   switch (A.getOp()) {
+  case ':':
+    return R;
   case '+':
     return Builder.CreateFAdd(L, R, "addtmp");
   case '-':
