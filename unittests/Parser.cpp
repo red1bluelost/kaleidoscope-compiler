@@ -13,7 +13,8 @@
 using namespace kaleidoscope;
 
 namespace {
-using ::testing::ResultOf, ::testing::ElementsAre, ::testing::Truly;
+using ::testing::ResultOf, ::testing::ElementsAre, ::testing::Truly,
+    ::testing::Pair;
 
 template <typename AstType>
 auto Isa() { // NOLINT(readability-identifier-naming)
@@ -447,6 +448,59 @@ TEST(Parser, VariableExprAST_2) {
   // Assert
   ASSERT_TRUE(llvm::isa<VariableExprAST>(AST));
   ASSERT_EQ("_u_n_d_e_r_", llvm::cast<VariableExprAST>(*AST).getName());
+  ASSERT_EQ(';', Parse.getCurToken());
+}
+
+TEST(Parser, VarAssignExprAST_0) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("var x = 1 in x;")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<VarAssignExprAST>(AST));
+  auto &C = llvm::cast<VarAssignExprAST>(*AST);
+  ASSERT_THAT(C.getVarAs(), ElementsAre(Pair("x", Isa<NumberExprAST>())));
+  ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getExpr()));
+  ASSERT_EQ(';', Parse.getCurToken());
+}
+
+TEST(Parser, VarAssignExprAST_1) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("var name = 3 : 5, y = z, a = 3 * func() in\n"
+                                  "  something(a, y, name);")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<VarAssignExprAST>(AST));
+  auto &C = llvm::cast<VarAssignExprAST>(*AST);
+  ASSERT_THAT(C.getVarAs(), ElementsAre(Pair("name", Isa<BinaryExprAST>()),
+                                        Pair("y", Isa<VariableExprAST>()),
+                                        Pair("a", Isa<BinaryExprAST>())));
+  ASSERT_TRUE(llvm::isa<CallExprAST>(C.getExpr()));
+  ASSERT_EQ(';', Parse.getCurToken());
+}
+
+TEST(Parser, VarAssignExprAST_2) {
+  // Arrange
+  Lexer Lex{makeGetCharWithString("var x = 1, y = x in\n"
+                                  "  x + y;")};
+  Parser Parse{Lex};
+
+  // Act
+  auto AST = Parse.parse();
+
+  // Assert
+  ASSERT_TRUE(llvm::isa<VarAssignExprAST>(AST));
+  auto &C = llvm::cast<VarAssignExprAST>(*AST);
+  ASSERT_THAT(C.getVarAs(), ElementsAre(Pair("x", Isa<NumberExprAST>()),
+                                        Pair("y", Isa<VariableExprAST>())));
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getExpr()));
   ASSERT_EQ(';', Parse.getCurToken());
 }
 

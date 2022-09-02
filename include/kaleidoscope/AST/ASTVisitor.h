@@ -58,6 +58,7 @@ public:
         HANDLE_EXPR_AST(IfExprAST);
         HANDLE_EXPR_AST(NumberExprAST);
         HANDLE_EXPR_AST(VariableExprAST);
+        HANDLE_EXPR_AST(VarAssignExprAST);
       case ASTNode::ANK_ExprAST:
       case ASTNode::ANK_LastExprAST:
       case ASTNode::ANK_FunctionAST:
@@ -81,6 +82,7 @@ public:
   VISIT_AST(IfExprAST)
   VISIT_AST(NumberExprAST)
   VISIT_AST(VariableExprAST)
+  VISIT_AST(VarAssignExprAST)
 
   auto visit(const PrototypeAST &A) {
     if constexpr ((Delegate & AVDelType::PrototypeAST) != AVDelType::None) {
@@ -97,6 +99,7 @@ public:
       case ASTNode::ANK_IfExprAST:
       case ASTNode::ANK_NumberExprAST:
       case ASTNode::ANK_VariableExprAST:
+      case ASTNode::ANK_VarAssignExprAST:
       case ASTNode::ANK_LastExprAST:
       case ASTNode::ANK_FunctionAST:
       case ASTNode::ANK_EndOfFileAST:

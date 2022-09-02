@@ -22,6 +22,7 @@ int Lexer::handleIdentifier() {
       .Case("in", tok_in)
       .Case("binary", tok_binary)
       .Case("unary", tok_unary)
+      .Case("var", tok_var)
       .Default(tok_identifier);
 }
 

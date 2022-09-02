@@ -89,6 +89,10 @@ auto XMLDump::visitImpl(const VariableExprAST &A) -> Self & {
   return open(A.NodeName).printSubItem("Name", A.getName()).close(A.NodeName);
 }
 
+auto XMLDump::visitImpl(const VarAssignExprAST &A) -> XMLDump::Self & {
+  return *this;
+}
+
 auto XMLDump::visitImpl(const FunctionAST &A) -> Self & {
   return open(A.NodeName)
       .printSubAST("Proto", A.getProto())

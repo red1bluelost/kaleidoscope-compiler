@@ -33,6 +33,9 @@ public:
     tok_binary = -11,
     tok_unary = -12,
 
+    // variable assignment
+    tok_var = -13,
+
     // tok_err
     tok_err = -256,
   };

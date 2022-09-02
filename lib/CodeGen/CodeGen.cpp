@@ -234,6 +234,10 @@ auto CodeGen::visitImpl(const VariableExprAST &A) const -> llvm::Value * {
   return CGS->Builder.CreateLoad(V->getAllocatedType(), V, S);
 }
 
+auto CodeGen::visitImpl(const VarAssignExprAST &A) -> llvm::Value * {
+  return nullptr;
+}
+
 auto CodeGen::visitImpl(const FunctionAST &A) -> llvm::Function * {
   assert(!CompiledFunctions.contains(A.getProto().getName()) &&
          "function with name has already been compiled");

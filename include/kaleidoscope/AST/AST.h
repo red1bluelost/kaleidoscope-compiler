@@ -37,6 +37,7 @@ public:
     ANK_IfExprAST,
     ANK_NumberExprAST,
     ANK_VariableExprAST,
+    ANK_VarAssignExprAST,
     ANK_LastExprAST,
     ANK_PrototypeAST,
     ANK_ProtoUnaryAST,
@@ -214,6 +215,31 @@ public:
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] const std::string &getName() const noexcept { return Name; }
+};
+
+/// VarAssignExprAST - Expression class for referencing a variable, like "a".
+class VarAssignExprAST : public ExprAST {
+public:
+  using VarAssignPair = std::pair<std::string, std::unique_ptr<ExprAST>>;
+
+private:
+  std::vector<VarAssignPair> VarAs;
+  std::unique_ptr<ExprAST> Expr;
+
+public:
+  static constexpr ASTNodeKind Kind = ANK_VarAssignExprAST;
+  static constexpr std::string_view NodeName = "VarAssignExprAST";
+
+  VarAssignExprAST(std::vector<VarAssignPair> VarAs,
+                   std::unique_ptr<ExprAST> Expr) noexcept
+      : ExprAST(Kind), VarAs(std::move(VarAs)), Expr(std::move(Expr)) {}
+
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
+
+  [[nodiscard]] const std::vector<VarAssignPair> &getVarAs() const noexcept {
+    return VarAs;
+  }
+  [[nodiscard]] const ExprAST &getExpr() const noexcept { return *Expr; }
 };
 
 /// ----------------------------------------------------------------------------

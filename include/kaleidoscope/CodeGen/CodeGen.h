@@ -45,6 +45,7 @@ private:
   auto visitImpl(const IfExprAST &A) -> llvm::Value *;
   auto visitImpl(const NumberExprAST &A) const -> llvm::Value *;
   auto visitImpl(const VariableExprAST &A) const -> llvm::Value *;
+  auto visitImpl(const VarAssignExprAST &A) -> llvm::Value *;
 
   auto visitImpl(const FunctionAST &A) -> llvm::Function *;
 

@@ -96,6 +96,8 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
     return parseIfExpr();
   case Lexer::tok_for:
     return parseForExpr();
+  case Lexer::tok_var:
+    return parseVarAssignExpr();
   }
 }
 
@@ -203,6 +205,39 @@ std::unique_ptr<ForExprAST> Parser::parseForExpr() {
 
   return std::make_unique<ForExprAST>(IdName, std::move(Start), std::move(End),
                                       std::move(Step), std::move(Body));
+}
+
+std::unique_ptr<VarAssignExprAST> Parser::parseVarAssignExpr() {
+  std::vector<VarAssignExprAST::VarAssignPair> VarAssigns{};
+  while (true) {
+    if (getNextToken() != Lexer::tok_identifier)
+      return logError("expected identifier after \"var\"");
+    std::string IdName = Lex.getIdentifierStr();
+
+    if (getNextToken() != '=')
+      return logError("expected '=' after \"var\"");
+    getNextToken(); // eat '='
+
+    auto Right = parseExpression();
+    if (!Right)
+      return nullptr;
+
+    VarAssigns.emplace_back(std::move(IdName), std::move(Right));
+
+    if (CurTok == Lexer::tok_in)
+      break;
+
+    if (CurTok != ',')
+      return logError("expected ',' or 'in' after var identifiers list");
+  }
+  getNextToken(); // eat 'in'
+
+  auto Expr = parseExpression();
+  if (!Expr)
+    return logError("failed to parse expression for \"var\"");
+
+  return std::make_unique<VarAssignExprAST>(std::move(VarAssigns),
+                                            std::move(Expr));
 }
 
 std::unique_ptr<ExprAST> Parser::parseExpression() {

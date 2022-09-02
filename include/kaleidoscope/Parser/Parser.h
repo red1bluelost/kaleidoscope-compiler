@@ -63,6 +63,10 @@ class Parser {
   ///   ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
   std::unique_ptr<ForExprAST> parseForExpr();
 
+  /// varassignexpr
+  ///   ::= 'var' (identifier '=' expr)+ 'in' expression
+  std::unique_ptr<VarAssignExprAST> parseVarAssignExpr();
+
   /// expression
   ///   ::= primary binoprhs
   std::unique_ptr<ExprAST> parseExpression();

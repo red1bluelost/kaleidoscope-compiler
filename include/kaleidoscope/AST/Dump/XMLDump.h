@@ -44,6 +44,7 @@ private:
   auto visitImpl(const IfExprAST &A) -> Self &;
   auto visitImpl(const NumberExprAST &A) -> Self &;
   auto visitImpl(const VariableExprAST &A) -> Self &;
+  auto visitImpl(const VarAssignExprAST &A) -> Self &;
 
   auto visitImpl(const FunctionAST &A) -> Self &;
 
