@@ -16,6 +16,10 @@
 
 namespace kaleidoscope {
 
+#define LLVM_CLASS_OF(_id_name_)                                               \
+  [[maybe_unused]] static constexpr auto classof(                              \
+      const ASTNode *_id_name_) noexcept -> bool
+
 /// ----------------------------------------------------------------------------
 /// Abstract Syntax Tree
 /// ----------------------------------------------------------------------------
@@ -49,7 +53,7 @@ protected:
   constexpr ASTNode(ASTNodeKind K) noexcept : MyKind(K) {}
 
 public:
-  constexpr ASTNodeKind getKind() const noexcept { return MyKind; }
+  constexpr auto getKind() const noexcept -> ASTNodeKind { return MyKind; }
 
   constexpr virtual ~ASTNode() noexcept = default;
 };
@@ -68,7 +72,7 @@ protected:
 public:
   static constexpr ASTNodeKind Kind = ANK_ExprAST;
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
+  LLVM_CLASS_OF(A) {
     return A->getKind() >= ANK_ExprAST && A->getKind() <= ANK_LastExprAST;
   }
 
@@ -88,9 +92,7 @@ public:
                 std::unique_ptr<ExprAST> RHS) noexcept
       : ExprAST(Kind), Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] char getOp() const noexcept { return Op; }
   [[nodiscard]] const ExprAST &getLHS() const noexcept { return *LHS; }
@@ -109,9 +111,7 @@ public:
   UnaryExprAST(char Op, std::unique_ptr<ExprAST> Operand) noexcept
       : ExprAST(Kind), Opcode(Op), Operand(std::move(Operand)) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] char getOpcode() const noexcept { return Opcode; }
   [[nodiscard]] const ExprAST &getOperand() const noexcept { return *Operand; }
@@ -130,9 +130,7 @@ public:
               std::vector<std::unique_ptr<ExprAST>> Args) noexcept
       : ExprAST(Kind), Callee(std::move(Callee)), Args(std::move(Args)) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] const std::string &getCallee() const noexcept { return Callee; }
   [[nodiscard]] const std::vector<std::unique_ptr<ExprAST>> &
@@ -156,9 +154,7 @@ public:
       : ExprAST(Kind), VarName(std::move(VarName)), Start(std::move(Start)),
         End(std::move(End)), Step(std::move(Step)), Body(std::move(Body)) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] const std::string &getVarName() const noexcept {
     return VarName;
@@ -182,9 +178,7 @@ public:
       : ExprAST(Kind), Cond(std::move(Cond)), Then(std::move(Then)),
         Else(std::move(Else)) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] const ExprAST &getCond() const noexcept { return *Cond; }
   [[nodiscard]] const ExprAST &getThen() const noexcept { return *Then; }
@@ -201,9 +195,7 @@ public:
 
   constexpr NumberExprAST(double Val) noexcept : ExprAST(Kind), Val(Val) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] double getVal() const noexcept { return Val; }
 };
@@ -219,9 +211,7 @@ public:
   VariableExprAST(std::string Name) noexcept
       : ExprAST(Kind), Name(std::move(Name)) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] const std::string &getName() const noexcept { return Name; }
 };
@@ -252,7 +242,7 @@ public:
   PrototypeAST(PrototypeAST &&) noexcept = default;
   virtual ~PrototypeAST() = default;
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
+  LLVM_CLASS_OF(A) {
     return A->getKind() >= Kind && A->getKind() <= ANK_LastPrototypeAST;
   }
 
@@ -280,9 +270,7 @@ public:
   ProtoBinaryAST(const ProtoBinaryAST &) noexcept = default;
   ProtoBinaryAST(ProtoBinaryAST &&) noexcept = default;
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] char getOperator() const noexcept { return getName().back(); }
   [[nodiscard]] int getPrecedence() const noexcept { return Precedence; }
@@ -302,9 +290,7 @@ public:
   ProtoUnaryAST(const ProtoUnaryAST &) noexcept = default;
   ProtoUnaryAST(ProtoUnaryAST &&) noexcept = default;
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] char getOperator() const noexcept { return getName().back(); }
 };
@@ -326,9 +312,7 @@ public:
               std::unique_ptr<ExprAST> Body) noexcept
       : ASTNode(Kind), Proto(std::move(Proto)), Body(std::move(Body)) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] const PrototypeAST &getProto() const noexcept { return *Proto; }
   [[nodiscard]] const ExprAST &getBody() const noexcept { return *Body; }
@@ -342,10 +326,10 @@ public:
 
   constexpr EndOfFileAST() noexcept : ASTNode(Kind) {}
 
-  [[maybe_unused]] static constexpr bool classof(const ASTNode *A) noexcept {
-    return A->getKind() == Kind;
-  }
+  LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 };
+
+#undef LLVM_CLASS_OF
 
 } // namespace kaleidoscope
 

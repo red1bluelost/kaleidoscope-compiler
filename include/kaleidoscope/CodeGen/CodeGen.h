@@ -36,32 +36,32 @@ private:
       FunctionProtos{};
   std::unordered_set<std::string> CompiledFunctions{};
 
-  llvm::Value *visitImpl(const BinaryExprAST &A);
-  llvm::Value *visitImpl(const UnaryExprAST &A);
-  llvm::Value *visitImpl(const CallExprAST &A);
-  llvm::Value *visitImpl(const ForExprAST &A);
-  llvm::Value *visitImpl(const IfExprAST &A);
-  llvm::Value *visitImpl(const NumberExprAST &A) const;
-  llvm::Value *visitImpl(const VariableExprAST &A) const;
+  auto visitImpl(const BinaryExprAST &A) -> llvm::Value *;
+  auto visitImpl(const UnaryExprAST &A) -> llvm::Value *;
+  auto visitImpl(const CallExprAST &A) -> llvm::Value *;
+  auto visitImpl(const ForExprAST &A) -> llvm::Value *;
+  auto visitImpl(const IfExprAST &A) -> llvm::Value *;
+  auto visitImpl(const NumberExprAST &A) const -> llvm::Value *;
+  auto visitImpl(const VariableExprAST &A) const -> llvm::Value *;
 
-  llvm::Function *visitImpl(const FunctionAST &A);
+  auto visitImpl(const FunctionAST &A) -> llvm::Function *;
 
-  llvm::Function *visitImpl(const PrototypeAST &A) const;
+  auto visitImpl(const PrototypeAST &A) const -> llvm::Function *;
 
-  llvm::Function *getFunction(llvm::StringRef Name) const;
+  auto getFunction(llvm::StringRef Name) const -> llvm::Function *;
 
 public:
-  llvm::Module &getModule() noexcept { return *CGS->Module; }
+  auto getModule() noexcept -> llvm::Module & { return *CGS->Module; }
 
-  std::unique_ptr<Session> takeSession() {
+  auto takeSession() -> std::unique_ptr<Session> {
     return std::exchange(CGS, std::make_unique<Session>());
   }
 
-  const PrototypeAST &addPrototype(std::unique_ptr<PrototypeAST> P) {
+  auto addPrototype(std::unique_ptr<PrototypeAST> P) -> const PrototypeAST & {
     return *(FunctionProtos[P->getName()] = std::move(P));
   }
 
-  llvm::Function *handleAnonExpr(const ExprAST &A);
+  auto handleAnonExpr(const ExprAST &A) -> llvm::Function *;
 };
 
 } // namespace kaleidoscope

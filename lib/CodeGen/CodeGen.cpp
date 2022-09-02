@@ -9,7 +9,7 @@
 
 using namespace kaleidoscope;
 
-llvm::Value *CodeGen::visitImpl(const BinaryExprAST &A) {
+auto CodeGen::visitImpl(const BinaryExprAST &A) -> llvm::Value * {
   auto *L = visit(A.getLHS()), *R = visit(A.getRHS());
   if (!L || !R)
     return logError("missing rhs and/or lhs");
@@ -46,7 +46,7 @@ llvm::Value *CodeGen::visitImpl(const BinaryExprAST &A) {
   return CGS->Builder.CreateCall(BinFun, {L, R}, "binoptmp");
 }
 
-llvm::Value *CodeGen::visitImpl(const UnaryExprAST &A) {
+auto CodeGen::visitImpl(const UnaryExprAST &A) -> llvm::Value * {
   auto *V = visit(A.getOperand());
   if (!V)
     return logError("failed to codegen operand");
@@ -59,7 +59,7 @@ llvm::Value *CodeGen::visitImpl(const UnaryExprAST &A) {
   return CGS->Builder.CreateCall(UnFun, {V}, "unoptmp");
 }
 
-llvm::Value *CodeGen::visitImpl(const CallExprAST &A) {
+auto CodeGen::visitImpl(const CallExprAST &A) -> llvm::Value * {
   // Look up the name in the global module table.
   llvm::Function *CalleeF = getFunction(A.getCallee());
   if (!CalleeF)
@@ -81,7 +81,7 @@ llvm::Value *CodeGen::visitImpl(const CallExprAST &A) {
   return CGS->Builder.CreateCall(CalleeF, ArgsV, "calltmp");
 }
 
-llvm::Value *CodeGen::visitImpl(const ForExprAST &A) {
+auto CodeGen::visitImpl(const ForExprAST &A) -> llvm::Value * {
   // Emit the start code first, without 'variable' in scope
   llvm::Value *StartV = visit(A.getStart());
   if (!StartV)
@@ -145,7 +145,7 @@ llvm::Value *CodeGen::visitImpl(const ForExprAST &A) {
   return llvm::Constant::getNullValue(llvm::Type::getDoubleTy(Context));
 }
 
-llvm::Value *CodeGen::visitImpl(const IfExprAST &A) {
+auto CodeGen::visitImpl(const IfExprAST &A) -> llvm::Value * {
   llvm::Value *CondV = visit(A.getCond());
   if (!CondV)
     return nullptr;
@@ -199,17 +199,17 @@ llvm::Value *CodeGen::visitImpl(const IfExprAST &A) {
   return PN;
 }
 
-llvm::Value *CodeGen::visitImpl(const NumberExprAST &A) const {
+auto CodeGen::visitImpl(const NumberExprAST &A) const -> llvm::Value * {
   return llvm::ConstantFP::get(*CGS->Context, llvm::APFloat(A.getVal()));
 }
 
-llvm::Value *CodeGen::visitImpl(const VariableExprAST &A) const {
+auto CodeGen::visitImpl(const VariableExprAST &A) const -> llvm::Value * {
   if (auto S = A.getName(); NamedValues.contains(S))
     return NamedValues.at(S);
   return logError("unknown variable name");
 }
 
-llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
+auto CodeGen::visitImpl(const FunctionAST &A) -> llvm::Function * {
   assert(!CompiledFunctions.contains(A.getProto().getName()) &&
          "function with name has already been compiled");
 
@@ -250,7 +250,7 @@ llvm::Function *CodeGen::visitImpl(const FunctionAST &A) {
   return logError("Failed to codegen function body");
 }
 
-llvm::Function *CodeGen::visitImpl(const PrototypeAST &A) const {
+auto CodeGen::visitImpl(const PrototypeAST &A) const -> llvm::Function * {
   auto &Args = A.getArgs();
   std::vector<llvm::Type *> Doubles(Args.size(),
                                     llvm::Type::getDoubleTy(*CGS->Context));
@@ -265,7 +265,7 @@ llvm::Function *CodeGen::visitImpl(const PrototypeAST &A) const {
   return F;
 }
 
-llvm::Function *CodeGen::getFunction(llvm::StringRef Name) const {
+auto CodeGen::getFunction(llvm::StringRef Name) const -> llvm::Function * {
   // first, see if the function has already been added to the current module
   if (auto *F = CGS->Module->getFunction(Name))
     return F;
@@ -279,7 +279,7 @@ llvm::Function *CodeGen::getFunction(llvm::StringRef Name) const {
   return nullptr;
 }
 
-llvm::Function *CodeGen::handleAnonExpr(const ExprAST &A) {
+auto CodeGen::handleAnonExpr(const ExprAST &A) -> llvm::Function * {
   // make an anonymous proto
   PrototypeAST Proto("__anon_expr", std::vector<std::string>());
   llvm::Function *TheFunction = visit(Proto);
