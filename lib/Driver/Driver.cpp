@@ -4,6 +4,7 @@
 #include <llvm/Transforms/InstCombine/InstCombine.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Scalar/GVN.h>
+#include <llvm/Transforms/Utils.h>
 
 #include <fmt/core.h>
 
@@ -13,6 +14,8 @@ static std::unique_ptr<llvm::legacy::FunctionPassManager>
 setUpFPM(llvm::Module *Mod) {
   auto FPM = std::make_unique<llvm::legacy::FunctionPassManager>(Mod);
 
+  // Promote allocas to registers.
+  FPM->add(llvm::createPromoteMemoryToRegisterPass());
   // Do simple "peephole" optimizations and bit-twiddling optzns.
   FPM->add(llvm::createInstructionCombiningPass());
   // Reassociate expressions.

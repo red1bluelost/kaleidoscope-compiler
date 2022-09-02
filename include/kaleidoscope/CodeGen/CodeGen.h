@@ -30,7 +30,7 @@ public:
   };
 
 private:
-  std::unordered_map<std::string, llvm::Value *> NamedValues{};
+  std::unordered_map<std::string, llvm::AllocaInst *> NamedValues{};
   std::unique_ptr<Session> CGS{};
   std::unordered_map<std::string, std::unique_ptr<PrototypeAST>>
       FunctionProtos{};
@@ -49,6 +49,9 @@ private:
   auto visitImpl(const PrototypeAST &A) const -> llvm::Function *;
 
   auto getFunction(llvm::StringRef Name) const -> llvm::Function *;
+
+  auto createEntryBlockAlloca(llvm::Function *TheFunction,
+                         const llvm::Twine &VarName) -> llvm::AllocaInst *;
 
 public:
   auto getModule() noexcept -> llvm::Module & { return *CGS->Module; }
