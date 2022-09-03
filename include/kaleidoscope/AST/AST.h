@@ -224,22 +224,22 @@ public:
 
 private:
   std::vector<VarAssignPair> VarAs;
-  std::unique_ptr<ExprAST> Expr;
+  std::unique_ptr<ExprAST> Body;
 
 public:
   static constexpr ASTNodeKind Kind = ANK_VarAssignExprAST;
   static constexpr std::string_view NodeName = "VarAssignExprAST";
 
   VarAssignExprAST(std::vector<VarAssignPair> VarAs,
-                   std::unique_ptr<ExprAST> Expr) noexcept
-      : ExprAST(Kind), VarAs(std::move(VarAs)), Expr(std::move(Expr)) {}
+                   std::unique_ptr<ExprAST> Body) noexcept
+      : ExprAST(Kind), VarAs(std::move(VarAs)), Body(std::move(Body)) {}
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
   [[nodiscard]] const std::vector<VarAssignPair> &getVarAs() const noexcept {
     return VarAs;
   }
-  [[nodiscard]] const ExprAST &getExpr() const noexcept { return *Expr; }
+  [[nodiscard]] const ExprAST &getBody() const noexcept { return *Body; }
 };
 
 /// ----------------------------------------------------------------------------

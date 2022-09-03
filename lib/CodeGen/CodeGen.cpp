@@ -2,10 +2,13 @@
 
 #include "kaleidoscope/Util/Error/Log.h"
 
+#include <llvm/ADT/ScopeExit.h>
 #include <llvm/IR/Verifier.h>
 
 #include <fmt/compile.h>
 #include <fmt/core.h>
+
+#include <ranges>
 
 using namespace kaleidoscope;
 
@@ -226,16 +229,37 @@ auto CodeGen::visitImpl(const NumberExprAST &A) const -> llvm::Value * {
   return llvm::ConstantFP::get(*CGS->Context, llvm::APFloat(A.getVal()));
 }
 
-auto CodeGen::visitImpl(const VariableExprAST &A) const -> llvm::Value * {
-  auto S = A.getName();
-  if (!NamedValues.contains(S))
+auto CodeGen::visitImpl(const VariableExprAST &A) -> llvm::Value * {
+  auto &S = A.getName();
+  llvm::AllocaInst *V = NamedValues[S];
+  if (!V)
     return logError("unknown variable name");
-  llvm::AllocaInst *V = NamedValues.at(S);
   return CGS->Builder.CreateLoad(V->getAllocatedType(), V, S);
 }
 
 auto CodeGen::visitImpl(const VarAssignExprAST &A) -> llvm::Value * {
-  return nullptr;
+  std::vector<std::pair<const std::string &, llvm::AllocaInst *>> NameSave{};
+  NameSave.reserve(A.getVarAs().size());
+  auto &Builder = CGS->Builder;
+  auto *Func = Builder.GetInsertBlock()->getParent();
+  for (auto &[Name, Expr] : A.getVarAs()) {
+    auto *Arg = createEntryBlockAlloca(Func, Name);
+    auto *E = visit(*Expr);
+    if (!E)
+      return logError(
+          fmt::format("failed to codegen assignment for argument {}", Name));
+    Builder.CreateStore(E, Arg);
+    NameSave.emplace_back(Name, std::exchange(NamedValues[Name], Arg));
+  }
+
+  auto *Body = visit(A.getBody());
+  if (!Body)
+    return logError("failed to codegen the expression in var");
+
+  for (auto &[Name, Alloc] : NameSave | std::views::reverse)
+    NamedValues[Name] = Alloc;
+
+  return Body;
 }
 
 auto CodeGen::visitImpl(const FunctionAST &A) -> llvm::Function * {
@@ -263,7 +287,7 @@ auto CodeGen::visitImpl(const FunctionAST &A) -> llvm::Function * {
   CGS->Builder.SetInsertPoint(BB);
 
   // record the function arguments in the NamedValues map
-  NamedValues.clear();
+  auto Exit = llvm::make_scope_exit([&] { NamedValues.clear(); });
   for (auto &Arg : TheFunction->args()) {
     std::string Name = Arg.getName().str();
     auto *ArgAlloca = createEntryBlockAlloca(TheFunction, Name);

@@ -463,7 +463,7 @@ TEST(Parser, VarAssignExprAST_0) {
   ASSERT_TRUE(llvm::isa<VarAssignExprAST>(AST));
   auto &C = llvm::cast<VarAssignExprAST>(*AST);
   ASSERT_THAT(C.getVarAs(), ElementsAre(Pair("x", Isa<NumberExprAST>())));
-  ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getExpr()));
+  ASSERT_TRUE(llvm::isa<VariableExprAST>(C.getBody()));
   ASSERT_EQ(';', Parse.getCurToken());
 }
 
@@ -482,7 +482,7 @@ TEST(Parser, VarAssignExprAST_1) {
   ASSERT_THAT(C.getVarAs(), ElementsAre(Pair("name", Isa<BinaryExprAST>()),
                                         Pair("y", Isa<VariableExprAST>()),
                                         Pair("a", Isa<BinaryExprAST>())));
-  ASSERT_TRUE(llvm::isa<CallExprAST>(C.getExpr()));
+  ASSERT_TRUE(llvm::isa<CallExprAST>(C.getBody()));
   ASSERT_EQ(';', Parse.getCurToken());
 }
 
@@ -500,7 +500,7 @@ TEST(Parser, VarAssignExprAST_2) {
   auto &C = llvm::cast<VarAssignExprAST>(*AST);
   ASSERT_THAT(C.getVarAs(), ElementsAre(Pair("x", Isa<NumberExprAST>()),
                                         Pair("y", Isa<VariableExprAST>())));
-  ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getExpr()));
+  ASSERT_TRUE(llvm::isa<BinaryExprAST>(C.getBody()));
   ASSERT_EQ(';', Parse.getCurToken());
 }
 
