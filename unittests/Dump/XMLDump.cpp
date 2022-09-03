@@ -714,6 +714,108 @@ TEST(XMLDumpTest, VariableExprAST_1) {
             SS.view());
 }
 
+TEST(XMLDumpTest, VarAssignExprAST_0) {
+  // Arrange
+  auto AST = convertAST("var x = 1 in x;");
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<VarAssignExprAST>\n"
+            "  <Vars>\n"
+            "    <x>\n"
+            "      <NumberExprAST>\n"
+            "        <Val>1</Val>\n"
+            "      </NumberExprAST>\n"
+            "    </x>\n"
+            "  </Vars>\n"
+            "  <Body>\n"
+            "    <VariableExprAST>\n"
+            "      <Name>x</Name>\n"
+            "    </VariableExprAST>\n"
+            "  </Body>\n"
+            "</VarAssignExprAST>\n"sv,
+            SS.view());
+}
+
+TEST(XMLDumpTest, VarAssignExprAST_1) {
+  // Arrange
+  auto AST = convertAST("var name = 3 : 5, y = z, a = 3 * func() in\n"
+                        "  something(a, y, name);");
+  std::stringstream SS{};
+
+  // Act
+  ast::XMLDump(SS).visit(*AST);
+
+  // Assert
+  ASSERT_EQ("<VarAssignExprAST>\n"
+            "  <Vars>\n"
+            "    <name>\n"
+            "      <BinaryExprAST>\n"
+            "        <Op>:</Op>\n"
+            "        <LHS>\n"
+            "          <NumberExprAST>\n"
+            "            <Val>3</Val>\n"
+            "          </NumberExprAST>\n"
+            "        </LHS>\n"
+            "        <RHS>\n"
+            "          <NumberExprAST>\n"
+            "            <Val>5</Val>\n"
+            "          </NumberExprAST>\n"
+            "        </RHS>\n"
+            "      </BinaryExprAST>\n"
+            "    </name>\n"
+            "    <y>\n"
+            "      <VariableExprAST>\n"
+            "        <Name>z</Name>\n"
+            "      </VariableExprAST>\n"
+            "    </y>\n"
+            "    <a>\n"
+            "      <BinaryExprAST>\n"
+            "        <Op>*</Op>\n"
+            "        <LHS>\n"
+            "          <NumberExprAST>\n"
+            "            <Val>3</Val>\n"
+            "          </NumberExprAST>\n"
+            "        </LHS>\n"
+            "        <RHS>\n"
+            "          <CallExprAST>\n"
+            "            <Callee>func</Callee>\n"
+            "            <Args>\n"
+            "            </Args>\n"
+            "          </CallExprAST>\n"
+            "        </RHS>\n"
+            "      </BinaryExprAST>\n"
+            "    </a>\n"
+            "  </Vars>\n"
+            "  <Body>\n"
+            "    <CallExprAST>\n"
+            "      <Callee>something</Callee>\n"
+            "      <Args>\n"
+            "        <Arg[0]>\n"
+            "          <VariableExprAST>\n"
+            "            <Name>a</Name>\n"
+            "          </VariableExprAST>\n"
+            "        </Arg[0]>\n"
+            "        <Arg[1]>\n"
+            "          <VariableExprAST>\n"
+            "            <Name>y</Name>\n"
+            "          </VariableExprAST>\n"
+            "        </Arg[1]>\n"
+            "        <Arg[2]>\n"
+            "          <VariableExprAST>\n"
+            "            <Name>name</Name>\n"
+            "          </VariableExprAST>\n"
+            "        </Arg[2]>\n"
+            "      </Args>\n"
+            "    </CallExprAST>\n"
+            "  </Body>\n"
+            "</VarAssignExprAST>\n"sv,
+            SS.view());
+}
+
 TEST(XMLDumpTest, FunctionExprAST_0) {
   // Arrange
   auto AST = convertAST("def func() 3;");
