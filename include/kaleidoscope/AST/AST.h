@@ -25,8 +25,6 @@ namespace kaleidoscope {
 /// ----------------------------------------------------------------------------
 
 class ASTNode {
-  ASTNode() = delete;
-
 public:
   enum ASTNodeKind {
     ANK_ExprAST,
@@ -54,9 +52,12 @@ protected:
   constexpr ASTNode(ASTNodeKind K) noexcept : MyKind(K) {}
 
 public:
-  constexpr auto getKind() const noexcept -> ASTNodeKind { return MyKind; }
-
+  ASTNode() = delete;
   constexpr virtual ~ASTNode() noexcept = default;
+
+  [[nodiscard]] constexpr auto getKind() const noexcept -> ASTNodeKind {
+    return MyKind;
+  }
 };
 
 /// ----------------------------------------------------------------------------
@@ -65,19 +66,19 @@ public:
 
 /// ExprAST - Base class for all expression nodes.
 class ExprAST : public ASTNode {
-  ExprAST() = delete;
+public:
+  static constexpr ASTNodeKind Kind = ANK_ExprAST;
 
 protected:
   constexpr ExprAST(ASTNodeKind K) noexcept : ASTNode(K) {}
 
 public:
-  static constexpr ASTNodeKind Kind = ANK_ExprAST;
+  ExprAST() = delete;
+  constexpr ~ExprAST() noexcept override = default;
 
   LLVM_CLASS_OF(A) {
     return A->getKind() >= ANK_ExprAST && A->getKind() <= ANK_LastExprAST;
   }
-
-  constexpr virtual ~ExprAST() noexcept = default;
 };
 
 /// BinaryExprAST - Expression class for a binary operator.
@@ -95,9 +96,9 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] char getOp() const noexcept { return Op; }
-  [[nodiscard]] const ExprAST &getLHS() const noexcept { return *LHS; }
-  [[nodiscard]] const ExprAST &getRHS() const noexcept { return *RHS; }
+  [[nodiscard]] auto getOp() const noexcept -> char { return Op; }
+  [[nodiscard]] auto getLHS() const noexcept -> const ExprAST & { return *LHS; }
+  [[nodiscard]] auto getRHS() const noexcept -> const ExprAST & { return *RHS; }
 };
 
 /// UnaryExprAST - Expression class for a unary operator.
@@ -114,8 +115,10 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] char getOpcode() const noexcept { return Opcode; }
-  [[nodiscard]] const ExprAST &getOperand() const noexcept { return *Operand; }
+  [[nodiscard]] auto getOpcode() const noexcept -> char { return Opcode; }
+  [[nodiscard]] auto getOperand() const noexcept -> const ExprAST & {
+    return *Operand;
+  }
 };
 
 /// CallExprAST - Expression class for function calls.
@@ -133,9 +136,11 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] const std::string &getCallee() const noexcept { return Callee; }
-  [[nodiscard]] const std::vector<std::unique_ptr<ExprAST>> &
-  getArgs() const noexcept {
+  [[nodiscard]] auto getCallee() const noexcept -> const std::string & {
+    return Callee;
+  }
+  [[nodiscard]] auto getArgs() const noexcept
+      -> const std::vector<std::unique_ptr<ExprAST>> & {
     return Args;
   }
 };
@@ -157,13 +162,19 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] const std::string &getVarName() const noexcept {
+  [[nodiscard]] auto getVarName() const noexcept -> const std::string & {
     return VarName;
   }
-  [[nodiscard]] const ExprAST &getStart() const noexcept { return *Start; }
-  [[nodiscard]] const ExprAST &getEnd() const noexcept { return *End; }
-  [[nodiscard]] const ExprAST &getStep() const noexcept { return *Step; }
-  [[nodiscard]] const ExprAST &getBody() const noexcept { return *Body; }
+  [[nodiscard]] auto getStart() const noexcept -> const ExprAST & {
+    return *Start;
+  }
+  [[nodiscard]] auto getEnd() const noexcept -> const ExprAST & { return *End; }
+  [[nodiscard]] auto getStep() const noexcept -> const ExprAST & {
+    return *Step;
+  }
+  [[nodiscard]] auto getBody() const noexcept -> const ExprAST & {
+    return *Body;
+  }
 };
 
 /// IfExprAST - Expression class for if/then/else.
@@ -181,9 +192,15 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] const ExprAST &getCond() const noexcept { return *Cond; }
-  [[nodiscard]] const ExprAST &getThen() const noexcept { return *Then; }
-  [[nodiscard]] const ExprAST &getElse() const noexcept { return *Else; }
+  [[nodiscard]] auto getCond() const noexcept -> const ExprAST & {
+    return *Cond;
+  }
+  [[nodiscard]] auto getThen() const noexcept -> const ExprAST & {
+    return *Then;
+  }
+  [[nodiscard]] auto getElse() const noexcept -> const ExprAST & {
+    return *Else;
+  }
 };
 
 /// NumberExprAST - AST node containing a literal number
@@ -198,7 +215,7 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] double getVal() const noexcept { return Val; }
+  [[nodiscard]] auto getVal() const noexcept -> double { return Val; }
 };
 
 /// VariableExprAST - Expression class for referencing a variable, like "a".
@@ -214,7 +231,9 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] const std::string &getName() const noexcept { return Name; }
+  [[nodiscard]] auto getName() const noexcept -> const std::string & {
+    return Name;
+  }
 };
 
 /// VarAssignExprAST - Expression class for referencing a variable, like "a".
@@ -236,10 +255,13 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] const std::vector<VarAssignPair> &getVarAs() const noexcept {
+  [[nodiscard]] auto getVarAs() const noexcept
+      -> const std::vector<VarAssignPair> & {
     return VarAs;
   }
-  [[nodiscard]] const ExprAST &getBody() const noexcept { return *Body; }
+  [[nodiscard]] auto getBody() const noexcept -> const ExprAST & {
+    return *Body;
+  }
 };
 
 /// ----------------------------------------------------------------------------
@@ -266,14 +288,17 @@ public:
       : PrototypeAST(Kind, std::move(Name), std::move(Args)) {}
   PrototypeAST(const PrototypeAST &) noexcept = default;
   PrototypeAST(PrototypeAST &&) noexcept = default;
-  virtual ~PrototypeAST() = default;
+  ~PrototypeAST() override = default;
 
   LLVM_CLASS_OF(A) {
     return A->getKind() >= Kind && A->getKind() <= ANK_LastPrototypeAST;
   }
 
-  [[nodiscard]] const std::string &getName() const noexcept { return Name; }
-  [[nodiscard]] const std::vector<std::string> &getArgs() const noexcept {
+  [[nodiscard]] auto getName() const noexcept -> const std::string & {
+    return Name;
+  }
+  [[nodiscard]] auto getArgs() const noexcept
+      -> const std::vector<std::string> & {
     return Args;
   }
 };
@@ -298,8 +323,12 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] char getOperator() const noexcept { return getName().back(); }
-  [[nodiscard]] int getPrecedence() const noexcept { return Precedence; }
+  [[nodiscard]] auto getOperator() const noexcept -> char {
+    return getName().back();
+  }
+  [[nodiscard]] auto getPrecedence() const noexcept -> int {
+    return Precedence;
+  }
 };
 
 /// ProtoUnaryAST - This class represents the "prototype" for a unary operator,
@@ -318,7 +347,9 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] char getOperator() const noexcept { return getName().back(); }
+  [[nodiscard]] auto getOperator() const noexcept -> char {
+    return getName().back();
+  }
 };
 
 /// ----------------------------------------------------------------------------
@@ -340,8 +371,12 @@ public:
 
   LLVM_CLASS_OF(A) { return A->getKind() == Kind; }
 
-  [[nodiscard]] const PrototypeAST &getProto() const noexcept { return *Proto; }
-  [[nodiscard]] const ExprAST &getBody() const noexcept { return *Body; }
+  [[nodiscard]] auto getProto() const noexcept -> const PrototypeAST & {
+    return *Proto;
+  }
+  [[nodiscard]] auto getBody() const noexcept -> const ExprAST & {
+    return *Body;
+  }
 };
 
 /// ExprAST - Base class for all expression nodes.

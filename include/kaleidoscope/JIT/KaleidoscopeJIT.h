@@ -55,7 +55,7 @@ public:
       ES->reportError(std::move(Err));
   }
 
-  static llvm::Expected<std::unique_ptr<KaleidoscopeJIT>> create() {
+  static auto create() -> llvm::Expected<std::unique_ptr<KaleidoscopeJIT>> {
     auto EPC = llvm::orc::SelfExecutorProcessControl::Create();
     if (!EPC)
       return EPC.takeError();
@@ -73,18 +73,19 @@ public:
                                              std::move(*DL));
   }
 
-  const llvm::DataLayout &getDataLayout() const { return DL; }
+  auto getDataLayout() const -> const llvm::DataLayout & { return DL; }
 
-  llvm::orc::JITDylib &getMainJITDylib() { return MainJD; }
+  auto getMainJITDylib() -> llvm::orc::JITDylib & { return MainJD; }
 
-  llvm::Error addModule(llvm::orc::ThreadSafeModule TSM,
-                        llvm::orc::ResourceTrackerSP RT = nullptr) {
+  auto addModule(llvm::orc::ThreadSafeModule TSM,
+                 llvm::orc::ResourceTrackerSP RT = nullptr) -> llvm::Error {
     if (!RT)
       RT = MainJD.getDefaultResourceTracker();
     return CompileLayer.add(RT, std::move(TSM));
   }
 
-  llvm::Expected<llvm::JITEvaluatedSymbol> lookup(llvm::StringRef Name) {
+  auto lookup(llvm::StringRef Name)
+      -> llvm::Expected<llvm::JITEvaluatedSymbol> {
     return ES->lookup({&MainJD}, Mangle(Name.str()));
   }
 };

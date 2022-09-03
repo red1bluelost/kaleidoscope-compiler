@@ -26,22 +26,22 @@ class Parser {
 
   /// getTokPrecedence - Get the precedence of the pending binary operator
   /// token.
-  int getTokPrecedence(int Tok) const;
+  auto getTokPrecedence(int Tok) const -> int;
 
   /// numberexpr ::= number
-  std::unique_ptr<NumberExprAST> parseNumberExpr();
+  auto parseNumberExpr() -> std::unique_ptr<NumberExprAST>;
 
   /// parenexpr ::= '(' expression ')'
-  std::unique_ptr<ExprAST> parseParenExpr();
+  auto parseParenExpr() -> std::unique_ptr<ExprAST>;
 
   /// identifierexpr
   ///   ::= identifier
   ///   ::= identifier '(' expression* ')'
-  std::unique_ptr<ExprAST> parseIdentifierOrCallExpr();
+  auto parseIdentifierOrCallExpr() -> std::unique_ptr<ExprAST>;
 
   /// unaryexpr
   ///   ::= unaryop expression
-  std::unique_ptr<UnaryExprAST> parseUnaryExpr();
+  auto parseUnaryExpr() -> std::unique_ptr<UnaryExprAST>;
 
   /// primary
   ///   ::= identifierexpr
@@ -51,48 +51,48 @@ class Parser {
   ///   ::= ifexpr
   ///   ::= forexpr
   ///   ::= varassignexpr
-  std::unique_ptr<ExprAST> parsePrimary();
+  auto parsePrimary() -> std::unique_ptr<ExprAST>;
 
   /// binoprhs
   ///   ::= ('+' primary)*
-  std::unique_ptr<ExprAST> parseBinOpRHS(int ExprPrec,
-                                         std::unique_ptr<ExprAST> LHS);
+  auto parseBinOpRHS(int ExprPrec, std::unique_ptr<ExprAST> LHS)
+      -> std::unique_ptr<ExprAST>;
 
   /// ifexpr
   ///   ::= 'if' expression 'then' expression 'else' expression
-  std::unique_ptr<IfExprAST> parseIfExpr();
+  auto parseIfExpr() -> std::unique_ptr<IfExprAST>;
 
   /// forexpr
   ///   ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
-  std::unique_ptr<ForExprAST> parseForExpr();
+  auto parseForExpr() -> std::unique_ptr<ForExprAST>;
 
   /// varassignexpr
   ///   ::= 'var' identifier '=' expr (',' identifier '=' expr)* 'in' expression
-  std::unique_ptr<VarAssignExprAST> parseVarAssignExpr();
+  auto parseVarAssignExpr() -> std::unique_ptr<VarAssignExprAST>;
 
   /// expression
   ///   ::= primary binoprhs
-  std::unique_ptr<ExprAST> parseExpression();
+  auto parseExpression() -> std::unique_ptr<ExprAST>;
 
   /// protobinary
   ///   ::= binary char number (id, id)
-  std::unique_ptr<ProtoBinaryAST> parseProtoBinary();
+  auto parseProtoBinary() -> std::unique_ptr<ProtoBinaryAST>;
 
   /// protounary
   ///   ::= unary char (id)
-  std::unique_ptr<ProtoUnaryAST> parseProtoUnary();
+  auto parseProtoUnary() -> std::unique_ptr<ProtoUnaryAST>;
 
   /// prototype
   ///   ::= id '(' id* ')'
   ///   ::= protobinary
   ///   ::= protounary
-  std::unique_ptr<PrototypeAST> parsePrototype();
+  auto parsePrototype() -> std::unique_ptr<PrototypeAST>;
 
   /// definition ::= 'def' prototype expression
-  std::unique_ptr<FunctionAST> parseDefinition();
+  auto parseDefinition() -> std::unique_ptr<FunctionAST>;
 
   /// external ::= 'extern' prototype
-  std::unique_ptr<PrototypeAST> parseExtern();
+  auto parseExtern() -> std::unique_ptr<PrototypeAST>;
 
 public:
   Parser(Lexer &Lex) : Lex(Lex) {}
@@ -104,11 +104,11 @@ public:
 
   /// getNextToken - reads another token from the lexer and updates CurTok with
   /// its results.
-  int getNextToken() { return CurTok = Lex.gettok(); }
-  [[nodiscard]] int getCurToken() const noexcept { return CurTok; }
+  auto getNextToken() -> int { return CurTok = Lex.gettok(); }
+  [[nodiscard]] auto getCurToken() const noexcept -> int { return CurTok; }
 
   /// astnode ::= expression | external | definition
-  std::unique_ptr<ASTNode> parse();
+  auto parse() -> std::unique_ptr<ASTNode>;
 };
 
 } // namespace kaleidoscope

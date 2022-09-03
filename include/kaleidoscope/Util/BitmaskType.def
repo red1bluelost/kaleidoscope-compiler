@@ -8,14 +8,14 @@ static_assert(false, "Must define BITMASK_TYPE to use this define file");
 #endif
 
 #define DEFINE_BINARY_OPERATOR(_type_, _op_)                                   \
-  constexpr _type_ operator _op_(_type_ _x, _type_ _y) noexcept {              \
+  constexpr auto operator _op_(_type_ _x, _type_ _y) noexcept -> _type_ {      \
     using _utype = typename std::underlying_type<_type_>::type;                \
     return static_cast<_type_>(static_cast<_utype>(_x)                         \
                                    _op_ static_cast<_utype>(_y));              \
   }
 
 #define DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(_type_, _op_)                      \
-  constexpr _type_ &operator _op_(_type_ &_x, _type_ _y) noexcept {            \
+  constexpr auto operator _op_(_type_ &_x, _type_ _y) noexcept -> _type_ & {   \
     return _x = _x _op_ _y;                                                    \
   }
 
@@ -27,11 +27,12 @@ DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(BITMASK_TYPE, &=)
 DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(BITMASK_TYPE, |=)
 DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(BITMASK_TYPE, ^=)
 
-constexpr BITMASK_TYPE operator~(BITMASK_TYPE _x) noexcept {
+constexpr auto operator~(BITMASK_TYPE _x) noexcept -> BITMASK_TYPE {
   using _utype = typename std::underlying_type<BITMASK_TYPE>::type;
   return static_cast<BITMASK_TYPE>(static_cast<_utype>(BITMASK_TYPE::All) &
                                    ~static_cast<_utype>(_x));
 }
+
 static_assert(BITMASK_TYPE::All == ~BITMASK_TYPE::None &&
               BITMASK_TYPE::None == ~BITMASK_TYPE::All &&
               (BITMASK_TYPE::All ^ BITMASK_TYPE::None) == BITMASK_TYPE::All);

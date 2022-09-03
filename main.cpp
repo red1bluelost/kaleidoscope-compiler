@@ -11,18 +11,18 @@
 #endif
 
 /// putchard - putchar that takes a double and returns 0.
-extern "C" DLLEXPORT [[maybe_unused]] double putchard(double X) {
+extern "C" DLLEXPORT [[maybe_unused]] auto putchard(double X) -> double {
   fmt::print(stderr, "{}", static_cast<char>(X));
   return X;
 }
 
 /// printd - print that takes a double prints it with newline, returning 0.
-extern "C" DLLEXPORT [[maybe_unused]] double printd(double X) {
+extern "C" DLLEXPORT [[maybe_unused]] auto printd(double X) -> double {
   fmt::print(stderr, "{}", X);
   return X;
 }
 
-int main() {
+auto main() -> int {
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();

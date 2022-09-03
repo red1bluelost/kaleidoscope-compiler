@@ -8,7 +8,7 @@
 namespace kaleidoscope {
 
 /// logError - These are little helper functions for error handling.
-inline static std::nullptr_t logError(std::string_view Str) {
+inline static auto logError(std::string_view Str) -> std::nullptr_t {
   fmt::print(stderr, "Error: {}\n", Str);
   return nullptr;
 }

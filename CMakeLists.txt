@@ -52,8 +52,7 @@ set(KALEIDOSCOPE_SOURCES
         lib/AST/Dump/XMLDump.cpp
         lib/Parser/Parser.cpp
         lib/CodeGen/CodeGen.cpp
-        lib/Driver/Driver.cpp
-        lib/JIT/KaleidoscopeJIT.cpp)
+        lib/Driver/Driver.cpp)
 set(KALEIDOSCOPE_HEADERS
         include/kaleidoscope/Lexer/Lexer.h
         include/kaleidoscope/AST/AST.h

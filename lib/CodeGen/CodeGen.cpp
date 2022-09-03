@@ -342,7 +342,8 @@ auto CodeGen::createEntryBlockAlloca(llvm::Function *Func,
                                      const llvm::Twine &VarName)
     -> llvm::AllocaInst * {
   llvm::IRBuilder<> TmpB(&Func->getEntryBlock(), Func->getEntryBlock().begin());
-  return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*CGS->Context), 0, VarName);
+  return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*CGS->Context), nullptr,
+                           VarName);
 }
 
 auto CodeGen::handleAnonExpr(const ExprAST &A) -> llvm::Function * {

@@ -48,25 +48,25 @@ private:
   int LastChar = ' ';
 
   // Identifiers: [_a-zA-Z][_a-zA-Z0-9]*
-  int handleIdentifier();
+  auto handleIdentifier() -> int;
 
   // Number: [0-9.]+
-  int handleNumber();
+  auto handleNumber() -> int;
 
   // Comment
-  int handleComment();
+  auto handleComment() -> int;
 
 public:
   Lexer(std::function<int()> GetChar = std::getchar) noexcept
       : GetChar(std::move(GetChar)) {}
 
-  [[nodiscard]] const std::string &getIdentifierStr() const noexcept {
+  [[nodiscard]] auto getIdentifierStr() const noexcept -> const std::string & {
     return IdentifierStr;
   }
-  [[nodiscard]] double getNumVal() const noexcept { return NumVal; }
+  [[nodiscard]] auto getNumVal() const noexcept -> double { return NumVal; }
 
   /// gettok - Return the next token from standard input.
-  int gettok();
+  auto gettok() -> int;
 };
 } // namespace kaleidoscope
 

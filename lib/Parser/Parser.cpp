@@ -8,7 +8,7 @@ static const std::unordered_map<char, int> DefaultBinOpPrec{
     {':', 1},  {'=', 2},  {'<', 10}, {'>', 10},
     {'+', 20}, {'-', 20}, {'*', 40}, {'/', 40}};
 
-int Parser::getTokPrecedence(int Tok) const {
+auto Parser::getTokPrecedence(int Tok) const -> int {
   if (!isascii(Tok))
     return -1;
   char C = static_cast<char>(Tok);
@@ -19,13 +19,13 @@ int Parser::getTokPrecedence(int Tok) const {
   return -1;
 }
 
-std::unique_ptr<NumberExprAST> Parser::parseNumberExpr() {
+auto Parser::parseNumberExpr() -> std::unique_ptr<NumberExprAST> {
   auto Res = std::make_unique<NumberExprAST>(Lex.getNumVal());
   getNextToken();
   return Res;
 }
 
-std::unique_ptr<ExprAST> Parser::parseParenExpr() {
+auto Parser::parseParenExpr() -> std::unique_ptr<ExprAST> {
   getNextToken(); // eat (
   auto V = parseExpression();
   if (!V)
@@ -36,7 +36,7 @@ std::unique_ptr<ExprAST> Parser::parseParenExpr() {
   return V;
 }
 
-std::unique_ptr<ExprAST> Parser::parseIdentifierOrCallExpr() {
+auto Parser::parseIdentifierOrCallExpr() -> std::unique_ptr<ExprAST> {
   std::string IdName = Lex.getIdentifierStr();
   getNextToken(); // eat identifier
 
@@ -69,7 +69,7 @@ std::unique_ptr<ExprAST> Parser::parseIdentifierOrCallExpr() {
   return std::make_unique<CallExprAST>(std::move(IdName), std::move(Args));
 }
 
-std::unique_ptr<UnaryExprAST> Parser::parseUnaryExpr() {
+auto Parser::parseUnaryExpr() -> std::unique_ptr<UnaryExprAST> {
   if (!isascii(CurTok) || !UserUnaryOps.contains(static_cast<char>(CurTok)))
     return logError("Unknown unary expression.");
 
@@ -82,7 +82,7 @@ std::unique_ptr<UnaryExprAST> Parser::parseUnaryExpr() {
   return logError("Failed to parse operand expression for unary op");
 }
 
-std::unique_ptr<ExprAST> Parser::parsePrimary() {
+auto Parser::parsePrimary() -> std::unique_ptr<ExprAST> {
   switch (CurTok) {
   default:
     return parseUnaryExpr();
@@ -101,8 +101,8 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
   }
 }
 
-std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
-                                               std::unique_ptr<ExprAST> LHS) {
+auto Parser::parseBinOpRHS(int ExprPrec, std::unique_ptr<ExprAST> LHS)
+    -> std::unique_ptr<ExprAST> {
   // if this is a binop, find its precedence
   while (CurTok != Lexer::tok_eof && CurTok != ';') {
     int TokPrec = getTokPrecedence(CurTok);
@@ -135,7 +135,7 @@ std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int ExprPrec,
   return LHS;
 }
 
-std::unique_ptr<IfExprAST> Parser::parseIfExpr() {
+auto Parser::parseIfExpr() -> std::unique_ptr<IfExprAST> {
   getNextToken(); // eat the "if"
 
   auto Cond = parseExpression();
@@ -162,7 +162,7 @@ std::unique_ptr<IfExprAST> Parser::parseIfExpr() {
                                      std::move(Else));
 }
 
-std::unique_ptr<ForExprAST> Parser::parseForExpr() {
+auto Parser::parseForExpr() -> std::unique_ptr<ForExprAST> {
   getNextToken(); // eat "for"
 
   if (CurTok != Lexer::tok_identifier)
@@ -207,7 +207,7 @@ std::unique_ptr<ForExprAST> Parser::parseForExpr() {
                                       std::move(Step), std::move(Body));
 }
 
-std::unique_ptr<VarAssignExprAST> Parser::parseVarAssignExpr() {
+auto Parser::parseVarAssignExpr() -> std::unique_ptr<VarAssignExprAST> {
   std::vector<VarAssignExprAST::VarAssignPair> VarAssigns{};
   while (true) {
     if (getNextToken() != Lexer::tok_identifier)
@@ -240,14 +240,14 @@ std::unique_ptr<VarAssignExprAST> Parser::parseVarAssignExpr() {
                                             std::move(Expr));
 }
 
-std::unique_ptr<ExprAST> Parser::parseExpression() {
+auto Parser::parseExpression() -> std::unique_ptr<ExprAST> {
   auto LHS = parsePrimary();
   if (!LHS)
     return nullptr;
   return parseBinOpRHS(0, std::move(LHS));
 }
 
-std::unique_ptr<ProtoBinaryAST> Parser::parseProtoBinary() {
+auto Parser::parseProtoBinary() -> std::unique_ptr<ProtoBinaryAST> {
   if (!isascii(getNextToken()))
     return logError("Expected binary operator");
   char Op = static_cast<char>(CurTok);
@@ -283,7 +283,7 @@ std::unique_ptr<ProtoBinaryAST> Parser::parseProtoBinary() {
       Op, std::array{std::move(LHS), std::move(RHS)}, Prec);
 }
 
-std::unique_ptr<ProtoUnaryAST> Parser::parseProtoUnary() {
+auto Parser::parseProtoUnary() -> std::unique_ptr<ProtoUnaryAST> {
   if (!isascii(getNextToken()))
     return logError("Expected unary operator");
   char Op = static_cast<char>(CurTok);
@@ -306,7 +306,7 @@ std::unique_ptr<ProtoUnaryAST> Parser::parseProtoUnary() {
   return std::make_unique<ProtoUnaryAST>(Op, std::array{std::move(Arg)});
 }
 
-std::unique_ptr<PrototypeAST> Parser::parsePrototype() {
+auto Parser::parsePrototype() -> std::unique_ptr<PrototypeAST> {
   switch (CurTok) {
   default:
     return logError("expected function name or operator in prototype");
@@ -335,7 +335,7 @@ std::unique_ptr<PrototypeAST> Parser::parsePrototype() {
   return std::make_unique<PrototypeAST>(std::move(FnName), std::move(ArgNames));
 }
 
-std::unique_ptr<FunctionAST> Parser::parseDefinition() {
+auto Parser::parseDefinition() -> std::unique_ptr<FunctionAST> {
   getNextToken(); // eat def
   auto Proto = parsePrototype();
   if (!Proto)
@@ -348,7 +348,7 @@ std::unique_ptr<FunctionAST> Parser::parseDefinition() {
   return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
 }
 
-std::unique_ptr<PrototypeAST> Parser::parseExtern() {
+auto Parser::parseExtern() -> std::unique_ptr<PrototypeAST> {
   getNextToken(); // eat extern
   auto P = parsePrototype();
   if (!P)
@@ -358,7 +358,7 @@ std::unique_ptr<PrototypeAST> Parser::parseExtern() {
   return P;
 }
 
-std::unique_ptr<ASTNode> Parser::parse() {
+auto Parser::parse() -> std::unique_ptr<ASTNode> {
   switch (getNextToken()) {
   case ';':
     return logError("given semicolon where expression should start");

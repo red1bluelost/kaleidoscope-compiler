@@ -7,7 +7,7 @@
 
 using namespace kaleidoscope;
 
-int Lexer::handleIdentifier() {
+auto Lexer::handleIdentifier() -> int {
   IdentifierStr = static_cast<char>(LastChar);
   while (std::isalnum((LastChar = GetChar())) || LastChar == '_')
     IdentifierStr += static_cast<char>(LastChar);
@@ -26,7 +26,7 @@ int Lexer::handleIdentifier() {
       .Default(tok_identifier);
 }
 
-int Lexer::handleNumber() {
+auto Lexer::handleNumber() -> int {
   std::string NumStr;
   do {
     NumStr += static_cast<char>(LastChar);
@@ -41,7 +41,7 @@ int Lexer::handleNumber() {
   return tok_number;
 }
 
-int Lexer::handleComment() {
+auto Lexer::handleComment() -> int {
   // Comment until end of line.
   LastChar = GetChar();
   while (LastChar != EOF && LastChar != '\n' && LastChar != '\r')
@@ -52,7 +52,7 @@ int Lexer::handleComment() {
   return gettok();
 }
 
-int Lexer::gettok() {
+auto Lexer::gettok() -> int {
   // Skip any whitespace.
   while (std::isspace(LastChar))
     LastChar = GetChar();

@@ -29,12 +29,12 @@ class Driver : public ASTVisitor<Driver, AVDelType::None> {
 
   std::unique_ptr<llvm::legacy::FunctionPassManager> FPM;
 
-  std::unique_ptr<CodeGen::Session> resetSession();
+  auto resetSession() -> std::unique_ptr<CodeGen::Session>;
 
-  VisitRet visitImpl(const ExprAST &A);
-  VisitRet visitImpl(const FunctionAST &A);
-  VisitRet visitImpl(const PrototypeAST &A);
-  VisitRet visitImpl(const EndOfFileAST &) const noexcept {
+  auto visitImpl(const ExprAST &A) -> VisitRet;
+  auto visitImpl(const FunctionAST &A) -> VisitRet;
+  auto visitImpl(const PrototypeAST &A) -> VisitRet;
+  auto visitImpl(const EndOfFileAST &) const noexcept -> VisitRet {
     return VisitRet::EndOfFile;
   }
 

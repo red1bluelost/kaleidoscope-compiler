@@ -10,8 +10,8 @@
 
 using namespace kaleidoscope;
 
-static std::unique_ptr<llvm::legacy::FunctionPassManager>
-setUpFPM(llvm::Module *Mod) {
+static auto setUpFPM(llvm::Module *Mod)
+    -> std::unique_ptr<llvm::legacy::FunctionPassManager> {
   auto FPM = std::make_unique<llvm::legacy::FunctionPassManager>(Mod);
 
   // Promote allocas to registers.
@@ -35,7 +35,7 @@ Driver::Driver()
   resetSession();
 }
 
-std::unique_ptr<CodeGen::Session> Driver::resetSession() {
+auto Driver::resetSession() -> std::unique_ptr<CodeGen::Session> {
   auto LastCGSess = CG.takeSession();
   auto &Mod = CG.getModule();
   Mod.setDataLayout(JIT->getDataLayout());
@@ -43,7 +43,7 @@ std::unique_ptr<CodeGen::Session> Driver::resetSession() {
   return LastCGSess;
 }
 
-Driver::VisitRet Driver::visitImpl(const FunctionAST &A) {
+auto Driver::visitImpl(const FunctionAST &A) -> VisitRet {
   auto *FnIR = CG.visit(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -58,7 +58,7 @@ Driver::VisitRet Driver::visitImpl(const FunctionAST &A) {
   return VisitRet::Success;
 }
 
-Driver::VisitRet Driver::visitImpl(const PrototypeAST &A) {
+auto Driver::visitImpl(const PrototypeAST &A) -> VisitRet {
   auto *FnIR = CG.visit(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -70,7 +70,7 @@ Driver::VisitRet Driver::visitImpl(const PrototypeAST &A) {
   return VisitRet::Success;
 }
 
-Driver::VisitRet Driver::visitImpl(const ExprAST &A) {
+auto Driver::visitImpl(const ExprAST &A) -> VisitRet {
   auto *FnIR = CG.handleAnonExpr(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -94,8 +94,8 @@ Driver::VisitRet Driver::visitImpl(const ExprAST &A) {
 
   // Get the symbol's address and cast it to the right type (takes no
   // arguments, returns a double) so we can call it as a native function.
-  TLEntryPointer FP =
-      (TLEntryPointer) static_cast<intptr_t>(ExprSymbol.getAddress());
+  auto FP = reinterpret_cast<TLEntryPointer>(
+      static_cast<intptr_t>(ExprSymbol.getAddress()));
   fmt::print(stderr, "Evaluated to {}\n", FP());
 
   // Delete the anonymous expression module from the JIT.
