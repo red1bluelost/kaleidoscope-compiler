@@ -20,9 +20,9 @@ namespace kaleidoscope {
 
 class KaleidoscopeJIT {
 private:
-  const std::unique_ptr<llvm::orc::ExecutionSession> ES;
+  const std::unique_ptr<llvm::orc::ExecutionSession> ExecSess;
 
-  const llvm::DataLayout DL;
+  const llvm::DataLayout DataLayout;
   llvm::orc::MangleAndInterner Mangle;
 
   llvm::orc::RTDyldObjectLinkingLayer ObjectLayer;
@@ -33,26 +33,29 @@ private:
 public:
   KaleidoscopeJIT(std::unique_ptr<llvm::orc::ExecutionSession> ES,
                   llvm::orc::JITTargetMachineBuilder JTMB, llvm::DataLayout DL)
-      : ES(std::move(ES)), DL(std::move(DL)), Mangle(*this->ES, this->DL),
+      : ExecSess(std::move(ES)), DataLayout(std::move(DL)),
+        Mangle(*ExecSess, DataLayout),
         ObjectLayer(
-            *this->ES,
+            *ExecSess,
             []() { return std::make_unique<llvm::SectionMemoryManager>(); }),
         CompileLayer(
-            *this->ES, ObjectLayer,
+            *ExecSess, ObjectLayer,
             std::make_unique<llvm::orc::ConcurrentIRCompiler>(std::move(JTMB))),
-        MainJD(this->ES->createBareJITDylib("<main>")) {
+        MainJD(ExecSess->createBareJITDylib("<main>")) {
     MainJD.addGenerator(
         cantFail(llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
-            DL.getGlobalPrefix())));
-    if (JTMB.getTargetTriple().isOSBinFormatCOFF()) {
+            DataLayout.getGlobalPrefix())));
+    if (ExecSess->getExecutorProcessControl()
+            .getTargetTriple()
+            .isOSBinFormatCOFF()) {
       ObjectLayer.setOverrideObjectFlagsWithResponsibilityFlags(true);
       ObjectLayer.setAutoClaimResponsibilityForObjectSymbols(true);
     }
   }
 
   ~KaleidoscopeJIT() {
-    if (auto Err = ES->endSession())
-      ES->reportError(std::move(Err));
+    if (auto Err = ExecSess->endSession())
+      ExecSess->reportError(std::move(Err));
   }
 
   static auto create() -> llvm::Expected<std::unique_ptr<KaleidoscopeJIT>> {
@@ -73,7 +76,7 @@ public:
                                              std::move(*DL));
   }
 
-  auto getDataLayout() const -> const llvm::DataLayout & { return DL; }
+  auto getDataLayout() const -> const llvm::DataLayout & { return DataLayout; }
 
   auto getMainJITDylib() -> llvm::orc::JITDylib & { return MainJD; }
 
@@ -86,7 +89,7 @@ public:
 
   auto lookup(llvm::StringRef Name)
       -> llvm::Expected<llvm::JITEvaluatedSymbol> {
-    return ES->lookup({&MainJD}, Mangle(Name.str()));
+    return ExecSess->lookup({&MainJD}, Mangle(Name.str()));
   }
 };
 

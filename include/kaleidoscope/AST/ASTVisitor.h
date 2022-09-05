@@ -19,7 +19,7 @@ enum class AVDelType {
 
 template <typename SubClass, AVDelType Delegate>
 class ASTVisitor {
-#define DELEGATE(AST) static_cast<SubClass *>(this)->visitImpl(AST)
+#define DELEGATE(AST) (static_cast<SubClass *>(this)->visitImpl(AST))
 
 #define HANDLE_EXPR_AST(AST_TYPE)                                              \
   case AST_TYPE::Kind:                                                         \

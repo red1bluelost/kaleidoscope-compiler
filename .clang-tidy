@@ -1,5 +1,6 @@
 Checks: >
         -*,
+        bugprone-*,
         clang-diagnostic-*,
         modernize-*,
         -modernize-return-braced-init-list,

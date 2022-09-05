@@ -18,7 +18,8 @@ namespace kaleidoscope {
 
 #define LLVM_CLASS_OF(_id_name_)                                               \
   [[maybe_unused]] static constexpr auto classof(                              \
-      const ASTNode *_id_name_) noexcept -> bool
+      const ASTNode *                                                          \
+          _id_name_ /* NOLINT(bugprone-macro-parentheses) */) noexcept -> bool
 
 /// ----------------------------------------------------------------------------
 /// Abstract Syntax Tree
