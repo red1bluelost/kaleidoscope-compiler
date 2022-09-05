@@ -27,6 +27,8 @@ class Driver : public ASTVisitor<Driver, AVDelType::None> {
   CodeGen CG;
   const std::unique_ptr<KaleidoscopeJIT> JIT;
 
+  llvm::TargetMachine *TargetMachine;
+
   std::unique_ptr<llvm::legacy::FunctionPassManager> FPM;
 
   auto resetSession() -> std::unique_ptr<CodeGen::Session>;

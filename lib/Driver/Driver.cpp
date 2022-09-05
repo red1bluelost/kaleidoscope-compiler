@@ -1,6 +1,9 @@
 #include "kaleidoscope/Driver/Driver.h"
 
+#include <llvm/ADT/Optional.h>
+#include <llvm/MC/TargetRegistry.h>
 #include <llvm/Support/Error.h>
+#include <llvm/Support/Host.h>
 #include <llvm/Transforms/InstCombine/InstCombine.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Scalar/GVN.h>
@@ -30,8 +33,42 @@ static auto setUpFPM(llvm::Module *Mod)
   return FPM;
 }
 
+static void generateObjFile(std::string_view FN, llvm::TargetMachine &TM,
+                            llvm::Module &Mod) {
+  std::error_code EC;
+  llvm::raw_fd_ostream Dest(fmt::format("{}.o", FN), EC,
+                            llvm::sys::fs::OF_None);
+  if (EC) {
+    fmt::print(stderr, "Could not open file: {}\n", EC.message());
+    std::exit(1);
+  }
+
+  llvm::legacy::PassManager Pass;
+  if (TM.addPassesToEmitFile(Pass, Dest, nullptr, llvm::CGFT_ObjectFile)) {
+    fmt::print(stderr, "TargetMachine can't emit a file of this type\n");
+    std::exit(1);
+  }
+
+  Mod.setDataLayout(TM.createDataLayout());
+  Mod.setTargetTriple(TM.getTargetTriple().str());
+
+  Pass.run(Mod);
+}
+
 Driver::Driver()
     : Lex(), Parse(Lex), CG(), JIT(ExitOnErr(KaleidoscopeJIT::create())) {
+  {
+    std::string TargetTriple = llvm::sys::getDefaultTargetTriple();
+    std::string Error;
+    auto *Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+    if (!Target) {
+      fmt::print(stderr, "{}\n", Error);
+      std::exit(1);
+    }
+    TargetMachine = Target->createTargetMachine(
+        TargetTriple, "generic", "", llvm::TargetOptions{}, llvm::None);
+  }
+
   resetSession();
 }
 
@@ -53,6 +90,9 @@ auto Driver::visitImpl(const FunctionAST &A) -> VisitRet {
   llvm::errs() << *FnIR;
   fmt::print(stderr, "\n");
   auto CGSess = resetSession();
+
+  generateObjFile(A.getProto().getName(), *TargetMachine, *CGSess->Module);
+
   ExitOnErr(JIT->addModule(llvm::orc::ThreadSafeModule(
       std::move(CGSess->Module), std::move(CGSess->Context))));
   return VisitRet::Success;
