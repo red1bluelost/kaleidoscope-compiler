@@ -1,4 +1,4 @@
-#include "kaleidoscope/Driver/Driver.h"
+#include "kaleidoscope/Driver/ReplDriver.h"
 
 #include <llvm/ADT/Optional.h>
 #include <llvm/MC/TargetRegistry.h>
@@ -55,7 +55,7 @@ static void generateObjFile(std::string_view FN, llvm::TargetMachine &TM,
   Pass.run(Mod);
 }
 
-Driver::Driver()
+ReplDriver::ReplDriver()
     : Lex(), Parse(Lex), CG(), JIT(ExitOnErr(KaleidoscopeJIT::create())) {
   {
     std::string TargetTriple = llvm::sys::getDefaultTargetTriple();
@@ -72,7 +72,7 @@ Driver::Driver()
   resetSession();
 }
 
-auto Driver::resetSession() -> std::unique_ptr<CodeGen::Session> {
+auto ReplDriver::resetSession() -> std::unique_ptr<CodeGen::Session> {
   auto LastCGSess = CG.takeSession();
   auto &Mod = CG.getModule();
   Mod.setDataLayout(JIT->getDataLayout());
@@ -80,7 +80,7 @@ auto Driver::resetSession() -> std::unique_ptr<CodeGen::Session> {
   return LastCGSess;
 }
 
-auto Driver::visitImpl(const FunctionAST &A) -> VisitRet {
+auto ReplDriver::visitImpl(const FunctionAST &A) -> VisitRet {
   auto *FnIR = CG.visit(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -98,7 +98,7 @@ auto Driver::visitImpl(const FunctionAST &A) -> VisitRet {
   return VisitRet::Success;
 }
 
-auto Driver::visitImpl(const PrototypeAST &A) -> VisitRet {
+auto ReplDriver::visitImpl(const PrototypeAST &A) -> VisitRet {
   auto *FnIR = CG.visit(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -110,7 +110,7 @@ auto Driver::visitImpl(const PrototypeAST &A) -> VisitRet {
   return VisitRet::Success;
 }
 
-auto Driver::visitImpl(const ExprAST &A) -> VisitRet {
+auto ReplDriver::visitImpl(const ExprAST &A) -> VisitRet {
   auto *FnIR = CG.handleAnonExpr(A);
   if (!FnIR)
     return VisitRet::Error;
@@ -143,7 +143,7 @@ auto Driver::visitImpl(const ExprAST &A) -> VisitRet {
   return VisitRet::Success;
 }
 
-void Driver::mainLoop() {
+void ReplDriver::mainLoop() {
   while (true) {
     fmt::print(stderr, "ready> ");
 

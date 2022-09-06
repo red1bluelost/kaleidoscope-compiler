@@ -1,5 +1,5 @@
-#ifndef KALEIDOSCOPE_DRIVER_DRIVER_H
-#define KALEIDOSCOPE_DRIVER_DRIVER_H
+#ifndef KALEIDOSCOPE_DRIVER_REPLDRIVER_H
+#define KALEIDOSCOPE_DRIVER_REPLDRIVER_H
 
 #include "kaleidoscope/AST/ASTVisitor.h"
 #include "kaleidoscope/CodeGen/CodeGen.h"
@@ -12,8 +12,8 @@
 
 namespace kaleidoscope {
 
-class Driver : public ASTVisitor<Driver, AVDelType::None> {
-  using Parent = ASTVisitor<Driver, AVDelType::None>;
+class ReplDriver : protected ASTVisitor<ReplDriver, AVDelType::None> {
+  using Parent = ASTVisitor<ReplDriver, AVDelType::None>;
   friend Parent;
 
   using TLEntryPointer = double (*)();
@@ -41,11 +41,11 @@ class Driver : public ASTVisitor<Driver, AVDelType::None> {
   }
 
 public:
-  explicit Driver();
-  /// top ::= definition | external | expression | ';'
+  explicit ReplDriver();
+  /// top ::= definition | external | expression
   void mainLoop();
 };
 
 } // namespace kaleidoscope
 
-#endif // KALEIDOSCOPE_DRIVER_DRIVER_H
+#endif // KALEIDOSCOPE_DRIVER_REPLDRIVER_H

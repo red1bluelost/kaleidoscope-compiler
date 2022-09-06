@@ -1,4 +1,4 @@
-#include "kaleidoscope/Driver/Driver.h"
+#include "kaleidoscope/Driver/ReplDriver.h"
 
 #include <llvm/Support/TargetSelect.h>
 
@@ -27,5 +27,5 @@ auto main() -> int {
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
 
-  kaleidoscope::Driver().mainLoop();
+  kaleidoscope::ReplDriver().mainLoop();
 }

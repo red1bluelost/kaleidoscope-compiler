@@ -52,7 +52,7 @@ set(KALEIDOSCOPE_SOURCES
         lib/AST/Dump/XMLDump.cpp
         lib/Parser/Parser.cpp
         lib/CodeGen/CodeGen.cpp
-        lib/Driver/Driver.cpp)
+        lib/Driver/ReplDriver.cpp)
 set(KALEIDOSCOPE_HEADERS
         include/kaleidoscope/Lexer/Lexer.h
         include/kaleidoscope/AST/AST.h
@@ -62,7 +62,7 @@ set(KALEIDOSCOPE_HEADERS
         include/kaleidoscope/CodeGen/CodeGen.h
         include/kaleidoscope/Util/Error/Log.h
         include/kaleidoscope/Util/BitmaskType.def
-        include/kaleidoscope/Driver/Driver.h
+        include/kaleidoscope/Driver/ReplDriver.h
         include/kaleidoscope/JIT/KaleidoscopeJIT.h)
 
 include_directories(include)
