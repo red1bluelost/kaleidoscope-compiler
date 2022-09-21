@@ -18,7 +18,7 @@ static_assert(false, "Must define BITMASK_TYPE to use this define file");
   }
 
 #define DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(_op_)                              \
-  constexpr auto operator _op_(BITMASK_TYPE &_x, BITMASK_TYPE _y) noexcept     \
+  constexpr auto operator _op_##=(BITMASK_TYPE &_x, BITMASK_TYPE _y) noexcept  \
       -> BITMASK_TYPE & { /* NOLINT(bugprone-macro-parentheses) */             \
     return _x = _x _op_ /* NOLINT(bugprone-macro-parentheses) */ _y;           \
   }
@@ -27,9 +27,9 @@ DEFINE_BINARY_OPERATOR(&)
 DEFINE_BINARY_OPERATOR(|)
 DEFINE_BINARY_OPERATOR(^)
 
-DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(&=)
-DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(|=)
-DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(^=)
+DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(&)
+DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(|)
+DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(^)
 
 constexpr auto operator~(BITMASK_TYPE _x) noexcept -> BITMASK_TYPE {
   using _utype = typename std::underlying_type<BITMASK_TYPE>::type;
