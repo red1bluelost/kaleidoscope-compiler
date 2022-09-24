@@ -11,7 +11,7 @@
 namespace kaleidoscope {
 
 class Parser {
-  Lexer &Lex;
+  Lexer& Lex;
 
   /// CurTok/getNextToken - Provide a simple token buffer.
   /// CurTok is the current token the parser is looking at.
@@ -94,17 +94,19 @@ class Parser {
   /// external ::= 'extern' prototype
   auto parseExtern() -> std::unique_ptr<PrototypeAST>;
 
-public:
-  Parser(Lexer &Lex) : Lex(Lex) {}
+ public:
+  explicit Parser(Lexer& Lex) : Lex(Lex) {}
+
   ~Parser() = default;
 
-  Parser() = delete;
-  Parser(const Parser &) = delete;
-  Parser(Parser &&) = delete;
+  Parser()              = delete;
+  Parser(const Parser&) = delete;
+  Parser(Parser&&)      = delete;
 
   /// getNextToken - reads another token from the lexer and updates CurTok with
   /// its results.
   auto getNextToken() -> int { return CurTok = Lex.gettok(); }
+
   [[nodiscard]] auto getCurToken() const noexcept -> int { return CurTok; }
 
   /// astnode ::= expression | external | definition

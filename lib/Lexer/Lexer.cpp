@@ -35,8 +35,7 @@ auto Lexer::handleNumber() -> int {
 
   std::size_t Len;
   NumVal = std::stod(NumStr, &Len);
-  if (Len != NumStr.length())
-    return tok_err;
+  if (Len != NumStr.length()) return tok_err;
 
   return tok_number;
 }
@@ -47,22 +46,17 @@ auto Lexer::handleComment() -> int {
   while (LastChar != EOF && LastChar != '\n' && LastChar != '\r')
     LastChar = GetChar();
 
-  if (LastChar == EOF)
-    return tok_eof;
+  if (LastChar == EOF) return tok_eof;
   return gettok();
 }
 
 auto Lexer::gettok() -> int {
   // Skip any whitespace.
-  while (std::isspace(LastChar))
-    LastChar = GetChar();
+  while (std::isspace(LastChar)) LastChar = GetChar();
 
-  if (std::isalpha(LastChar) || LastChar == '_')
-    return handleIdentifier();
-  if (std::isdigit(LastChar) || LastChar == '.')
-    return handleNumber();
-  if (LastChar == '#')
-    return handleComment();
+  if (std::isalpha(LastChar) || LastChar == '_') return handleIdentifier();
+  if (std::isdigit(LastChar) || LastChar == '.') return handleNumber();
+  if (LastChar == '#') return handleComment();
   if (LastChar == EOF) // Check for end of file. Don't eat the EOF.
     return tok_eof;
 

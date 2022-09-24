@@ -22,25 +22,26 @@ class ReplDriver : protected ASTVisitor<ReplDriver, AVDelType::None> {
 
   const llvm::ExitOnError ExitOnErr{};
 
-  Lexer Lex;
-  Parser Parse;
-  CodeGen CG;
+  Lexer                                  Lex;
+  Parser                                 Parse;
+  CodeGen                                CG;
   const std::unique_ptr<KaleidoscopeJIT> JIT;
 
-  llvm::TargetMachine *TargetMachine;
+  llvm::TargetMachine* TargetMachine;
 
   std::unique_ptr<llvm::legacy::FunctionPassManager> FPM;
 
   auto resetSession() -> std::unique_ptr<CodeGen::Session>;
 
-  auto visitImpl(const ExprAST &A) -> VisitRet;
-  auto visitImpl(const FunctionAST &A) -> VisitRet;
-  auto visitImpl(const PrototypeAST &A) -> VisitRet;
-  auto visitImpl(const EndOfFileAST &) const noexcept -> VisitRet {
+  auto visitImpl(const ExprAST& A) -> VisitRet;
+  auto visitImpl(const FunctionAST& A) -> VisitRet;
+  auto visitImpl(const PrototypeAST& A) -> VisitRet;
+
+  auto visitImpl(const EndOfFileAST&) const noexcept -> VisitRet {
     return VisitRet::EndOfFile;
   }
 
-public:
+ public:
   explicit ReplDriver();
   /// top ::= definition | external | expression
   void mainLoop();

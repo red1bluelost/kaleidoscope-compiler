@@ -188,7 +188,8 @@ TEST(LexerTest, Char_OpenParen) {
 TEST(LexerTest, EndOfFile) {
   // Arrange
   Lexer Lex{makeGetCharWithString(
-      std::string(1, static_cast<char>(std::char_traits<char>::eof())))};
+      std::string(1, static_cast<char>(std::char_traits<char>::eof()))
+  )};
 
   // Act
   int Tok = Lex.gettok();

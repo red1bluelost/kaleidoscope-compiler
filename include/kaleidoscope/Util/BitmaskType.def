@@ -8,20 +8,18 @@ static_assert(false, "Must define BITMASK_TYPE to use this define file");
 #endif
 
 #define DEFINE_BINARY_OPERATOR(_op_)                                           \
-  constexpr auto operator _op_(BITMASK_TYPE _x, BITMASK_TYPE _y) noexcept      \
-      -> BITMASK_TYPE {                                                        \
-    using _utype = typename std::underlying_type<BITMASK_TYPE>::type;          \
-    return static_cast<BITMASK_TYPE>(                                          \
-        static_cast<_utype>(_x)                                                \
-            _op_ /* NOLINT(bugprone-macro-parentheses) */ static_cast<_utype>( \
-                _y));                                                          \
-  }
+ constexpr auto operator _op_(BITMASK_TYPE _x, BITMASK_TYPE _y) noexcept       \
+     -> BITMASK_TYPE {                                                         \
+  using _utype = typename std::underlying_type<BITMASK_TYPE>::type;            \
+  return static_cast<BITMASK_TYPE>(static_cast<_utype>(_x                      \
+  ) _op_ /* NOLINT(bugprone-macro-parentheses) */ static_cast<_utype>(_y));    \
+ }
 
 #define DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(_op_)                              \
-  constexpr auto operator _op_##=(BITMASK_TYPE &_x, BITMASK_TYPE _y) noexcept  \
-      -> BITMASK_TYPE & { /* NOLINT(bugprone-macro-parentheses) */             \
-    return _x = _x _op_ /* NOLINT(bugprone-macro-parentheses) */ _y;           \
-  }
+ constexpr auto operator _op_##=(BITMASK_TYPE& _x, BITMASK_TYPE _y) noexcept   \
+     -> BITMASK_TYPE& { /* NOLINT(bugprone-macro-parentheses) */               \
+  return _x = _x _op_ /* NOLINT(bugprone-macro-parentheses) */ _y;             \
+ }
 
 DEFINE_BINARY_OPERATOR(&)
 DEFINE_BINARY_OPERATOR(|)
@@ -33,13 +31,16 @@ DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(^)
 
 constexpr auto operator~(BITMASK_TYPE _x) noexcept -> BITMASK_TYPE {
   using _utype = typename std::underlying_type<BITMASK_TYPE>::type;
-  return static_cast<BITMASK_TYPE>(static_cast<_utype>(BITMASK_TYPE::All) &
-                                   ~static_cast<_utype>(_x));
+  return static_cast<BITMASK_TYPE>(
+      static_cast<_utype>(BITMASK_TYPE::All) & ~static_cast<_utype>(_x)
+  );
 }
 
-static_assert(BITMASK_TYPE::All == ~BITMASK_TYPE::None &&
-              BITMASK_TYPE::None == ~BITMASK_TYPE::All &&
-              (BITMASK_TYPE::All ^ BITMASK_TYPE::None) == BITMASK_TYPE::All);
+static_assert(
+    BITMASK_TYPE::All == ~BITMASK_TYPE::None
+    && BITMASK_TYPE::None == ~BITMASK_TYPE::All
+    && (BITMASK_TYPE::All ^ BITMASK_TYPE::None) == BITMASK_TYPE::All
+);
 
 #undef DEFINE_COMPOUND_ASSIGNMENT_OPERATOR
 #undef DEFINE_BINARY_OPERATORS

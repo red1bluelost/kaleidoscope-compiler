@@ -8,30 +8,30 @@
 namespace kaleidoscope {
 
 class Lexer {
-public:
+ public:
   /// The lexer returns tokens [0-255] if it is an unknown character, otherwise
   /// one of these for known things.
   enum Token {
     tok_eof = -1,
 
     // commands
-    tok_def = -2,
+    tok_def    = -2,
     tok_extern = -3,
 
     // primary
     tok_identifier = -4,
-    tok_number = -5,
+    tok_number     = -5,
 
     // control
-    tok_if = -6,
+    tok_if   = -6,
     tok_then = -7,
     tok_else = -8,
-    tok_for = -9,
-    tok_in = -10,
+    tok_for  = -9,
+    tok_in   = -10,
 
     // operators
     tok_binary = -11,
-    tok_unary = -12,
+    tok_unary  = -12,
 
     // variable assignment
     tok_var = -13,
@@ -40,10 +40,10 @@ public:
     tok_err = -256,
   };
 
-private:
+ private:
   std::function<int()> GetChar;
-  std::string IdentifierStr;
-  double NumVal;
+  std::string          IdentifierStr;
+  double               NumVal;
 
   int LastChar = ' ';
 
@@ -56,13 +56,14 @@ private:
   // Comment
   auto handleComment() -> int;
 
-public:
+ public:
   Lexer(std::function<int()> GetChar = std::getchar) noexcept
       : GetChar(std::move(GetChar)) {}
 
-  [[nodiscard]] auto getIdentifierStr() const noexcept -> const std::string & {
+  [[nodiscard]] auto getIdentifierStr() const noexcept -> const std::string& {
     return IdentifierStr;
   }
+
   [[nodiscard]] auto getNumVal() const noexcept -> double { return NumVal; }
 
   /// gettok - Return the next token from standard input.

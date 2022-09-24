@@ -5,9 +5,9 @@
 #include <fmt/core.h>
 
 #ifdef _WIN32
-#define DLLEXPORT __declspec(dllexport)
+# define DLLEXPORT __declspec(dllexport)
 #else
-#define DLLEXPORT
+# define DLLEXPORT
 #endif
 
 /// putchard - putchar that takes a double and returns 0.
